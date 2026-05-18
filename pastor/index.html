@@ -212,6 +212,7 @@
     <div class="auth-link"><a onclick="showScreen('forgot')">Forgot password?</a></div>
     <div class="auth-link">Not registered? <a onclick="showScreen('register')">Create account</a></div>
     <div class="auth-link">Not a pastor yet? <a onclick="showScreen('apply')">Apply for verification</a></div>
+    <div class="auth-link" style="margin-top:16px;"><a href="https://trinitarian.app" style="color:#8fa3c0;">← Back to trinitarian.app</a></div>
   </div>
 </div>
 
@@ -275,11 +276,15 @@
       <h4>📋 Verification Requirements</h4>
       <ul>
         <li>Valid ordination certificate from a recognised Christian denomination</li>
+        <li>Ordination body or authority</li>
         <li>Minimum 2 years of active ministry</li>
         <li>Church name, country and city</li>
         <li>Personal statement (minimum 100 words)</li>
-        <li>After submitting, email your ordination certificate to: <strong style="color:var(--gold)">verify@trinitarian.app</strong></li>
+        <li>Verified email address</li>
       </ul>
+      <p style="color:var(--warning);font-size:12px;margin-top:10px;">⚠️ False information will result in permanent account suspension.</p>
+      <p style="color:var(--text-sec);font-size:12px;margin-top:8px;">📎 After submitting, email your ordination certificate to: <strong style="color:var(--gold)">verify@trinitarian.app</strong></p>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Please use your registered email address as the subject line.</p>
     </div>
     <div class="alert alert-error" id="apply-error"></div>
     <div class="alert alert-success" id="apply-success"></div>
@@ -293,7 +298,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">Denomination</label>
-      <select class="form-input" id="apply-denom">
+      <select class="form-input" id="apply-denom" onchange="document.getElementById('denom-other-wrap').style.display=this.value==='Other'?'block':'none'">
         <option value="">Select denomination</option>
         <option>Catholic</option><option>Anglican</option><option>Pentecostal</option>
         <option>Baptist</option><option>Methodist</option><option>Presbyterian</option>
@@ -301,8 +306,8 @@
       </select>
     </div>
     <div class="form-group" id="denom-other-wrap" style="display:none;">
-      <label class="form-label">Specify Denomination</label>
-      <input type="text" class="form-input" id="apply-denom-other" placeholder="e.g. Evangelical, RCCG, SDA…" />
+      <label class="form-label">Specify Your Denomination *</label>
+      <input type="text" class="form-input" id="apply-denom-other" placeholder="e.g. Evangelical, RCCG, SDA, AOG…" />
     </div>
     <div class="form-group">
       <label class="form-label">Country</label>
@@ -356,6 +361,9 @@
       <div class="nav-divider"></div>
       <div class="nav-item" id="admin-nav" style="display:none;" onclick="showPage('admin')">
         <span class="nav-icon">🛡️</span><span>Admin Panel</span>
+      </div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <span class="nav-icon">⚙️</span><span>Settings</span>
       </div>
       <div class="nav-item" onclick="showPage('profile')">
         <span class="nav-icon">👤</span><span>Profile</span>
@@ -617,6 +625,64 @@
       </div>
     </div>
 
+    <!-- SETTINGS -->
+    <div id="page-settings" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-sub">Manage your account preferences</p>
+      </div>
+      <div class="profile-card" style="max-width:560px;">
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Account</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Display Name</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-name">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Email</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-email">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
+            <span style="color:var(--text);font-size:14px;">Role</span>
+            <span style="color:var(--gold);font-size:13px;font-weight:600;" id="set-role">—</span>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Security</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div onclick="showPage('changepass')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Change Password</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="handleLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;">
+            <span style="color:var(--error);font-size:14px;">Sign Out</span>
+            <span style="color:var(--error);font-size:18px;">›</span>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Legal</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div onclick="window.open('https://trinitarian.app/privacy/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Privacy Policy</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="window.open('https://trinitarian.app/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Terms of Service</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="window.open('https://trinitarian.app/terms/index.html#dmca','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;">
+            <span style="color:var(--text);font-size:14px;">DMCA Policy</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);font-size:11px;text-align:center;margin-top:20px;">Trinitarian v1.0 · Globiq Media Technologies Ltd</p>
+      </div>
+    </div>
+
     <!-- CHANGE PASSWORD -->
     <div id="page-changepass" class="page">
       <div class="page-header">
@@ -811,6 +877,10 @@ function initDashboard() {
   if (['admin', 'moderator'].includes(user?.role)) {
     document.getElementById('admin-nav').style.display = 'flex';
   }
+  // Populate settings
+  if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
+  if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
+  if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
   loadOverview();
 }
 
