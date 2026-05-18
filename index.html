@@ -288,7 +288,15 @@ function loadPastorDashboard() {
 // ── Navigation ──
 function goTo(page) {
   if (page === 'pastor') {
-    window.location.href = '/pastor/index.html';
+    window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html', '_blank');
+    return;
+  }
+  if (page === 'privacy') {
+    window.open('https://trinitarian-web.charlesuonuoha.workers.dev/privacy/index.html', '_blank');
+    return;
+  }
+  if (page === 'terms') {
+    window.open('https://trinitarian-web.charlesuonuoha.workers.dev/terms/index.html', '_blank');
     return;
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
