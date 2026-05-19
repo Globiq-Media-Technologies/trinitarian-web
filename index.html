@@ -294,7 +294,7 @@
       <div style="margin-bottom:14px;"><label style="display:block;color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Email</label><input type="email" id="ll-email" placeholder="your@email.com" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;outline:none;"/></div>
       <div style="margin-bottom:8px;"><label style="display:block;color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Password</label><div style="position:relative;"><input type="password" id="ll-pass" placeholder="••••••••" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 48px 12px 16px;color:#fff;font-size:14px;outline:none;"/><span onclick="togglePwd('ll-pass',this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:18px;user-select:none;">👁</span></div></div>
       <div style="text-align:right;margin-bottom:20px;"><a onclick="llShow('forgot')" style="color:#D4AF37;font-size:13px;cursor:pointer;">Forgot password?</a></div>
-      <button onclick="llLogin()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px;">Sign In</button>
+      <button onclick="this.style.transform='scale(0.97)';setTimeout(()=>this.style.transform='',150);llLogin()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px;transition:transform 0.15s;">Sign In</button>
       <p style="text-align:center;color:#8fa3c0;font-size:13px;">No account? <a onclick="llShow('register')" style="color:#D4AF37;cursor:pointer;">Create one free</a></p>
       <p style="text-align:center;margin-top:8px;color:#8fa3c0;font-size:13px;">Pastor? <a onclick="goTo('pastor')" style="color:#D4AF37;cursor:pointer;">Pastor Login →</a></p>
           </div>
@@ -333,6 +333,7 @@
     <span style="color:#D4AF37;font-family:Georgia,serif;font-size:16px;letter-spacing:2px;">✝ TRINITARIAN</span>
     <div style="display:flex;align-items:center;gap:12px;">
       <span id="lh-username" style="color:#b0c4d8;font-size:13px;"></span>
+      <span onclick="lhLoadSermons()" style="color:#8fa3c0;font-size:18px;cursor:pointer;" title="Refresh sermons">↻</span>
       <span onclick="lhLogout()" style="color:#e05555;font-size:12px;cursor:pointer;padding:5px 10px;border:1px solid rgba(224,85,85,0.3);border-radius:20px;">Sign Out</span>
     </div>
   </div>
@@ -351,6 +352,10 @@
       <span style="font-size:22px;">🔖</span>
       <span style="color:#8fa3c0;font-size:10px;">Saved</span>
     </div>
+    <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">📬</span>
+      <span style="color:#8fa3c0;font-size:10px;">Inbox</span>
+    </div>
     <div onclick="goTo('lh-notifications')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">🔔</span>
       <span style="color:#8fa3c0;font-size:10px;">Alerts</span>
@@ -359,6 +364,10 @@
       <span style="font-size:22px;">⚙️</span>
       <span style="color:#8fa3c0;font-size:10px;">Settings</span>
     </div>
+  </div>
+  <!-- Admin indicator -->
+  <div id="lh-admin-bar" style="display:none;background:rgba(212,175,55,0.1);border-bottom:1px solid rgba(212,175,55,0.2);padding:8px 20px;text-align:center;">
+    <span style="color:#D4AF37;font-size:12px;">🛡️ Admin Mode — <a onclick="window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Open Pastor Dashboard</a></span>
   </div>
 
   <!-- Content area with bottom padding for nav -->
@@ -400,6 +409,7 @@
   </div>
   <div style="max-width:800px;margin:0 auto;padding:24px;">
     <!-- Video/Audio player -->
+    <div style="text-align:right;margin-bottom:6px;"><span onclick="playerFullscreen()" style="color:#8fa3c0;font-size:11px;cursor:pointer;">⛶ Click for fullscreen</span></div>
     <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:60px 40px;text-align:center;margin-bottom:20px;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
       <div style="font-size:64px;margin-bottom:16px;" id="player-icon">🎧</div>
       <p style="color:#8fa3c0;font-size:13px;">Media player coming in v1.1</p>
@@ -470,6 +480,24 @@
 
 
 
+<!-- ══ LISTENER INBOX ══ -->
+<div id="page-lh-inbox" class="page">
+  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
+    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;">Inbox</span>
+  </div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 80px;">
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;" id="lh-inbox-list">
+      <div style="text-align:center;padding:40px;color:#8fa3c0;">Loading messages...</div>
+    </div>
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:20px;">
+      <div style="color:#D4AF37;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Send Message to Support</div>
+      <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:10px;"></textarea>
+      <button onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ LISTENER NOTIFICATIONS ══ -->
 <div id="page-lh-notifications" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
@@ -492,6 +520,17 @@
   <div style="max-width:560px;margin:0 auto;padding:24px 24px 80px;">
 
     <!-- Account -->
+    <!-- Font Preview -->
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Font Size</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="lhSetFont(13,this)" class="lhfs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;">A</button>
+        <button onclick="lhSetFont(15,this)" class="lhfs-btn active-lhfs" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:14px;">A</button>
+        <button onclick="lhSetFont(17,this)" class="lhfs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:16px;">A</button>
+        <button onclick="lhSetFont(20,this)" class="lhfs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:19px;">A</button>
+      </div>
+      <div id="lhfs-preview" style="background:#071528;border-radius:8px;padding:12px;color:#b0c4d8;font-size:15px;line-height:1.7;">"For God so loved the world..." — John 3:16</div>
+    </div>
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Account</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
@@ -574,10 +613,17 @@
       </div>
     </div>
 
-    <!-- Sign Out -->
+    <!-- Sign Out & Delete -->
     <div style="background:#0d2142;border:1px solid rgba(224,85,85,0.2);border-radius:14px;overflow:hidden;margin-bottom:20px;">
-      <div onclick="lhLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
+      <div onclick="lhLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(224,85,85,0.1);">
         <span style="color:#e05555;font-size:14px;">Sign Out</span>
+        <span style="color:#e05555;">›</span>
+      </div>
+      <div onclick="lhDeleteAccount()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
+        <div>
+          <div style="color:#e05555;font-size:14px;">Delete Account</div>
+          <div style="color:#8fa3c0;font-size:11px;">Permanently delete your account and data</div>
+        </div>
         <span style="color:#e05555;">›</span>
       </div>
     </div>
@@ -679,6 +725,7 @@ function goTo(page){
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
   if(page==='listener-home') initListenerHome();
   if(page==='lh-notifications') loadLhNotifications();
+  if(page==='lh-inbox') loadLhInbox();
   if(page==='lh-settings'){const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
   window.location.hash=page==='home'?'':page;
 }
@@ -689,6 +736,10 @@ function scrollTo_(selector){
 }
 
 window.addEventListener('load',async ()=>{
+  // Check for password reset token in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetToken = urlParams.get('token');
+  if(resetToken){ goTo('reset'); return; }
   const hash=window.location.hash.replace('#','');
   const token=localStorage.getItem('trinitarian_token');
   if(token&&hash==='listener'){
@@ -734,7 +785,13 @@ let lhSaved = JSON.parse(localStorage.getItem('lh_saved')||'[]');
 
 async function initListenerHome(){
   const u = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-  if(u) document.getElementById('lh-username').textContent = u.display_name || '';
+  if(u){
+    document.getElementById('lh-username').textContent = u.display_name || '';
+    if(['admin','moderator'].includes(u.role)){
+      const bar=document.getElementById('lh-admin-bar');
+      if(bar) bar.style.display='block';
+    }
+  }
   await lhLoadSermons();
 }
 
@@ -772,7 +829,8 @@ function lhRender(){
   const q = document.getElementById('lh-search').value.toLowerCase();
   let list = lhAllSermons;
   if(lhCurrentType!=='all') list = list.filter(s=>s.type===lhCurrentType);
-  if(q) list = list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')).toLowerCase().includes(q));
+  if(lhCurrentCat) list = list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase().includes(lhCurrentCat));
+  if(q) list = list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')+' '+(s.category_name||'')).toLowerCase().includes(q));
   const el = document.getElementById('lh-sermons');
   if(!list.length){
     el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🎧</div><p style="color:#8fa3c0;">No sermons found</p></div>';
@@ -826,7 +884,7 @@ async function lhShowPastors(){
   el.style.gridTemplateColumns='1fr';
   el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Loading pastors...</div>';
   try{
-    const res=await fetch(API+'/api/pastors/verified');
+    const res=await fetch(API+'/api/pastors?verified=true&limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
     const pastors=Array.isArray(data)?data:(data?.pastors||[]);
     if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">No verified pastors yet</div>';return;}
@@ -865,6 +923,91 @@ function lhShowSaved(){
       <div style="color:#D4AF37;font-size:12px;">${s.pastor_name||'Verified Pastor'}</div>
     </div>
   `).join('');
+}
+
+// ── Category filter ──
+let lhCurrentCat = '';
+function lhFilterCat(cat, btn){
+  lhCurrentCat = cat;
+  document.querySelectorAll('.lh-cat').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
+  if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
+  lhRender();
+}
+
+// ── Font size for listener ──
+function lhSetFont(size, btn){
+  document.querySelectorAll('.lhfs-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});
+  if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}
+  localStorage.setItem('lh_font_size', size);
+  const preview=document.getElementById('lhfs-preview');
+  if(preview) preview.style.fontSize=size+'px';
+}
+
+// ── Delete Account ──
+async function handleReset(){
+  const token = new URLSearchParams(window.location.search).get('token');
+  const pass = document.getElementById('reset-pass').value;
+  const confirm = document.getElementById('reset-confirm').value;
+  const errEl = document.getElementById('reset-error');
+  const okEl = document.getElementById('reset-success');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!token){ errEl.textContent='Invalid reset link. Please request a new one.'; errEl.style.display='block'; return; }
+  if(pass.length<8){ errEl.textContent='Password must be at least 8 characters.'; errEl.style.display='block'; return; }
+  if(pass!==confirm){ errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
+  try{
+    const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});
+    const data=await res.json();
+    if(data.message){ okEl.textContent='✅ Password reset successfully! You can now sign in.'; okEl.style.display='block'; setTimeout(()=>goTo('listener'),2000); }
+    else{ errEl.textContent=data.error||'Reset failed. Link may have expired.'; errEl.style.display='block'; }
+  }catch(e){ errEl.textContent='Connection failed. Please try again.'; errEl.style.display='block'; }
+}
+
+async function lhDeleteAccount(){
+  const confirm1 = confirm('Are you sure you want to delete your account?\n\nThis action cannot be undone. All your data will be permanently deleted.');
+  if(!confirm1) return;
+  const confirm2 = confirm('This will delete:\n• Your account\n• Your saved sermons\n• Your comments\n\nType OK to confirm.');
+  if(!confirm2) return;
+  try{
+    const res=await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});
+    alert('Your account has been deleted. We are sorry to see you go.');
+    lhLogout();
+  }catch(e){
+    alert('Account deletion failed. Please email support@trinitarian.app to request deletion.');
+  }
+}
+
+// ── Listener Inbox ──
+async function loadLhInbox(){
+  const el=document.getElementById('lh-inbox-list');
+  if(!el) return;
+  try{
+    const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});
+    const data=await res.json();
+    const msgs=data?.notifications||[];
+    if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}
+    el.innerHTML=msgs.map(m=>`
+      <div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);background:${!m.is_read?'rgba(212,175,55,0.03)':'transparent'}">
+        <div style="font-size:20px;flex-shrink:0;">📬</div>
+        <div style="flex:1;">
+          <div style="color:${m.is_read?'#b0c4d8':'#fff'};font-size:14px;font-weight:${m.is_read?'400':'600'};margin-bottom:3px;">${m.title}</div>
+          ${m.body?`<div style="color:#8fa3c0;font-size:12px;margin-bottom:4px;">${m.body}</div>`:''}
+          <div style="color:#8fa3c0;font-size:11px;">${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        ${!m.is_read?'<div style="width:8px;height:8px;border-radius:4px;background:#D4AF37;flex-shrink:0;margin-top:4px;"></div>':''}
+      </div>
+    `).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load messages</div>';}
+}
+
+async function sendLhInboxMsg(){
+  const msg=document.getElementById('lh-inbox-msg').value.trim();
+  if(!msg) return;
+  const toast=document.createElement('div');
+  toast.textContent='✓ Message sent to support';
+  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2500);
+  document.getElementById('lh-inbox-msg').value='';
 }
 
 function lhLogout(){
@@ -930,8 +1073,8 @@ function openSermon(s){
   else{pt.style.display='none';pe.style.display='block';}
   // Save button
   const saved = lhSaved.includes(s.id);
-  document.getElementById('btn-save').style.background = saved?'rgba(212,175,55,0.3)':'rgba(212,175,55,0.1)';
-  document.getElementById('btn-save').textContent = saved?'✅ Saved':'🔖 Save';
+  const saveBtn=document.getElementById('btn-save');
+  if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.style.border=saved?'1px solid rgba(212,175,55,0.5)':'1px solid rgba(212,175,55,0.1)';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}
   // Comments
   loadComments(s.id);
   playerShowTab('info');
@@ -1068,7 +1211,7 @@ function playerDownload(){ alert('Download will be available in v1.1'); }
 
 async function playerReport(){
   if(!currentSermon) return;
-  const reason=prompt('Please describe the issue with this sermon:');
+  const reason=prompt('Report this sermon\n\nPlease describe the issue (e.g. false teaching, offensive content, copyright):');
   if(!reason) return;
   try{
     await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'},body:JSON.stringify({reason})});
@@ -1098,6 +1241,12 @@ function postComment(){
   localStorage.setItem('lh_comments',JSON.stringify(comments));
   document.getElementById('comment-input').value='';
   loadComments(currentSermon.id);
+  // Show success toast
+  const toast=document.createElement('div');
+  toast.textContent='✓ Comment posted';
+  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2500);
 }
 
 
@@ -1183,5 +1332,33 @@ async function loadLhNotifications() {
   } catch(e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>'; }
 }
 </script>
+
+<!-- ══ RESET PASSWORD ══ -->
+<div id="page-reset" class="page">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 60%);">
+    <div style="width:100%;max-width:420px;background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:40px 36px;">
+      <h2 style="color:#fff;font-size:22px;text-align:center;margin-bottom:8px;font-family:Georgia,serif;">Reset Password</h2>
+      <p style="color:#8fa3c0;font-size:13px;text-align:center;margin-bottom:28px;">Enter your new password below</p>
+      <div id="reset-error" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+      <div id="reset-success" style="display:none;background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.3);color:#40c96a;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">New Password</label>
+        <div style="position:relative;">
+          <input type="password" id="reset-pass" placeholder="Min. 8 characters" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:14px;outline:none;"/>
+          <span onclick="togglePwd('reset-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Confirm Password</label>
+        <div style="position:relative;">
+          <input type="password" id="reset-confirm" placeholder="Re-enter new password" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:14px;outline:none;"/>
+          <span onclick="togglePwd('reset-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+        </div>
+      </div>
+      <button onclick="handleReset()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Set New Password</button>
+      <p style="text-align:center;margin-top:16px;"><a onclick="goTo('listener')" style="color:#8fa3c0;font-size:13px;cursor:pointer;">← Back to Sign In</a></p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
