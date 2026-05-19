@@ -367,7 +367,7 @@
   </div>
   <!-- Admin indicator -->
   <div id="lh-admin-bar" style="display:none;background:rgba(212,175,55,0.1);border-bottom:1px solid rgba(212,175,55,0.2);padding:8px 20px;text-align:center;">
-    <span style="color:#D4AF37;font-size:12px;">🛡️ Admin Mode — <a onclick="window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Open Pastor Dashboard</a></span>
+    <span style="color:#D4AF37;font-size:12px;">🛡️ Admin Mode — <a onclick="window.open('https://trinitarian.app/pastor/index.html','_blank')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Open Pastor Dashboard</a></span>
   </div>
 
   <!-- Content area with bottom padding for nav -->
@@ -453,7 +453,8 @@
     </div>
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
-      <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
+      <div style="text-align:center;margin-bottom:8px;"><span onclick="playerFullscreen()" style="color:#8fa3c0;font-size:11px;cursor:pointer;background:rgba(212,175,55,0.08);padding:4px 12px;border-radius:20px;">⛶ Click Fullscreen for full-page reading · Use A-/A+ to resize text</span></div>
+    <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
         <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
           <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
           <button onclick="rdFontSize(1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A+</button>
@@ -602,13 +603,13 @@
     <!-- Legal -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Legal</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
-      <div onclick="window.open('https://trinitarian-web.charlesuonuoha.workers.dev/privacy/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+      <div onclick="window.open('https://trinitarian.app/privacy/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
         <span style="color:#b0c4d8;font-size:14px;">Privacy Policy</span><span style="color:#8fa3c0;">›</span>
       </div>
-      <div onclick="window.open('https://trinitarian-web.charlesuonuoha.workers.dev/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+      <div onclick="window.open('https://trinitarian.app/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
         <span style="color:#b0c4d8;font-size:14px;">Terms of Service</span><span style="color:#8fa3c0;">›</span>
       </div>
-      <div onclick="window.open('https://trinitarian-web.charlesuonuoha.workers.dev/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
+      <div onclick="window.open('https://trinitarian.app/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
         <span style="color:#b0c4d8;font-size:14px;">DMCA Policy</span><span style="color:#8fa3c0;">›</span>
       </div>
     </div>
@@ -654,7 +655,7 @@ async function llLogin(){
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
       const role = data.user?.role || 'listener';
       if(['admin','moderator','pastor'].includes(role)){
-        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+        window.open('https://trinitarian.app/pastor/index.html','_blank');
         showMsg('ll-err','You have been redirected to the Pastor Dashboard in a new tab.', true);
       } else {
         goTo('listener-home');
@@ -686,7 +687,7 @@ async function llRegister(){
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
       const role = data.user?.role || 'listener';
       if(['admin','moderator','pastor'].includes(role)){
-        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+        window.open('https://trinitarian.app/pastor/index.html','_blank');
       } else {
         goTo('listener-home');
       }
@@ -726,9 +727,9 @@ function showFMsg(msg,type){
 }
 
 function goTo(page){
-  if(page==='pastor'){window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');return;}
-  if(page==='privacy'){window.open('https://trinitarian-web.charlesuonuoha.workers.dev/privacy/index.html','_blank');return;}
-  if(page==='terms'){window.open('https://trinitarian-web.charlesuonuoha.workers.dev/terms/index.html','_blank');return;}
+  if(page==='pastor'){window.open('https://trinitarian.app/pastor/index.html','_blank');return;}
+  if(page==='privacy'){window.open('https://trinitarian.app/privacy/index.html','_blank');return;}
+  if(page==='terms'){window.open('https://trinitarian.app/terms/index.html','_blank');return;}
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
@@ -760,7 +761,7 @@ window.addEventListener('load',async ()=>{
         localStorage.setItem('trinitarian_user',JSON.stringify(fresh));
         const role=fresh.role||'listener';
         if(['admin','moderator','pastor'].includes(role)){
-          window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+          window.open('https://trinitarian.app/pastor/index.html','_blank');
         } else {
           goTo('listener-home');
         }
@@ -771,7 +772,7 @@ window.addEventListener('load',async ()=>{
     const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
     if(user){
       if(['admin','moderator','pastor'].includes(user?.role)){
-        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+        window.open('https://trinitarian.app/pastor/index.html','_blank');
       } else {
         goTo('listener-home');
       }
@@ -838,10 +839,25 @@ function lhRender(){
   const q = document.getElementById('lh-search').value.toLowerCase();
   let list = lhAllSermons;
   if(lhCurrentType!=='all') list = list.filter(s=>s.type===lhCurrentType);
-  if(lhCurrentCat) list = list.filter(s=>{
-    const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')+' '+(s.tags||'')).toLowerCase();
-    return text.includes(lhCurrentCat.toLowerCase());
-  });
+  if(lhCurrentCat) {
+    const cat = lhCurrentCat.toLowerCase();
+    // Category synonyms for better matching
+    const synonyms = {
+      'faith': ['faith','believe','trust','confidence'],
+      'prayer': ['prayer','pray','intercession','petition'],
+      'worship': ['worship','praise','adoration','glory'],
+      'gospel': ['gospel','good news','salvation','saved','born again'],
+      'healing': ['healing','heal','miracle','restoration'],
+      'prophecy': ['prophecy','prophetic','vision','revelation'],
+      'marriage': ['marriage','family','husband','wife','relationship'],
+      'youth': ['youth','young','teenager','children','next generation'],
+    };
+    const words = synonyms[cat] || [cat];
+    list = list.filter(s=>{
+      const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase();
+      return words.some(w=>text.includes(w));
+    });
+  }
   if(q) list = list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')+' '+(s.category_name||'')+' '+(s.tags||'')).toLowerCase().includes(q));
   const el = document.getElementById('lh-sermons');
   if(!list.length){
@@ -1236,6 +1252,7 @@ async function playerReport(){
   if(!currentSermon) return;
   // Create report modal
   const modal = document.createElement('div');
+  modal.id='report-modal-overlay';
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
   modal.innerHTML=`
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:500px;">
@@ -1253,7 +1270,7 @@ async function playerReport(){
       <div id="report-selected" style="color:#D4AF37;font-size:12px;margin-bottom:14px;display:none;">Selected: <span id="report-reason-text"></span></div>
       <div style="display:flex;gap:10px;">
         <button onclick="submitReport()" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">Submit Report</button>
-        <button onclick="this.closest('[style*=position:fixed]').remove()" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button>
+        <button id="report-cancel-btn" onclick="document.getElementById('report-modal-overlay').remove();selectedReason=''" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button>
       </div>
     </div>
   `;
@@ -1275,7 +1292,7 @@ async function submitReport(){
   const reason=selectedReason+(detail?' - '+detail:'');
   try{
     await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'},body:JSON.stringify({reason})});
-    document.querySelector('[style*="position:fixed"][style*="z-index:99999"]')?.remove();
+    document.getElementById('report-modal-overlay')?.remove();
     const toast=document.createElement('div');
     toast.textContent='✓ Report submitted. Thank you.';
     toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
