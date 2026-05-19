@@ -11,7 +11,7 @@
 
     /* Pages */
     .page{display:none;}
-    .page.active{display:block;}
+    .page{display:none;}.page.active{display:block;}
 
     /* Nav */
     nav{display:flex;justify-content:space-between;align-items:center;padding:14px 40px;border-bottom:1px solid rgba(212,175,55,0.2);position:sticky;top:0;background:#071528;z-index:100;}
@@ -577,14 +577,15 @@ function showFMsg(msg,type){
 }
 
 function goTo(page){
-  if(page==='pastor'){window.open('https://fascinating-kleicha-ee3900.netlify.app/pastor/index.html','_blank');return;}
-  if(page==='privacy'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/privacy/index.html';return;}
-  if(page==='terms'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/terms/index.html';return;}
+  if(page==='pastor'){window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');return;}
+  if(page==='privacy'){window.location.href='https://trinitarian-web.charlesuonuoha.workers.dev/privacy/index.html';return;}
+  if(page==='terms'){window.location.href='https://trinitarian-web.charlesuonuoha.workers.dev/terms/index.html';return;}
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');window.scrollTo(0,0);}
   if(page==='listener-home') initListenerHome();
   if(page==='lh-notifications') loadLhNotifications();
+  if(page==='lh-settings'){const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const e=document.getElementById('lhs-email');if(n)n.textContent=u.display_name||'—';if(e)e.textContent=u.email||'—';}}
   window.location.hash=page==='home'?'':page;
 }
 
