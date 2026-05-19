@@ -688,20 +688,37 @@ function scrollTo_(selector){
   setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);
 }
 
-window.addEventListener('load',()=>{
+window.addEventListener('load',async ()=>{
   const hash=window.location.hash.replace('#','');
   const token=localStorage.getItem('trinitarian_token');
-  const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-  if(token&&user&&hash==='listener'){
-    const role=user?.role||'listener';
-    if(['admin','moderator','pastor'].includes(role)){
-      window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
-    } else {
-      goTo('listener-home');
+  if(token&&hash==='listener'){
+    try{
+      // Always fetch fresh user data to get current role
+      const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});
+      const fresh=await res.json();
+      if(fresh?.id){
+        localStorage.setItem('trinitarian_user',JSON.stringify(fresh));
+        const role=fresh.role||'listener';
+        if(['admin','moderator','pastor'].includes(role)){
+          window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+        } else {
+          goTo('listener-home');
+        }
+        return;
+      }
+    }catch(e){}
+    // Fallback to cached user if server unreachable
+    const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+    if(user){
+      if(['admin','moderator','pastor'].includes(user?.role)){
+        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+      } else {
+        goTo('listener-home');
+      }
+      return;
     }
-    return;
   }
-  if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
+  if(hash&&['listener-home','player'].includes(hash))goTo(hash);
 });
 window.addEventListener('hashchange',()=>{
   const hash=window.location.hash.replace('#','');
