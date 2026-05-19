@@ -324,110 +324,7 @@
   </div>
 </div>
 
-<script>
-const API='https://trinitarian-backend-production.up.railway.app';
 
-function llShow(panel){
-  ['login','register','forgot'].forEach(p=>document.getElementById('ll-'+p).style.display='none');
-  document.getElementById('ll-'+panel).style.display='block';
-}
-
-async function llLogin(){
-  const email=document.getElementById('ll-email').value.trim();
-  const pass=document.getElementById('ll-pass').value;
-  if(!email||!pass){showMsg('ll-err','Please enter email and password');return;}
-  try{
-    const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass})});
-    const data=await res.json();
-    if(data.token){
-      localStorage.setItem('trinitarian_token',data.token);
-      localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
-      goTo('listener-home');
-    }else{showMsg('ll-err',data.error||'Invalid credentials');}
-  }catch(e){showMsg('ll-err','Connection failed. Please try again.');}
-}
-
-async function llRegister(){
-  const name=document.getElementById('ll-rname').value.trim();
-  const email=document.getElementById('ll-remail').value.trim();
-  const username=document.getElementById('ll-rusername').value.trim();
-  const pass=document.getElementById('ll-rpass').value;
-  const confirm=document.getElementById('ll-rconfirm').value;
-  if(!name||!email||!username||!pass){showMsg('ll-reg-err','Please fill in all fields');return;}
-  if(pass.length<8){showMsg('ll-reg-err','Password must be at least 8 characters');return;}
-  if(pass!==confirm){showMsg('ll-reg-err','Passwords do not match');return;}
-  try{
-    const res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({display_name:name,email:email.toLowerCase(),username:username.toLowerCase(),password:pass})});
-    const data=await res.json();
-    if(data.token){
-      localStorage.setItem('trinitarian_token',data.token);
-      localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
-      goTo('listener-home');
-    }else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
-  }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
-}
-
-async function llForgot(){
-  const email=document.getElementById('ll-femail').value.trim();
-  if(!email){showFMsg('Please enter your email','error');return;}
-  try{
-    await fetch(API+'/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
-    showFMsg('Reset link sent! Check your inbox and spam folder.','success');
-  }catch(e){showFMsg('Request failed. Please try again.','error');}
-}
-
-function showMsg(id,msg,success=false){
-  // Hide all message elements first
-  document.querySelectorAll('[id^="ll-"]').forEach(el=>{
-    if(el.id.endsWith('-err')||el.id.endsWith('-ok')){el.style.display='none';el.textContent='';}
-  });
-  const el=document.getElementById(id);
-  if(el){
-    el.textContent=msg;
-    if(success){el.style.background='rgba(64,201,106,0.1)';el.style.border='1px solid rgba(64,201,106,0.3)';el.style.color='#40c96a';}
-    else{el.style.background='rgba(224,85,85,0.1)';el.style.border='1px solid rgba(224,85,85,0.3)';el.style.color='#e05555';}
-    el.style.display='block';
-  }
-}
-function togglePwd(id,btn){
-  const el=document.getElementById(id);
-  if(el){el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
-}
-function showFMsg(msg,type){
-  const el=document.getElementById('ll-fmsg');
-  if(el){el.textContent=msg;el.style.background=type==='success'?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)';el.style.border=type==='success'?'1px solid rgba(64,201,106,0.3)':'1px solid rgba(224,85,85,0.3)';el.style.color=type==='success'?'#40c96a':'#e05555';el.style.display='block';}
-}
-
-function goTo(page){
-  if(page==='pastor'){window.open('https://fascinating-kleicha-ee3900.netlify.app/pastor/index.html','_blank');return;}
-  if(page==='privacy'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/privacy/index.html';return;}
-  if(page==='terms'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/terms/index.html';return;}
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');window.scrollTo(0,0);}
-  if(page==='listener-home') initListenerHome();
-  if(page==='lh-notifications') loadLhNotifications();
-  window.location.hash=page==='home'?'':page;
-}
-
-function scrollTo_(selector){
-  goTo('home');
-  setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);
-}
-
-window.addEventListener('load',()=>{
-  const hash=window.location.hash.replace('#','');
-  const token=localStorage.getItem('trinitarian_token');
-  const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-  if(token&&user&&hash==='listener'){goTo('listener-home');return;}
-  if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
-});
-window.addEventListener('hashchange',()=>{
-  const hash=window.location.hash.replace('#','');
-  if(hash&&['listener'].includes(hash))goTo(hash);
-  else if(!hash)goTo('home');
-});
-</script>
 
 <!-- ══ LISTENER HOME ══ -->
 <div id="page-listener-home" class="page">
@@ -559,6 +456,111 @@ window.addEventListener('hashchange',()=>{
 </div>
 
 <script>
+
+const API='https://trinitarian-backend-production.up.railway.app';
+
+function llShow(panel){
+  ['login','register','forgot'].forEach(p=>document.getElementById('ll-'+p).style.display='none');
+  document.getElementById('ll-'+panel).style.display='block';
+}
+
+async function llLogin(){
+  const email=document.getElementById('ll-email').value.trim();
+  const pass=document.getElementById('ll-pass').value;
+  if(!email||!pass){showMsg('ll-err','Please enter email and password');return;}
+  try{
+    const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass})});
+    const data=await res.json();
+    if(data.token){
+      localStorage.setItem('trinitarian_token',data.token);
+      localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
+      goTo('listener-home');
+    }else{showMsg('ll-err',data.error||'Invalid credentials');}
+  }catch(e){showMsg('ll-err','Connection failed. Please try again.');}
+}
+
+async function llRegister(){
+  const name=document.getElementById('ll-rname').value.trim();
+  const email=document.getElementById('ll-remail').value.trim();
+  const username=document.getElementById('ll-rusername').value.trim();
+  const pass=document.getElementById('ll-rpass').value;
+  const confirm=document.getElementById('ll-rconfirm').value;
+  if(!name||!email||!username||!pass){showMsg('ll-reg-err','Please fill in all fields');return;}
+  if(pass.length<8){showMsg('ll-reg-err','Password must be at least 8 characters');return;}
+  if(pass!==confirm){showMsg('ll-reg-err','Passwords do not match');return;}
+  try{
+    const res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({display_name:name,email:email.toLowerCase(),username:username.toLowerCase(),password:pass})});
+    const data=await res.json();
+    if(data.token){
+      localStorage.setItem('trinitarian_token',data.token);
+      localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
+      goTo('listener-home');
+    }else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
+  }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
+}
+
+async function llForgot(){
+  const email=document.getElementById('ll-femail').value.trim();
+  if(!email){showFMsg('Please enter your email','error');return;}
+  try{
+    await fetch(API+'/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    showFMsg('Reset link sent! Check your inbox and spam folder.','success');
+  }catch(e){showFMsg('Request failed. Please try again.','error');}
+}
+
+function showMsg(id,msg,success=false){
+  // Hide all message elements first
+  document.querySelectorAll('[id^="ll-"]').forEach(el=>{
+    if(el.id.endsWith('-err')||el.id.endsWith('-ok')){el.style.display='none';el.textContent='';}
+  });
+  const el=document.getElementById(id);
+  if(el){
+    el.textContent=msg;
+    if(success){el.style.background='rgba(64,201,106,0.1)';el.style.border='1px solid rgba(64,201,106,0.3)';el.style.color='#40c96a';}
+    else{el.style.background='rgba(224,85,85,0.1)';el.style.border='1px solid rgba(224,85,85,0.3)';el.style.color='#e05555';}
+    el.style.display='block';
+  }
+}
+function togglePwd(id,btn){
+  const el=document.getElementById(id);
+  if(el){el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
+}
+function showFMsg(msg,type){
+  const el=document.getElementById('ll-fmsg');
+  if(el){el.textContent=msg;el.style.background=type==='success'?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)';el.style.border=type==='success'?'1px solid rgba(64,201,106,0.3)':'1px solid rgba(224,85,85,0.3)';el.style.color=type==='success'?'#40c96a':'#e05555';el.style.display='block';}
+}
+
+function goTo(page){
+  if(page==='pastor'){window.open('https://fascinating-kleicha-ee3900.netlify.app/pastor/index.html','_blank');return;}
+  if(page==='privacy'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/privacy/index.html';return;}
+  if(page==='terms'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/terms/index.html';return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el){el.classList.add('active');window.scrollTo(0,0);}
+  if(page==='listener-home') initListenerHome();
+  if(page==='lh-notifications') loadLhNotifications();
+  window.location.hash=page==='home'?'':page;
+}
+
+function scrollTo_(selector){
+  goTo('home');
+  setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);
+}
+
+window.addEventListener('load',()=>{
+  const hash=window.location.hash.replace('#','');
+  const token=localStorage.getItem('trinitarian_token');
+  const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+  if(token&&user&&hash==='listener'){goTo('listener-home');return;}
+  if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
+});
+window.addEventListener('hashchange',()=>{
+  const hash=window.location.hash.replace('#','');
+  if(hash&&['listener'].includes(hash))goTo(hash);
+  else if(!hash)goTo('home');
+});
+
+
 // ── LISTENER HOME ──
 let lhAllSermons = [];
 let lhCurrentType = 'all';
@@ -574,7 +576,10 @@ async function lhLoadSermons(){
   try{
     const res = await fetch(API+'/api/sermons?limit=50');
     const data = await res.json();
-    lhAllSermons = Array.isArray(data) ? data : (data.sermons||[]);
+    const raw = Array.isArray(data) ? data : (data.sermons||[]);
+    // Deduplicate by ID
+    const seen = new Set();
+    lhAllSermons = raw.filter(s => { if(seen.has(s.id)) return false; seen.add(s.id); return true; });
     lhRender();
   }catch(e){
     document.getElementById('lh-sermons').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Could not load sermons. Check your connection.</div>';
@@ -847,6 +852,7 @@ function postComment(){
   document.getElementById('comment-input').value='';
   loadComments(currentSermon.id);
 }
+
 
 </script>
 
