@@ -462,6 +462,8 @@ window.addEventListener('hashchange',()=>{
     <button class="lh-tab" onclick="lhTab(this,'audio')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">🎧 Audio</button>
     <button class="lh-tab" onclick="lhTab(this,'text')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">📄 Text</button>
     <button class="lh-tab" onclick="lhTab(this,'article')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">📰 Article</button>
+    <button class="lh-tab" onclick="lhTab(this,'pastors')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">🛡️ Pastors</button>
+    <button class="lh-tab" onclick="lhTab(this,'saved')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">🔖 Saved</button>
   </div>
 
   <!-- Sermons grid -->
@@ -593,7 +595,58 @@ function lhTab(btn,type){
   });
   btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';
   lhCurrentType=type;
+  if(type==='pastors'){lhShowPastors();return;}
+  if(type==='saved'){lhShowSaved();return;}
+  document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
   lhRender();
+}
+
+let lhFollowing = JSON.parse(localStorage.getItem('lh_following')||'[]');
+
+async function lhShowPastors(){
+  const el=document.getElementById('lh-sermons');
+  el.style.gridTemplateColumns='1fr';
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Loading pastors...</div>';
+  try{
+    const res=await fetch(API+'/api/pastors/verified');
+    const data=await res.json();
+    const pastors=Array.isArray(data)?data:(data?.pastors||[]);
+    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">No verified pastors yet</div>';return;}
+    el.innerHTML=pastors.map(p=>{
+      const following=lhFollowing.includes(p.id||p.user_id);
+      return `<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+        <div style="width:48px;height:48px;border-radius:24px;background:rgba(212,175,55,0.1);border:2px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✝</div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:15px;font-weight:600;margin-bottom:3px;">${p.display_name||p.username}</div>
+          <div style="color:#D4AF37;font-size:12px;">${p.church_name||''} ${p.denomination?'· '+p.denomination:''}</div>
+        </div>
+        <button onclick="toggleFollow('${p.id||p.user_id}','${p.display_name||p.username}',this)" style="padding:8px 16px;border-radius:20px;border:1px solid ${following?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.2)'};background:${following?'rgba(212,175,55,0.15)':'transparent'};color:${following?'#D4AF37':'#8fa3c0'};cursor:pointer;font-size:12px;white-space:nowrap;">${following?'✓ Following':'+ Follow'}</button>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load pastors</div>';}
+}
+
+function toggleFollow(id,name,btn){
+  const idx=lhFollowing.indexOf(id);
+  if(idx>-1){lhFollowing.splice(idx,1);btn.textContent='+ Follow';btn.style.color='#8fa3c0';btn.style.borderColor='rgba(212,175,55,0.2)';btn.style.background='transparent';}
+  else{lhFollowing.push(id);btn.textContent='✓ Following';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.background='rgba(212,175,55,0.15)';}
+  localStorage.setItem('lh_following',JSON.stringify(lhFollowing));
+  try{fetch(API+'/api/users/'+id+'/follow',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}
+}
+
+function lhShowSaved(){
+  const el=document.getElementById('lh-sermons');
+  el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
+  const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));
+  if(!saved.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">No saved sermons yet</p></div>';return;}
+  const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
+  el.innerHTML=saved.map(s=>`
+    <div onclick="openSermon(${JSON.stringify(s).replace(/"/g,'&quot;')})" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;">
+      <div style="font-size:36px;margin-bottom:10px;">${ICONS[s.type]||'🎧'}</div>
+      <div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">${s.title}</div>
+      <div style="color:#D4AF37;font-size:12px;">${s.pastor_name||'Verified Pastor'}</div>
+    </div>
+  `).join('');
 }
 
 function lhLogout(){

@@ -658,12 +658,119 @@
             <span style="color:var(--text-muted);font-size:13px;" id="set-name">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Username</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-username">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
             <span style="color:var(--text);font-size:14px;">Email</span>
             <span style="color:var(--text-muted);font-size:13px;" id="set-email">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;">Denomination</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-denom">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
             <span style="color:var(--text);font-size:14px;">Role</span>
             <span style="color:var(--gold);font-size:13px;font-weight:600;" id="set-role">—</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Font & Display</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <div style="margin-bottom:16px;">
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;">Font Size</span>
+            <div style="display:flex;gap:8px;">
+              <button onclick="setFontSize('small')" id="fs-small" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;">Small</button>
+              <button onclick="setFontSize('medium')" id="fs-medium" class="fs-btn active-fs" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:13px;">Medium</button>
+              <button onclick="setFontSize('large')" id="fs-large" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:15px;">Large</button>
+              <button onclick="setFontSize('xlarge')" id="fs-xlarge" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:17px;">XL</button>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;">Line Spacing</span>
+            <div style="display:flex;gap:8px;">
+              <button onclick="setSpacing('compact')" id="sp-compact" class="sp-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;">Compact</button>
+              <button onclick="setSpacing('normal')" id="sp-normal" class="sp-btn active-sp" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:12px;">Normal</button>
+              <button onclick="setSpacing('relaxed')" id="sp-relaxed" class="sp-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;">Relaxed</button>
+            </div>
+          </div>
+          <div>
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;">Font Style</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="setFont('default')" id="ff-default" class="ff-btn active-ff" style="padding:8px 14px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Default</button>
+              <button onclick="setFont('serif')" id="ff-serif" class="ff-btn" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:13px;font-family:Georgia,serif;">Serif</button>
+              <button onclick="setFont('mono')" id="ff-mono" class="ff-btn" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:13px;font-family:monospace;">Mono</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Language</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="lang-settings-grid">
+            <div onclick="setLang('en',this)" class="lang-setting-btn active-lang" style="background:var(--gold-light);border:1px solid var(--gold-border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇬🇧</div><div style="color:var(--gold);font-size:11px;">English</div>
+            </div>
+            <div onclick="setLang('fr',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇫🇷</div><div style="color:var(--text-muted);font-size:11px;">Français</div>
+            </div>
+            <div onclick="setLang('ig',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇳🇬</div><div style="color:var(--text-muted);font-size:11px;">Igbo</div>
+            </div>
+            <div onclick="setLang('yo',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇳🇬</div><div style="color:var(--text-muted);font-size:11px;">Yorùbá</div>
+            </div>
+            <div onclick="setLang('ha',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇳🇬</div><div style="color:var(--text-muted);font-size:11px;">Hausa</div>
+            </div>
+            <div onclick="setLang('pt',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇧🇷</div><div style="color:var(--text-muted);font-size:11px;">Português</div>
+            </div>
+            <div onclick="setLang('tw',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇬🇭</div><div style="color:var(--text-muted);font-size:11px;">Twi</div>
+            </div>
+            <div onclick="setLang('zu',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇿🇦</div><div style="color:var(--text-muted);font-size:11px;">isiZulu</div>
+            </div>
+            <div onclick="setLang('ar',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇸🇦</div><div style="color:var(--text-muted);font-size:11px;">Arabic</div>
+            </div>
+            <div onclick="setLang('zh',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇨🇳</div><div style="color:var(--text-muted);font-size:11px;">中文</div>
+            </div>
+            <div onclick="setLang('hi',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇮🇳</div><div style="color:var(--text-muted);font-size:11px;">Hindi</div>
+            </div>
+            <div onclick="setLang('es',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇪🇸</div><div style="color:var(--text-muted);font-size:11px;">Español</div>
+            </div>
+            <div onclick="setLang('de',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇩🇪</div><div style="color:var(--text-muted);font-size:11px;">Deutsch</div>
+            </div>
+            <div onclick="setLang('it',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
+              <div style="font-size:20px;margin-bottom:4px;">🇮🇹</div><div style="color:var(--text-muted);font-size:11px;">Italiano</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Notifications</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <div><div style="color:var(--text);font-size:14px;">New Sermons</div><div style="color:var(--text-muted);font-size:12px;">When pastors you follow upload</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-sermons" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;" id="notif-sermons-knob"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <div><div style="color:var(--text);font-size:14px;">Live Streams</div><div style="color:var(--text-muted);font-size:12px;">When pastors you follow go live</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-streams" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
+            <div><div style="color:var(--text);font-size:14px;">Inbox Messages</div><div style="color:var(--text-muted);font-size:12px;">When you receive a message</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-inbox" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
           </div>
         </div>
         <div style="margin-bottom:20px;">
@@ -835,8 +942,12 @@ function showPage(name) {
   if (name === 'pastors') loadPastorsList();
   if (name === 'settings') {
     if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
+    if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
     if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
+    if(document.getElementById('set-denom')) document.getElementById('set-denom').textContent = user?.denomination || localStorage.getItem('pastor_denom') || '—';
     if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
+    loadFontSettings();
+    loadNotifPrefs();
   }
 }
 
@@ -1450,6 +1561,65 @@ function renderPastors(list) {
 
 // ── showPage updates ──
 const origShowPage = showPage;
+
+
+// ── Font & Display Settings ──
+function setFontSize(size) {
+  const sizes = {small:13, medium:15, large:17, xlarge:20};
+  document.body.style.fontSize = sizes[size]+'px';
+  localStorage.setItem('pastor_font_size', size);
+  document.querySelectorAll('.fs-btn').forEach(b=>{ b.style.background='var(--navy2)';b.style.borderColor='var(--border)';b.style.color='var(--text-muted)'; });
+  const el=document.getElementById('fs-'+size);
+  if(el){el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';el.style.color='var(--gold)';}
+}
+function setSpacing(sp) {
+  const spacings = {compact:'1.4', normal:'1.7', relaxed:'2.0'};
+  document.body.style.lineHeight = spacings[sp];
+  localStorage.setItem('pastor_spacing', sp);
+  document.querySelectorAll('.sp-btn').forEach(b=>{ b.style.background='var(--navy2)';b.style.borderColor='var(--border)';b.style.color='var(--text-muted)'; });
+  const el=document.getElementById('sp-'+sp);
+  if(el){el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';el.style.color='var(--gold)';}
+}
+function setFont(ff) {
+  const fonts = {default:"'DM Sans',sans-serif", serif:'Georgia,serif', mono:'monospace'};
+  document.body.style.fontFamily = fonts[ff];
+  localStorage.setItem('pastor_font_family', ff);
+  document.querySelectorAll('.ff-btn').forEach(b=>{ b.style.background='var(--navy2)';b.style.borderColor='var(--border)';b.style.color='var(--text-muted)'; });
+  const el=document.getElementById('ff-'+ff);
+  if(el){el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';el.style.color='var(--gold)';}
+}
+function loadFontSettings() {
+  const sz=localStorage.getItem('pastor_font_size')||'medium';
+  const sp=localStorage.getItem('pastor_spacing')||'normal';
+  const ff=localStorage.getItem('pastor_font_family')||'default';
+  setFontSize(sz); setSpacing(sp); setFont(ff);
+}
+
+// ── Language Settings ──
+function setLang(lang, el) {
+  document.querySelectorAll('.lang-setting-btn').forEach(b=>{
+    b.style.background='var(--navy2)';b.style.borderColor='var(--border)';
+    b.querySelector('div:last-child').style.color='var(--text-muted)';
+  });
+  el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';
+  el.querySelector('div:last-child').style.color='var(--gold)';
+  localStorage.setItem('pastor_lang', lang);
+}
+
+// ── Notification Preferences ──
+function saveNotifPref() {
+  localStorage.setItem('notif_sermons', document.getElementById('notif-sermons')?.checked||true);
+  localStorage.setItem('notif_streams', document.getElementById('notif-streams')?.checked||true);
+  localStorage.setItem('notif_inbox', document.getElementById('notif-inbox')?.checked||true);
+}
+function loadNotifPrefs() {
+  const s=localStorage.getItem('notif_sermons');
+  const st=localStorage.getItem('notif_streams');
+  const i=localStorage.getItem('notif_inbox');
+  if(s!==null&&document.getElementById('notif-sermons')) document.getElementById('notif-sermons').checked=s==='true';
+  if(st!==null&&document.getElementById('notif-streams')) document.getElementById('notif-streams').checked=st==='true';
+  if(i!==null&&document.getElementById('notif-inbox')) document.getElementById('notif-inbox').checked=i==='true';
+}
 
 </script>
 
