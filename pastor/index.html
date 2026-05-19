@@ -598,8 +598,14 @@
         <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="ad-pending">—</div><div class="stat-label">Pending Applications</div></div>
         <div class="stat-card"><div class="stat-icon">⚑</div><div class="stat-value" id="ad-flags">—</div><div class="stat-label">Unresolved Flags</div></div>
       </div>
-      <div style="margin-bottom:16px;">
-        <span class="section-label">⏳ Pending Pastor Applications</span>
+      <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="section-label">Pastor Applications</span>
+        <div style="display:flex;gap:6px;">
+          <button onclick="filterApps('pending',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(240,165,0,0.4);background:rgba(240,165,0,0.1);color:var(--warning);cursor:pointer;font-size:12px;">⏳ Pending</button>
+          <button onclick="filterApps('approved',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">✅ Approved</button>
+          <button onclick="filterApps('rejected',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">❌ Rejected</button>
+          <button onclick="filterApps('all',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">All</button>
+        </div>
       </div>
       <div id="admin-applications"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
@@ -612,11 +618,16 @@
       </div>
       <div class="profile-card">
         <div class="avatar-section">
-          <div class="avatar" id="profile-avatar">P</div>
+          <div style="position:relative;cursor:pointer;" onclick="document.getElementById('photo-upload').click()">
+            <div class="avatar" id="profile-avatar" style="overflow:hidden;">P</div>
+            <div style="position:absolute;bottom:0;right:0;background:var(--gold);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;">📷</div>
+          </div>
+          <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)"/>
           <div>
             <div style="color:var(--white);font-size:18px;font-weight:600;margin-bottom:4px;" id="profile-name">Pastor</div>
             <div style="color:var(--text-muted);font-size:13px;margin-bottom:8px;" id="profile-email">email</div>
             <div class="status-badge status-live" id="profile-role-badge">PASTOR</div>
+            <div style="color:var(--text-muted);font-size:11px;margin-top:6px;">Click photo to update</div>
           </div>
         </div>
         <div class="form-group">
@@ -1051,6 +1062,8 @@ function handleLogout() {
 function initDashboard() {
   showScreen('dashboard');
   document.getElementById('sidebar-name').textContent = user?.display_name || 'Pastor';
+  const savedAvatar=localStorage.getItem('pastor_avatar');
+  if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';}}
   document.getElementById('sidebar-church').textContent = user?.role?.toUpperCase() || 'PASTOR';
   document.getElementById('dash-role').textContent = (user?.role || 'pastor').toUpperCase();
   document.getElementById('overview-name').textContent = user?.display_name || 'Pastor';
@@ -1302,6 +1315,26 @@ async function markAllRead() {
 }
 
 // ── Admin ──
+let currentAppFilter = 'pending';
+async function filterApps(status, btn) {
+  currentAppFilter = status;
+  document.querySelectorAll('.app-filter-btn').forEach(b=>{
+    b.style.background='transparent';b.style.color='var(--text-muted)';b.style.borderColor='var(--border)';
+  });
+  if(btn){
+    const colors={pending:'rgba(240,165,0,0.1)',approved:'rgba(64,201,106,0.1)',rejected:'rgba(224,85,85,0.1)',all:'rgba(212,175,55,0.1)'};
+    const textColors={pending:'var(--warning)',approved:'var(--success)',rejected:'var(--error)',all:'var(--gold)'};
+    btn.style.background=colors[status]||colors.all;
+    btn.style.color=textColors[status]||textColors.all;
+  }
+  const url = status==='all' ? '/api/pastors/applications' : '/api/pastors/applications?status='+status;
+  try {
+    const apps = await api(url);
+    const applications = apps?.applications || [];
+    renderApplications(applications);
+  } catch(e) {}
+}
+
 async function loadAdmin() {
   try {
     const [dash, apps] = await Promise.all([
@@ -1315,28 +1348,33 @@ async function loadAdmin() {
       document.getElementById('ad-flags').textContent = dash.unresolved_flags || 0;
     }
     const applications = apps?.applications || [];
-    const el = document.getElementById('admin-applications');
-    if (!applications.length) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><h3>No pending applications</h3><p>All pastor applications have been reviewed</p></div>';
-      return;
-    }
-    el.innerHTML = applications.map(a => `
-      <div class="sermon-card" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;gap:10px;">
-        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
-          <div>
-            <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
-            <div style="color:var(--text-muted);font-size:12px;">${a.denomination} · ${a.church_name} · ${a.country}</div>
-          </div>
-          <span class="status-badge status-pending">● PENDING</span>
-        </div>
-        ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement.substring(0,200)}…</div>` : ''}
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve</button>
-          <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
-        </div>
-      </div>
-    `).join('');
+    renderApplications(applications);
   } catch(e) { document.getElementById('admin-applications').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load admin data</p>'; }
+}
+
+function renderApplications(applications) {
+  const el = document.getElementById('admin-applications');
+  if (!applications.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><h3>No applications found</h3></div>';
+    return;
+  }
+  const statusColors = {pending:'status-pending',approved:'status-live',rejected:'status-archived'};
+  el.innerHTML = applications.map(a => `
+    <div class="sermon-card" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;gap:10px;">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+        <div>
+          <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
+          <div style="color:var(--text-muted);font-size:12px;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}</div>
+        </div>
+        <span class="status-badge ${statusColors[a.status]||'status-pending'}">● ${(a.status||'pending').toUpperCase()}</span>
+      </div>
+      ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement.substring(0,200)}…</div>` : ''}
+      ${a.status==='pending'?`<div style="display:flex;gap:8px;">
+        <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve</button>
+        <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
+      </div>`:''}
+    </div>
+  `).join('');
 }
 
 async function approveApp(id, name) {
@@ -1371,6 +1409,21 @@ async function loadProfile() {
       document.getElementById('prof-email').value = user.email || '';
     }
   } catch(e) {}
+}
+
+function uploadPhoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const avatar=document.getElementById('profile-avatar');
+    avatar.style.backgroundImage='url('+e.target.result+')';
+    avatar.style.backgroundSize='cover';
+    avatar.style.backgroundPosition='center';
+    avatar.textContent='';
+    localStorage.setItem('pastor_avatar',e.target.result);
+  };
+  reader.readAsDataURL(file);
 }
 
 async function saveProfile() {
