@@ -1668,6 +1668,16 @@ function loadNotifPrefs() {
   if(i!==null&&document.getElementById('notif-inbox')) document.getElementById('notif-inbox').checked=i==='true';
 }
 
+// ── Apply saved font settings on load ──
+window.addEventListener('load', function(){
+  const sz=localStorage.getItem('pastor_font_size');
+  const sp=localStorage.getItem('pastor_spacing');
+  const ff=localStorage.getItem('pastor_font_family');
+  if(sz){const sizes={small:13,medium:15,large:17,xlarge:20};document.body.style.fontSize=(sizes[sz]||15)+'px';}
+  if(sp){const spacings={compact:'1.4',normal:'1.7',relaxed:'2.0'};document.body.style.lineHeight=spacings[sp]||'1.7';}
+  if(ff){const fonts={default:"'DM Sans',sans-serif",serif:'Georgia,serif',mono:'monospace'};document.body.style.fontFamily=fonts[ff]||fonts.default;}
+});
+
 </script>
 
 </body>
