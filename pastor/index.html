@@ -209,7 +209,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
-      <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="login-password" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" onkeypress="if(event.key==='Enter')handleLogin()" placeholder="••••••••" />
+      <div style="position:relative;"><input type="password" class="form-input" id="login-password" placeholder="••••••••" style="padding-right:44px;" /><span onclick="var i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
     </div>
     <button class="btn btn-gold" id="login-btn" onclick="handleLogin()">Sign In</button>
     <div class="auth-link"><a onclick="showScreen('forgot')">Forgot password?</a></div>
@@ -241,11 +241,11 @@
     </div>
     <div class="form-group">
       <label class="form-label">Password (min. 8 characters)</label>
-      <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="reg-password" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" placeholder="••••••••" />
+      <div style="position:relative;"><input type="password" class="form-input" id="reg-password" placeholder="••••••••" style="padding-right:44px;" /><span onclick="var i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
     </div>
     <div class="form-group">
       <label class="form-label">Confirm Password</label>
-      <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="reg-confirm" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('reg-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" placeholder="••••••••" />
+      <div style="position:relative;"><input type="password" class="form-input" id="reg-confirm" placeholder="Re-enter password" style="padding-right:44px;" /><span onclick="var i=document.getElementById('reg-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
     </div>
     <button class="btn btn-gold" onclick="handleRegister()">Create Account</button>
     <div class="auth-link">Already registered? <a onclick="showScreen('login')">Sign In</a></div>
@@ -818,15 +818,15 @@
         <div class="alert alert-success" id="cp-success"></div>
         <div class="form-group">
           <label class="form-label">Current Password</label>
-          <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="cp-current" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('cp-current');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" placeholder="••••••••" />
+          <div style="position:relative;"><input type="password" class="form-input" id="cp-current" placeholder="Current password" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-current');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
         </div>
         <div class="form-group">
           <label class="form-label">New Password</label>
-          <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="cp-new" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('cp-new');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" placeholder="Min. 8 characters" />
+          <div style="position:relative;"><input type="password" class="form-input" id="cp-new" placeholder="Min. 8 characters" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-new');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
         </div>
         <div class="form-group">
           <label class="form-label">Confirm New Password</label>
-          <div style="position:relative;display:flex;align-items:center;"><input type="password" class="form-input" id="cp-confirm" style="flex:1;padding-right:44px;" /><span onclick="var i=document.getElementById('cp-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span></div><div style="display:none" placeholder="Re-enter new password" />
+          <div style="position:relative;"><input type="password" class="form-input" id="cp-confirm" placeholder="Re-enter new password" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;">👁</span>
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn btn-gold" onclick="changePassword()" style="flex:1;">Update Password</button>
@@ -1085,13 +1085,7 @@ async function loadOverview() {
 }
 
 // ── Sermons ──
-async function loadSermons() {
-  try {
-    const data = await api('/api/sermons/my/sermons');
-    const list = Array.isArray(data) ? data : [];
-    renderSermonList(list, 'all-sermons');
-  } catch(e) { document.getElementById('all-sermons').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load sermons</p>'; }
-}
+
 
 function renderSermonList(sermons, containerId) {
   const el = document.getElementById(containerId);
