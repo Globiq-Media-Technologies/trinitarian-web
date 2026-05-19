@@ -455,7 +455,56 @@
   </div>
 </div>
 
-<script>
+
+
+<!-- ══ LISTENER NOTIFICATIONS ══ -->
+<div id="page-lh-notifications" class="page">
+  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
+    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;">Notifications</span>
+  </div>
+  <div style="max-width:700px;margin:0 auto;padding:24px;">
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;" id="lh-notifs-list">
+      <div style="text-align:center;padding:40px;color:#8fa3c0;">Loading notifications...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LISTENER SETTINGS ══ -->
+<div id="page-lh-settings" class="page">
+  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
+    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
+  </div>
+  <div style="max-width:560px;margin:0 auto;padding:24px;">
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+      <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Account</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;" id="lhs-name">—</div>
+        <div style="color:#8fa3c0;font-size:13px;" id="lhs-email">—</div>
+      </div>
+      <div onclick="lhLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
+        <span style="color:#e05555;font-size:14px;">Sign Out</span>
+        <span style="color:#e05555;">›</span>
+      </div>
+    </div>
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+      <div style="padding:12px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Legal</div>
+      </div>
+      <div onclick="goTo('privacy')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <span style="color:#b0c4d8;font-size:14px;">Privacy Policy</span><span style="color:#8fa3c0;">›</span>
+      </div>
+      <div onclick="goTo('terms')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
+        <span style="color:#b0c4d8;font-size:14px;">Terms of Service</span><span style="color:#8fa3c0;">›</span>
+      </div>
+    </div>
+    <p style="color:#8fa3c0;font-size:11px;text-align:center;">Trinitarian v1.0 · Globiq Media Technologies Ltd</p>
+  </div>
+</div>
+</body>
+</html<script>
+
 
 const API='https://trinitarian-backend-production.up.railway.app';
 
@@ -854,55 +903,8 @@ function postComment(){
 }
 
 
-</script>
 
-<!-- ══ LISTENER NOTIFICATIONS ══ -->
-<div id="page-lh-notifications" class="page">
-  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
-    <span style="color:#fff;font-size:16px;font-weight:600;">Notifications</span>
-  </div>
-  <div style="max-width:700px;margin:0 auto;padding:24px;">
-    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;" id="lh-notifs-list">
-      <div style="text-align:center;padding:40px;color:#8fa3c0;">Loading notifications...</div>
-    </div>
-  </div>
-</div>
 
-<!-- ══ LISTENER SETTINGS ══ -->
-<div id="page-lh-settings" class="page">
-  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
-    <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
-  </div>
-  <div style="max-width:560px;margin:0 auto;padding:24px;">
-    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:16px;">
-      <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
-        <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Account</div>
-        <div style="color:#fff;font-size:15px;font-weight:600;" id="lhs-name">—</div>
-        <div style="color:#8fa3c0;font-size:13px;" id="lhs-email">—</div>
-      </div>
-      <div onclick="lhLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
-        <span style="color:#e05555;font-size:14px;">Sign Out</span>
-        <span style="color:#e05555;">›</span>
-      </div>
-    </div>
-    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:16px;">
-      <div style="padding:12px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
-        <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Legal</div>
-      </div>
-      <div onclick="goTo('privacy')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
-        <span style="color:#b0c4d8;font-size:14px;">Privacy Policy</span><span style="color:#8fa3c0;">›</span>
-      </div>
-      <div onclick="goTo('terms')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;">
-        <span style="color:#b0c4d8;font-size:14px;">Terms of Service</span><span style="color:#8fa3c0;">›</span>
-      </div>
-    </div>
-    <p style="color:#8fa3c0;font-size:11px;text-align:center;">Trinitarian v1.0 · Globiq Media Technologies Ltd</p>
-  </div>
-</div>
-</body>
-</html
 // ── Listener Navigation ──
 function lhShowProfile() {
   const menu = document.getElementById('lh-profile-menu');
@@ -983,4 +985,8 @@ async function loadLhNotifications() {
   } catch(e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>'; }
 }
 
->
+
+</script>
+
+</body>
+</html>
