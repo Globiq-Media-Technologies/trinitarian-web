@@ -603,7 +603,13 @@ async function llLogin(){
     if(data.token){
       localStorage.setItem('trinitarian_token',data.token);
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
-      goTo('listener-home');
+      const role = data.user?.role || 'listener';
+      if(['admin','moderator','pastor'].includes(role)){
+        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+        showMsg('ll-err','You have been redirected to the Pastor Dashboard in a new tab.', true);
+      } else {
+        goTo('listener-home');
+      }
     }else{showMsg('ll-err',data.error||'Invalid credentials');}
   }catch(e){showMsg('ll-err','Connection failed. Please try again.');}
 }
@@ -623,7 +629,12 @@ async function llRegister(){
     if(data.token){
       localStorage.setItem('trinitarian_token',data.token);
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
-      goTo('listener-home');
+      const role = data.user?.role || 'listener';
+      if(['admin','moderator','pastor'].includes(role)){
+        window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+      } else {
+        goTo('listener-home');
+      }
     }else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
   }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
 }
@@ -681,7 +692,15 @@ window.addEventListener('load',()=>{
   const hash=window.location.hash.replace('#','');
   const token=localStorage.getItem('trinitarian_token');
   const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-  if(token&&user&&hash==='listener'){goTo('listener-home');return;}
+  if(token&&user&&hash==='listener'){
+    const role=user?.role||'listener';
+    if(['admin','moderator','pastor'].includes(role)){
+      window.open('https://trinitarian-web.charlesuonuoha.workers.dev/pastor/index.html','_blank');
+    } else {
+      goTo('listener-home');
+    }
+    return;
+  }
   if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
 });
 window.addEventListener('hashchange',()=>{
