@@ -408,13 +408,6 @@ function goTo(page){
   if(page==='listener-home') initListenerHome();
   window.location.hash=page==='home'?'':page;
 }
-  if(page==='privacy'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/privacy/index.html';return;}
-  if(page==='terms'){window.location.href='https://fascinating-kleicha-ee3900.netlify.app/terms/index.html';return;}
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');window.scrollTo(0,0);}
-  window.location.hash=page==='home'?'':page;
-}
 
 function scrollTo_(selector){
   goTo('home');
