@@ -453,7 +453,7 @@
     </div>
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
-      <div style="text-align:center;margin-bottom:8px;"><span onclick="playerFullscreen()" style="color:#8fa3c0;font-size:11px;cursor:pointer;background:rgba(212,175,55,0.08);padding:4px 12px;border-radius:20px;">⛶ Click Fullscreen for full-page reading · Use A-/A+ to resize text</span></div>
+      <div style="text-align:center;margin-bottom:12px;"><span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;">⛶ <span>Tap for fullscreen reading &amp; video · <b>A-</b> / <b>A+</b> resize text</span></span></div>
     <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
         <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
           <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
@@ -530,7 +530,11 @@
         <button onclick="lhSetFont(17,this)" class="lhfs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:16px;">A</button>
         <button onclick="lhSetFont(20,this)" class="lhfs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:19px;">A</button>
       </div>
-      <div id="lhfs-preview" style="background:#071528;border-radius:8px;padding:12px;color:#b0c4d8;font-size:15px;line-height:1.7;">"For God so loved the world..." — John 3:16</div>
+      <div id="lhfs-preview" style="background:#071528;border-radius:8px;padding:14px;color:#b0c4d8;font-size:15px;line-height:1.8;">
+        <p style="margin-bottom:8px;color:#D4AF37;font-size:12px;letter-spacing:1px;text-transform:uppercase;">Preview</p>
+        <p>"For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life." — John 3:16</p>
+        <p style="margin-top:8px;font-size:13px;color:#8fa3c0;">The quick brown fox jumps over the lazy dog. ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
+      </div>
     </div>
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Account</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
@@ -600,6 +604,55 @@
       </div>
     </div>
 
+    <!-- Language -->
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Language</div>
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <div onclick="lhSetLang('en',this)" class="lh-lang-btn" style="background:rgba(212,175,55,0.12);border:2px solid rgba(212,175,55,0.4);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇬🇧</div><div style="color:#D4AF37;font-size:11px;font-weight:600;">English</div>
+        </div>
+        <div onclick="lhSetLang('fr',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇫🇷</div><div style="color:#8fa3c0;font-size:11px;">Français</div>
+        </div>
+        <div onclick="lhSetLang('ig',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇳🇬</div><div style="color:#8fa3c0;font-size:11px;">Igbo</div>
+        </div>
+        <div onclick="lhSetLang('yo',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇳🇬</div><div style="color:#8fa3c0;font-size:11px;">Yorùbá</div>
+        </div>
+        <div onclick="lhSetLang('ha',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇳🇬</div><div style="color:#8fa3c0;font-size:11px;">Hausa</div>
+        </div>
+        <div onclick="lhSetLang('pt',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇧🇷</div><div style="color:#8fa3c0;font-size:11px;">Português</div>
+        </div>
+        <div onclick="lhSetLang('tw',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇬🇭</div><div style="color:#8fa3c0;font-size:11px;">Twi</div>
+        </div>
+        <div onclick="lhSetLang('zu',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇿🇦</div><div style="color:#8fa3c0;font-size:11px;">isiZulu</div>
+        </div>
+        <div onclick="lhSetLang('ar',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇸🇦</div><div style="color:#8fa3c0;font-size:11px;">Arabic</div>
+        </div>
+        <div onclick="lhSetLang('zh',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇨🇳</div><div style="color:#8fa3c0;font-size:11px;">中文</div>
+        </div>
+        <div onclick="lhSetLang('hi',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇮🇳</div><div style="color:#8fa3c0;font-size:11px;">Hindi</div>
+        </div>
+        <div onclick="lhSetLang('es',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇪🇸</div><div style="color:#8fa3c0;font-size:11px;">Español</div>
+        </div>
+        <div onclick="lhSetLang('de',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇩🇪</div><div style="color:#8fa3c0;font-size:11px;">Deutsch</div>
+        </div>
+        <div onclick="lhSetLang('it',this)" class="lh-lang-btn" style="background:transparent;border:1px solid rgba(212,175,55,0.1);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;">
+          <div style="font-size:28px;margin-bottom:4px;">🇮🇹</div><div style="color:#8fa3c0;font-size:11px;">Italiano</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Legal -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Legal</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
@@ -652,11 +705,19 @@ async function llLogin(){
     const data=await res.json();
     if(data.token){
       localStorage.setItem('trinitarian_token',data.token);
+      // Fetch fresh user data to get accurate role
+      try {
+        const meRes = await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+data.token}});
+        const freshUser = await meRes.json();
+        if(freshUser?.id) {
+          data.user = freshUser;
+        }
+      } catch(e) {}
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
       const role = data.user?.role || 'listener';
       if(['admin','moderator','pastor'].includes(role)){
         window.open('https://trinitarian.app/pastor/index.html','_blank');
-        showMsg('ll-err','You have been redirected to the Pastor Dashboard in a new tab.', true);
+        showMsg('ll-err','✝ Welcome! Pastor Dashboard opened in a new tab.', true);
       } else {
         goTo('listener-home');
       }
@@ -975,7 +1036,13 @@ function lhSetFont(size, btn){
   if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}
   localStorage.setItem('lh_font_size', size);
   const preview=document.getElementById('lhfs-preview');
-  if(preview) preview.style.fontSize=size+'px';
+  if(preview){
+    preview.style.fontSize=size+'px';
+    preview.style.lineHeight=size>=17?'2.0':size>=15?'1.8':'1.6';
+  }
+  // Apply to reading content too
+  const rdText=document.getElementById('rd-text');
+  if(rdText) rdText.style.fontSize=size+'px';
 }
 
 // ── Delete Account ──
@@ -995,6 +1062,23 @@ async function handleReset(){
     if(data.message){ okEl.textContent='✅ Password reset successfully! You can now sign in.'; okEl.style.display='block'; setTimeout(()=>goTo('listener'),2000); }
     else{ errEl.textContent=data.error||'Reset failed. Link may have expired.'; errEl.style.display='block'; }
   }catch(e){ errEl.textContent='Connection failed. Please try again.'; errEl.style.display='block'; }
+}
+
+function lhSetLang(lang, btn){
+  document.querySelectorAll('.lh-lang-btn').forEach(b=>{
+    b.style.background='transparent';
+    b.style.borderColor='rgba(212,175,55,0.1)';
+    b.style.borderWidth='1px';
+    b.querySelector('div:last-child').style.color='#8fa3c0';
+  });
+  btn.style.background='rgba(212,175,55,0.12)';
+  btn.style.borderColor='rgba(212,175,55,0.4)';
+  btn.style.borderWidth='2px';
+  btn.querySelector('div:last-child').style.color='#D4AF37';
+  localStorage.setItem('lh_lang', lang);
+  // Filter sermons by language
+  lhCurrentType='all';
+  lhRender();
 }
 
 async function lhDeleteAccount(){
@@ -1269,7 +1353,7 @@ async function playerReport(){
       <textarea id="report-detail" placeholder="Please provide more details about the issue (optional for above categories, required if Other)..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:120px;line-height:1.6;margin-bottom:16px;"></textarea>
       <div id="report-selected" style="color:#D4AF37;font-size:12px;margin-bottom:14px;display:none;">Selected: <span id="report-reason-text"></span></div>
       <div style="display:flex;gap:10px;">
-        <button onclick="submitReport()" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">Submit Report</button>
+        <button onclick="submitReport()" onmouseover="this.style.background='#a8892a'" onmouseout="this.style.background='#D4AF37'" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;">Submit Report</button>
         <button id="report-cancel-btn" onclick="document.getElementById('report-modal-overlay').remove();selectedReason=''" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button>
       </div>
     </div>
