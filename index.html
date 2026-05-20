@@ -352,10 +352,6 @@
       <span style="font-size:22px;">🔖</span>
       <span style="color:#8fa3c0;font-size:10px;">Saved</span>
     </div>
-    <div onclick="goTo('lh-dm')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">💬</span>
-      <span style="color:#8fa3c0;font-size:10px;">Messages</span>
-    </div>
     <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">📬</span>
       <span style="color:#8fa3c0;font-size:10px;">Inbox</span>
@@ -891,6 +887,7 @@ let lhCurrentType = 'all';
 let lhSaved = JSON.parse(localStorage.getItem('lh_saved')||'[]');
 
 async function initListenerHome(){
+  applyTranslations(localStorage.getItem('lh_lang')||'en');
   const u = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){
     const unEl=document.getElementById('lh-username');
@@ -1130,16 +1127,13 @@ function lhSetLang(lang, btn){
     b.style.background='transparent';
     b.style.borderColor='rgba(212,175,55,0.1)';
     b.style.borderWidth='1px';
-    b.querySelector('div:last-child').style.color='#8fa3c0';
+    b.querySelector('div').style.color='#8fa3c0';
   });
   btn.style.background='rgba(212,175,55,0.12)';
   btn.style.borderColor='rgba(212,175,55,0.4)';
   btn.style.borderWidth='2px';
-  btn.querySelector('div:last-child').style.color='#D4AF37';
-  localStorage.setItem('lh_lang', lang);
-  // Filter sermons by language
-  lhCurrentType='all';
-  lhRender();
+  btn.querySelector('div').style.color='#D4AF37';
+  applyTranslations(lang);
 }
 
 async function lhDeleteAccount(){

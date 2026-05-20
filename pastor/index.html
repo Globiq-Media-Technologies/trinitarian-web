@@ -468,21 +468,21 @@
 
         <div class="form-group">
           <span class="section-label">Language</span>
-          <div class="lang-grid" id="lang-grid">
-            <div class="lang-btn active" onclick="selectLang(this,'en')">🇬🇧 English</div>
-            <div class="lang-btn" onclick="selectLang(this,'fr')">🇫🇷 Français</div>
-            <div class="lang-btn" onclick="selectLang(this,'ig')">🇳🇬 Igbo</div>
-            <div class="lang-btn" onclick="selectLang(this,'yo')">🇳🇬 Yorùbá</div>
-            <div class="lang-btn" onclick="selectLang(this,'ha')">🇳🇬 Hausa</div>
-            <div class="lang-btn" onclick="selectLang(this,'pt')">🇧🇷 Português</div>
-            <div class="lang-btn" onclick="selectLang(this,'tw')">🇬🇭 Twi</div>
-            <div class="lang-btn" onclick="selectLang(this,'zu')">🇿🇦 isiZulu</div>
-            <div class="lang-btn" onclick="selectLang(this,'ar')">🇸🇦 Arabic</div>
-            <div class="lang-btn" onclick="selectLang(this,'zh')">🇨🇳 中文</div>
-            <div class="lang-btn" onclick="selectLang(this,'hi')">🇮🇳 Hindi</div>
-            <div class="lang-btn" onclick="selectLang(this,'es')">🇪🇸 Español</div>
-            <div class="lang-btn" onclick="selectLang(this,'de')">🇩🇪 Deutsch</div>
-            <div class="lang-btn" onclick="selectLang(this,'it')">🇮🇹 Italiano</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="lang-grid">
+            <div class="lang-btn active" onclick="selectLang(this,'en')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">English</div>
+            <div class="lang-btn " onclick="selectLang(this,'fr')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Français</div>
+            <div class="lang-btn " onclick="selectLang(this,'ig')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Igbo</div>
+            <div class="lang-btn " onclick="selectLang(this,'yo')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Yorùbá</div>
+            <div class="lang-btn " onclick="selectLang(this,'ha')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Hausa</div>
+            <div class="lang-btn " onclick="selectLang(this,'pt')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Português</div>
+            <div class="lang-btn " onclick="selectLang(this,'tw')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Twi</div>
+            <div class="lang-btn " onclick="selectLang(this,'zu')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">isiZulu</div>
+            <div class="lang-btn " onclick="selectLang(this,'ar')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Arabic</div>
+            <div class="lang-btn " onclick="selectLang(this,'zh')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">中文</div>
+            <div class="lang-btn " onclick="selectLang(this,'hi')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Hindi</div>
+            <div class="lang-btn " onclick="selectLang(this,'es')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Español</div>
+            <div class="lang-btn " onclick="selectLang(this,'de')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Deutsch</div>
+            <div class="lang-btn " onclick="selectLang(this,'it')" style="border-radius:10px;padding:12px 8px;text-align:center;font-size:15px;font-weight:600;">Italiano</div>
           </div>
           <input type="hidden" id="up-lang" value="en" />
         </div>
@@ -692,11 +692,15 @@
         <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
           <div style="margin-bottom:16px;">
             <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;">Font Size</span>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
               <button onclick="setFontSize('small')" id="fs-small" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;">Small</button>
               <button onclick="setFontSize('medium')" id="fs-medium" class="fs-btn active-fs" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:13px;">Medium</button>
               <button onclick="setFontSize('large')" id="fs-large" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:15px;">Large</button>
               <button onclick="setFontSize('xlarge')" id="fs-xlarge" class="fs-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:17px;">XL</button>
+            </div>
+            <div id="pd-font-preview" style="background:var(--navy);border-radius:8px;padding:14px;color:var(--text-sec);font-size:15px;line-height:1.8;">
+              <span style="color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Preview</span>
+              "For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life." — John 3:16
             </div>
           </div>
           <div style="margin-bottom:16px;">
@@ -723,7 +727,7 @@
         <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="lang-settings-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
             <div onclick="setLang('en',this)" class="lang-setting-btn active-lang" style="background:var(--gold-light);border:1px solid var(--gold-border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
-              <div style="color:var(--gold);font-size:15px;font-weight:600;">English</div>
+              <div style="color:var(--gold);font-size:16px;font-weight:700;">English</div>
             </div>
             <div onclick="setLang('fr',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
               <div style="color:var(--text-muted);font-size:15px;font-weight:600;">Français</div>
@@ -766,43 +770,43 @@
             </div>
           </div>
             <div onclick="setLang('fr',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇫🇷</div><div style="color:var(--text-muted);font-size:12px;">Français</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇫🇷</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Français</div>
             </div>
             <div onclick="setLang('ig',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:12px;">Igbo</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Igbo</div>
             </div>
             <div onclick="setLang('yo',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:12px;">Yorùbá</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Yorùbá</div>
             </div>
             <div onclick="setLang('ha',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:12px;">Hausa</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇳🇬</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Hausa</div>
             </div>
             <div onclick="setLang('pt',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇧🇷</div><div style="color:var(--text-muted);font-size:12px;">Português</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇧🇷</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Português</div>
             </div>
             <div onclick="setLang('tw',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇬🇭</div><div style="color:var(--text-muted);font-size:12px;">Twi</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇬🇭</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Twi</div>
             </div>
             <div onclick="setLang('zu',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇿🇦</div><div style="color:var(--text-muted);font-size:12px;">isiZulu</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇿🇦</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">isiZulu</div>
             </div>
             <div onclick="setLang('ar',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇸🇦</div><div style="color:var(--text-muted);font-size:12px;">Arabic</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇸🇦</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Arabic</div>
             </div>
             <div onclick="setLang('zh',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇨🇳</div><div style="color:var(--text-muted);font-size:12px;">中文</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇨🇳</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">中文</div>
             </div>
             <div onclick="setLang('hi',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇮🇳</div><div style="color:var(--text-muted);font-size:12px;">Hindi</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇮🇳</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Hindi</div>
             </div>
             <div onclick="setLang('es',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇪🇸</div><div style="color:var(--text-muted);font-size:12px;">Español</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇪🇸</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Español</div>
             </div>
             <div onclick="setLang('de',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇩🇪</div><div style="color:var(--text-muted);font-size:12px;">Deutsch</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇩🇪</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Deutsch</div>
             </div>
             <div onclick="setLang('it',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;">
-              <div style="font-size:26px;margin-bottom:6px;">🇮🇹</div><div style="color:var(--text-muted);font-size:12px;">Italiano</div>
+              <div style="font-size:26px;margin-bottom:6px;">🇮🇹</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">Italiano</div>
             </div>
           </div>
         </div>
@@ -812,15 +816,15 @@
         </div>
         <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
-            <div><div style="color:var(--text);font-size:14px;">New Sermons</div><div style="color:var(--text-muted);font-size:12px;">When pastors you follow upload</div></div>
+            <div><div style="color:var(--text);font-size:14px;">New Sermons</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">When pastors you follow upload</div></div>
             <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-sermons" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;" id="notif-sermons-knob"></span></label>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
-            <div><div style="color:var(--text);font-size:14px;">Live Streams</div><div style="color:var(--text-muted);font-size:12px;">When pastors you follow go live</div></div>
+            <div><div style="color:var(--text);font-size:14px;">Live Streams</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">When pastors you follow go live</div></div>
             <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-streams" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
-            <div><div style="color:var(--text);font-size:14px;">Inbox Messages</div><div style="color:var(--text-muted);font-size:12px;">When you receive a message</div></div>
+            <div><div style="color:var(--text);font-size:14px;">Inbox Messages</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;">When you receive a message</div></div>
             <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-inbox" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
           </div>
         </div>
@@ -1088,6 +1092,19 @@ async function handleApply() {
   } catch(e) { showAlert('apply-error', 'Submission failed. Please sign in first.'); }
 }
 
+async function deletePastorAccount(){
+  if(!confirm('Are you sure you want to permanently delete your account?\n\nThis will delete all your sermons and data. This cannot be undone.')) return;
+  if(!confirm('Final confirmation: Delete account and all content?')) return;
+  try{
+    await api('/api/users/me','DELETE');
+    alert('Account deleted. Sorry to see you go.');
+    token=null; user=null;
+    localStorage.removeItem('pastor_token');
+    localStorage.removeItem('pastor_user');
+    showScreen('login');
+  }catch(e){ alert('Deletion failed. Please email support@trinitarian.app to request account deletion.'); }
+}
+
 function handleLogout() {
   if (!confirm('Are you sure you want to sign out?')) return;
   token = null; user = null;
@@ -1107,8 +1124,17 @@ function initDashboard() {
   document.getElementById('overview-name').textContent = user?.display_name || 'Pastor';
   if (['admin', 'moderator'].includes(user?.role)) {
     document.getElementById('admin-nav').style.display = 'flex';
-    document.getElementById('users-nav').style.display = 'flex';
-    document.getElementById('pastors-nav').style.display = 'flex';
+    if(document.getElementById('users-nav')) document.getElementById('users-nav').style.display = 'flex';
+    if(document.getElementById('pastors-nav')) document.getElementById('pastors-nav').style.display = 'flex';
+  }
+  // Verify role - if listener somehow got here, redirect
+  if(user?.role === 'listener'){
+    showAlert('login-error', 'Your account does not have pastor access. Apply for verification first.');
+    token=null; user=null;
+    localStorage.removeItem('pastor_token');
+    localStorage.removeItem('pastor_user');
+    showScreen('login');
+    return;
   }
   // Populate settings
   if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
@@ -1157,9 +1183,23 @@ function renderSermonList(sermons, containerId) {
       <div class="sermon-actions">
         <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'archived' ? 'status-archived' : 'status-pending'}">${s.status?.toUpperCase()}</span>
         ${s.status === 'live' ? `<button class="btn btn-ghost btn-sm" onclick="archiveSermon('${s.id}')">Archive</button>` : ''}
+        <button class="btn btn-sm" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:var(--error);" onclick="deleteSermon('${s.id}','${s.title.replace(/'/g,'')}')">Delete</button>
       </div>
     </div>
   `).join('');
+}
+
+async function deleteSermon(id, title){
+  if(!confirm('Delete "'+title+'"?\n\nThis cannot be undone.')) return;
+  try{
+    await api('/api/sermons/'+id,'DELETE');
+    loadSermons();
+    const toast=document.createElement('div');
+    toast.textContent='Sermon deleted';
+    toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(),2500);
+  }catch(e){alert('Delete failed. Please try again.');}
 }
 
 async function archiveSermon(id) {
@@ -1315,7 +1355,7 @@ async function loadAnalytics(period, btn) {
         <div class="top-sermon-item">
           <div class="rank">#${i+1}</div>
           <div style="flex:1;min-width:0;"><div style="color:var(--white);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.title}</div></div>
-          <div style="color:var(--text-muted);font-size:12px;">👁 ${parseInt(s.views_count||0).toLocaleString()}</div>
+          <div style="color:var(--text-muted);font-size:15px;font-weight:600;">👁 ${parseInt(s.views_count||0).toLocaleString()}</div>
         </div>
       `).join('');
     } else {
@@ -1402,7 +1442,7 @@ function renderApplications(applications) {
       <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
         <div>
           <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
-          <div style="color:var(--text-muted);font-size:12px;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}</div>
+          <div style="color:var(--text-muted);font-size:15px;font-weight:600;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}</div>
         </div>
         <span class="status-badge ${statusColors[a.status]||'status-pending'}">● ${(a.status||'pending').toUpperCase()}</span>
       </div>
@@ -1562,7 +1602,7 @@ async function loadInbox() {
         <div class="notif-icon">${ICONS[n.type]||'🔔'}</div>
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
-          ${n.body?`<div style="color:var(--text-muted);font-size:12px;">${n.body}</div>`:''}
+          ${n.body?`<div style="color:var(--text-muted);font-size:15px;font-weight:600;">${n.body}</div>`:''}
           <div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
         </div>
         ${!n.is_read?'<div class="notif-dot"></div>':''}
@@ -1656,6 +1696,8 @@ function setFontSize(size) {
   document.querySelectorAll('.fs-btn').forEach(b=>{ b.style.background='var(--navy2)';b.style.borderColor='var(--border)';b.style.color='var(--text-muted)'; });
   const el=document.getElementById('fs-'+size);
   if(el){el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';el.style.color='var(--gold)';}
+  const preview=document.getElementById('pd-font-preview');
+  if(preview) preview.style.fontSize=sizes[size]+'px';
 }
 function setSpacing(sp) {
   const spacings = {compact:'1.4', normal:'1.7', relaxed:'2.0'};
