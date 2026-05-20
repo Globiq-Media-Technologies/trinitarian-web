@@ -646,10 +646,11 @@
           <label class="form-label">Bio</label>
           <textarea class="form-input" id="prof-bio" placeholder="Tell your congregation about yourself…"></textarea>
         </div>
-        <div style="display:flex;gap:10px;">
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
           <button class="btn btn-gold" onclick="saveProfile()" style="flex:1;">Save Changes</button>
           <button class="btn btn-ghost" onclick="showPage('changepass')" style="flex:1;">Change Password</button>
         </div>
+        <button class="btn btn-danger" onclick="deletePastorAccount()" style="width:100%;opacity:0.8;">🗑 Delete My Account</button>
       </div>
     </div>
 
@@ -725,10 +726,50 @@
           <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;">Language</span>
         </div>
         <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="lang-settings-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
             <div onclick="setLang('en',this)" class="lang-setting-btn active-lang" style="background:var(--gold-light);border:1px solid var(--gold-border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
               <div style="color:var(--gold);font-size:16px;font-weight:700;">English</div>
             </div>
+            <div onclick="setLang('fr',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Français</div>
+            </div>
+            <div onclick="setLang('ig',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Igbo</div>
+            </div>
+            <div onclick="setLang('yo',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Yorùbá</div>
+            </div>
+            <div onclick="setLang('ha',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Hausa</div>
+            </div>
+            <div onclick="setLang('pt',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Português</div>
+            </div>
+            <div onclick="setLang('tw',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Twi</div>
+            </div>
+            <div onclick="setLang('zu',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">isiZulu</div>
+            </div>
+            <div onclick="setLang('ar',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Arabic</div>
+            </div>
+            <div onclick="setLang('zh',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">中文</div>
+            </div>
+            <div onclick="setLang('hi',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Hindi</div>
+            </div>
+            <div onclick="setLang('es',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Español</div>
+            </div>
+            <div onclick="setLang('de',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Deutsch</div>
+            </div>
+            <div onclick="setLang('it',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
+              <div style="color:var(--text-muted);font-size:16px;font-weight:700;">Italiano</div>
+            </div>
+          </div>
             <div onclick="setLang('fr',this)" class="lang-setting-btn " style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;">
               <div style="color:var(--text-muted);font-size:15px;font-weight:600;">Français</div>
             </div>

@@ -115,6 +115,25 @@
       <a class="btn-gold" onclick="scrollTo_('#download')">📱 Download App</a>
       <a class="btn-ghost" onclick="goTo('pastor')">🛡️ Join as Pastor</a>
     </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px;">
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Faith</span>
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Salvation</span>
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Prayer</span>
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Healing</span>
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Worship</span>
+      <span onclick="goTo('listener')" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;">Gospel</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;">
+      <span onclick="goTo('listener')">
+        <span style="display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+          <span style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;" onclick="event.stopPropagation();goTo('listener')">Faith</span>
+          <span style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;" onclick="event.stopPropagation();goTo('listener')">Salvation</span>
+          <span style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;" onclick="event.stopPropagation();goTo('listener')">Prayer</span>
+          <span style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;" onclick="event.stopPropagation();goTo('listener')">Healing</span>
+          <span style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#D4AF37;cursor:pointer;" onclick="event.stopPropagation();goTo('listener')">Worship</span>
+        </span>
+      </span>
+    </div>
     <div class="badges">
       <span class="badge">✝ VERIFIED PASTORS ONLY</span>
       <span class="badge">🌍 14 LANGUAGES</span>
@@ -339,7 +358,7 @@
   </div>
 
   <!-- Bottom Nav -->
-  <div class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <div class="lh-bottom-nav" class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
     <div onclick="lhBottomNav('sermons',this)" class="lh-bnav active-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">🏠</span>
       <span style="color:#D4AF37;font-size:10px;">Home</span>
@@ -400,7 +419,7 @@
 <!-- ══ SERMON PLAYER ══ -->
 <div id="page-player" class="page">
   <div style="padding:14px 24px;border-bottom:1px solid rgba(212,175,55,0.1);display:flex;align-items:center;gap:12px;">
-    <span onclick="const token=localStorage.getItem('trinitarian_token');const bnav=document.querySelector('[style*=\'position:fixed;bottom:0\']');if(bnav)bnav.style.display='flex';if(token){goTo('listener-home');}else{goTo('home');}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
   <div style="max-width:800px;margin:0 auto;padding:24px;">
@@ -498,7 +517,7 @@
 <!-- ══ LISTENER NOTIFICATIONS ══ -->
 <div id="page-lh-notifications" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="const token=localStorage.getItem('trinitarian_token');const bnav=document.querySelector('[style*=\'position:fixed;bottom:0\']');if(bnav)bnav.style.display='flex';if(token){goTo('listener-home');}else{goTo('home');}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Notifications</span>
   </div>
   <div style="max-width:700px;margin:0 auto;padding:24px;">
@@ -511,7 +530,7 @@
 <!-- ══ LISTENER SETTINGS ══ -->
 <div id="page-lh-settings" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="const token=localStorage.getItem('trinitarian_token');const bnav=document.querySelector('[style*=\'position:fixed;bottom:0\']');if(bnav)bnav.style.display='flex';if(token){goTo('listener-home');}else{goTo('home');}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:24px 24px 80px;">
@@ -888,48 +907,44 @@ let lhSaved = JSON.parse(localStorage.getItem('lh_saved')||'[]');
 
 async function initListenerHome(){
   applyTranslations(localStorage.getItem('lh_lang')||'en');
-  const u = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+  const bnav=document.querySelector('.lh-bottom-nav');
+  if(bnav) bnav.style.display='flex';
+  const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){
-    const unEl=document.getElementById('lh-username');
-    if(unEl) unEl.textContent = u.display_name || '';
+    const el=document.getElementById('lh-username');
+    if(el) el.textContent=u.display_name||'';
     if(['admin','moderator'].includes(u.role)){
       const bar=document.getElementById('lh-admin-bar');
       if(bar) bar.style.display='block';
     }
   }
-  // Always ensure bottom nav is visible
-  const bnav=document.querySelector('.lh-bottom-nav');
-  if(bnav) bnav.style.display='flex';
   await lhLoadSermons();
 }
 
 async function lhLoadSermons(){
-  const el = document.getElementById('lh-sermons');
+  const el=document.getElementById('lh-sermons');
   if(!el) return;
-  el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Loading sermons...</div>';
+  if(lhAllSermons.length>0){lhRender();return;}
+  el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;"><div style="font-size:32px;margin-bottom:12px;">⏳</div>Loading sermons...</div>';
   try{
-    const controller = new AbortController();
-    const timeout = setTimeout(()=>controller.abort(), 10000);
-    const headers = {};
-    const token = localStorage.getItem('trinitarian_token');
-    if(token) headers['Authorization'] = 'Bearer '+token;
-    const res = await fetch(API+'/api/sermons?limit=50', {signal:controller.signal, headers});
-    clearTimeout(timeout);
-    const data = await res.json();
-    const raw = Array.isArray(data) ? data : (data.sermons||data.data||[]);
-    const seen = new Set();
-    lhAllSermons = raw.filter(s => { if(seen.has(s.id)) return false; seen.add(s.id); return true; });
-    if(!lhAllSermons.length){
-      el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:16px;">🎧</div><p style="color:#8fa3c0;">No sermons available yet.<br>Check back soon.</p></div>';
-      return;
-    }
+    const ctrl=new AbortController();
+    const tid=setTimeout(()=>ctrl.abort(),8000);
+    const tkn=localStorage.getItem('trinitarian_token');
+    const res=await fetch(API+'/api/sermons?limit=50',{signal:ctrl.signal,headers:tkn?{'Authorization':'Bearer '+tkn}:{}});
+    clearTimeout(tid);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const raw=Array.isArray(data)?data:(data.sermons||data.data||[]);
+    const seen=new Set();
+    lhAllSermons=raw.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
     lhRender();
   }catch(e){
-    if(e.name==='AbortError'){
-      el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><p style="color:#8fa3c0;">Connection timed out.</p><button onclick="lhLoadSermons()" style="margin-top:12px;background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">Retry</button></div>';
-    } else {
-      el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><p style="color:#8fa3c0;">Could not load sermons.</p><button onclick="lhLoadSermons()" style="margin-top:12px;background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">Retry</button></div>';
-    }
+    const msg=e.name==='AbortError'?'Connection timed out.':'Could not load sermons.';
+    el.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;">
+      <div style="font-size:40px;margin-bottom:12px;">📡</div>
+      <p style="color:#8fa3c0;margin-bottom:16px;">${msg}</p>
+      <button onclick="lhAllSermons=[];lhLoadSermons()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">↻ Retry</button>
+    </div>`;
   }
 }
 
@@ -1251,7 +1266,15 @@ function openSermon(s){
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.style.border=saved?'1px solid rgba(212,175,55,0.5)':'1px solid rgba(212,175,55,0.1)';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}
   // Comments
   loadComments(s.id);
+  // Auto-fullscreen for text/article content
+  const autoFull = ['text','article'].includes(s.type);
   playerShowTab('info');
+  if(autoFull){
+    setTimeout(()=>{
+      playerShowTab('reading', null);
+      setTimeout(playerFullscreen, 300);
+    }, 200);
+  }
 }
 
 function playerShowTab(tab,evt){
