@@ -1116,21 +1116,34 @@ async function handleApply() {
   const wordCount = statement.split(/\s+/).filter(Boolean).length;
   if (wordCount < 100) return showAlert('apply-error', `Personal statement must be at least 100 words. Currently ${wordCount} words.`);
   if (!finalDenom) return showAlert('apply-error', 'Please select or enter your denomination');
+  // Use pastor token, or fall back to listener token
+  const activeToken = token || localStorage.getItem('trinitarian_token');
+  if (!activeToken) {
+    showAlert('apply-error', 'Please sign in or register first before applying.');
+    return;
+  }
   try {
-    const data = await api('/api/pastors/apply', 'POST', {
-      full_name: document.getElementById('apply-name').value.trim(),
-      church_name: document.getElementById('apply-church').value.trim(),
-      denomination: finalDenom,
-      country: document.getElementById('apply-country').value.trim(),
-      city: document.getElementById('apply-city').value.trim(),
-      statement
+    const res = await fetch(API + '/api/pastors/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeToken },
+      body: JSON.stringify({
+        full_name: document.getElementById('apply-name').value.trim(),
+        church_name: document.getElementById('apply-church').value.trim(),
+        denomination: finalDenom,
+        country: document.getElementById('apply-country').value.trim(),
+        city: document.getElementById('apply-city').value.trim(),
+        statement
+      })
     });
-    if (data.id || data.status) {
-      showAlert('apply-success', data.auto_verified ? '🎉 Congratulations! You are now a verified pastor.' : '✅ Application received! We will review and notify you within 3-5 business days.', 'success');
+    const data = await res.json();
+    if (data.id || data.status || data.message) {
+      showAlert('apply-success', data.auto_verified
+        ? '🎉 Congratulations! You are now a verified pastor. Please sign in.'
+        : '✅ Application received! We will review and notify you within 3-5 business days.', 'success');
     } else {
-      showAlert('apply-error', data.error || 'Submission failed. Are you signed in?');
+      showAlert('apply-error', data.error || 'Submission failed. Please ensure you are signed in.');
     }
-  } catch(e) { showAlert('apply-error', 'Submission failed. Please sign in first.'); }
+  } catch(e) { showAlert('apply-error', 'Submission failed. Please check your connection.'); }
 }
 
 async function deletePastorAccount(){
