@@ -374,8 +374,28 @@
         <input type="text" class="form-input" id="apply-country" placeholder="e.g. Nigeria"/>
       </div>
       <div>
-        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">City</label>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">City *</label>
         <input type="text" class="form-input" id="apply-city" placeholder="e.g. Lagos"/>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Ordaining Body</label>
+        <input type="text" class="form-input" id="apply-ordination" placeholder="e.g. PFN, CAN, RCCG"/>
+        <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Who ordained you? (optional)</p>
+      </div>
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Years in Ministry</label>
+        <select class="form-input" id="apply-years">
+          <option value="">Select</option>
+          <option value="1">Less than 1 year</option>
+          <option value="1">1 year</option>
+          <option value="2">2–5 years</option>
+          <option value="6">6–10 years</option>
+          <option value="11">11–20 years</option>
+          <option value="21">20+ years</option>
+        </select>
       </div>
     </div>
 
@@ -1234,6 +1254,7 @@ function prefillApply() {
   if (!user) return;
   const nameEl = document.getElementById('apply-name');
   const emailEl = document.getElementById('apply-email');
+  const cityEl = document.getElementById('apply-city');
   if (nameEl && !nameEl.value) nameEl.value = user.display_name || '';
   if (emailEl && !emailEl.value) emailEl.value = user.email || '';
 }
@@ -1262,6 +1283,8 @@ async function handleApply() {
         denomination: finalDenom,
         country: document.getElementById('apply-country').value.trim(),
         city: document.getElementById('apply-city').value.trim(),
+        ordination_body: (document.getElementById('apply-ordination')?.value || '').trim(),
+        years_in_ministry: parseInt(document.getElementById('apply-years')?.value) || null,
         statement
       })
     });
@@ -1277,7 +1300,7 @@ async function handleApply() {
         setTimeout(() => initDashboard(), 1500);
       } else {
         showAlert('apply-success',
-          '✅ Application submitted successfully!\n\n📧 You will receive an email notification once reviewed (usually 3–5 business days).\n\nYou can close this page. When approved, sign in here to access your dashboard.',
+          '✅ Application submitted! We will review it within 3–5 business days and notify you by email at the address you registered with. Once approved, simply sign in here to access your Pastor Dashboard.',
           'success');
       }
     } else {
