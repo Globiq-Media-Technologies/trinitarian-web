@@ -1077,7 +1077,7 @@ async function handleLogin() {
       if (role === 'listener') {
         // Check if they have a pending application
         showAlert('login-error',
-          'Your account is awaiting pastor verification. If you haven't applied yet, <a onclick="showScreen('apply')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">click here to apply</a>. Otherwise please wait for admin approval.',
+          'Your account is awaiting pastor verification. If you have not applied yet, <a onclick="showScreen(\'apply\')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">click here to apply</a>. Otherwise please wait for admin approval.',
           false, true);
         return;
       }
