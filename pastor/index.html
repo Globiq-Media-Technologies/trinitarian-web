@@ -1068,6 +1068,23 @@ async function handleLogin() {
       user = data.user;
       localStorage.setItem('pastor_token', token);
       localStorage.setItem('pastor_user', JSON.stringify(user));
+      // Fetch fresh role from server
+      try {
+        const fresh = await api('/api/auth/me');
+        if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); }
+      } catch(e) {}
+      const role = user?.role || 'listener';
+      if (role === 'listener') {
+        // Check if they have a pending application
+        showAlert('login-error',
+          'Your account is awaiting pastor verification. If you haven't applied yet, <a onclick="showScreen('apply')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">click here to apply</a>. Otherwise please wait for admin approval.',
+          false, true);
+        return;
+      }
+      if (role === 'pending') {
+        showAlert('login-error', '⏳ Your pastor application is under review. You will be notified once approved.', false, true);
+        return;
+      }
       initDashboard();
     } else {
       showAlert('login-error', data.error || 'Invalid credentials');
@@ -1092,9 +1109,15 @@ async function handleRegister() {
       token = data.token; user = data.user;
       localStorage.setItem('pastor_token', token);
       localStorage.setItem('pastor_user', JSON.stringify(user));
-      initDashboard();
+      // New accounts are listeners - send to apply screen
+      if (user.role === 'listener' || user.role === 'pending') {
+        showAlert('register-success', '✅ Account created! Now complete your pastor application below.', 'success');
+        showScreen('apply');
+      } else {
+        initDashboard();
+      }
     } else {
-      showAlert('register-error', data.error || 'Registration failed');
+      showAlert('register-error', data.error || (data.errors && data.errors.map(e=>e.msg).join(', ')) || 'Registration failed');
     }
   } catch(e) { showAlert('register-error', 'Connection failed'); }
 }
@@ -1106,6 +1129,14 @@ async function handleForgot() {
     await api('/api/auth/forgot-password', 'POST', { email });
     showAlert('forgot-success', 'If that email exists, a reset link has been sent. Check your inbox and spam folder.', 'success');
   } catch(e) { showAlert('forgot-error', 'Request failed. Please try again.'); }
+}
+
+function prefillApply() {
+  if (!user) return;
+  const nameEl = document.getElementById('apply-name');
+  const emailEl = document.getElementById('apply-email');
+  if (nameEl && !nameEl.value) nameEl.value = user.display_name || '';
+  if (emailEl && !emailEl.value) emailEl.value = user.email || '';
 }
 
 async function handleApply() {
@@ -1137,9 +1168,19 @@ async function handleApply() {
     });
     const data = await res.json();
     if (data.id || data.status || data.message) {
-      showAlert('apply-success', data.auto_verified
-        ? '🎉 Congratulations! You are now a verified pastor. Please sign in.'
-        : '✅ Application received! We will review and notify you within 3-5 business days.', 'success');
+      if (data.auto_verified) {
+        // Auto-verified - reload user and go to dashboard
+        try {
+          const fresh = await api('/api/auth/me');
+          if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); }
+        } catch(e) {}
+        showAlert('apply-success', '🎉 Congratulations! You are now a Verified Pastor. Loading your dashboard...', 'success');
+        setTimeout(() => initDashboard(), 1500);
+      } else {
+        showAlert('apply-success',
+          '✅ Application submitted successfully!\n\n📧 You will receive an email notification once reviewed (usually 3–5 business days).\n\nYou can close this page. When approved, sign in here to access your dashboard.',
+          'success');
+      }
     } else {
       showAlert('apply-error', data.error || 'Submission failed. Please ensure you are signed in.');
     }
