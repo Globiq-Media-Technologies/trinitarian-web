@@ -583,7 +583,25 @@
     <!-- Notifications -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Notifications</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);"><div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-sermons" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div>
+        <div onclick="lhToggleNotif('lhs-notif-sermons',this)" id="lhs-notif-sermons-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
+          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div>
+        <div onclick="lhToggleNotif('lhs-notif-streams',this)" id="lhs-notif-streams-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
+          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
+        <div><div style="color:#e8e8e8;font-size:14px;">Inbox Messages</div><div style="color:#8fa3c0;font-size:12px;">When you receive a message</div></div>
+        <div onclick="lhToggleNotif('lhs-notif-inbox',this)" id="lhs-notif-inbox-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
+          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        </div>
+      </div>
+    </div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-sermons" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;"><div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-streams" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
     </div>
 
@@ -766,7 +784,7 @@ function goTo(page){
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
-  if(page==='lh-settings'){const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
+  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
   window.location.hash=page==='home'?'':page;
@@ -960,17 +978,28 @@ function postComment(){if(!currentSermon)return;const u=JSON.parse(localStorage.
 function lhSetFont(size,btn){document.querySelectorAll('.lhfs-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_size',size);const p=document.getElementById('lhfs-preview');if(p){p.style.fontSize=size+'px';p.style.lineHeight=size>=17?'2.1':size>=15?'1.8':'1.6';}const r=document.getElementById('rd-text');if(r)r.style.fontSize=size+'px';}
 function lhSetFontFamily(ff,btn){const fonts={'sans':"'DM Sans',sans-serif",'serif':'Georgia,serif','mono':'monospace'};document.querySelectorAll('.lhff-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_family',ff);const f=fonts[ff];const p=document.getElementById('lhfs-preview');if(p)p.style.fontFamily=f;const r=document.getElementById('rd-text');if(r)r.style.fontFamily=f;}
 function lhSetSpacing(spacing,btn){document.querySelectorAll('.lhsp-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_line_spacing',spacing);const p=document.getElementById('lhfs-preview');if(p)p.style.lineHeight=spacing;const r=document.getElementById('rd-text');if(r)r.style.lineHeight=spacing;}
+function lhToggleNotif(id, trackEl){
+  const current = localStorage.getItem(id);
+  const newVal = current === 'false' ? true : (current === null ? false : !JSON.parse(current));
+  localStorage.setItem(id, newVal);
+  const track = document.getElementById(id+'-track');
+  const knob = document.getElementById(id+'-knob');
+  if(track) track.style.background = newVal ? '#D4AF37' : 'rgba(212,175,55,0.2)';
+  if(knob) knob.style.transform = newVal ? 'translateX(22px)' : 'translateX(0)';
+}
+
 function saveLhNotifPref(){
-  ['lhs-notif-sermons','lhs-notif-streams'].forEach(id=>{
-    const cb=document.getElementById(id);
-    if(!cb) return;
-    localStorage.setItem(id, cb.checked);
-    const label=cb.closest('label');
-    if(!label) return;
-    const track=label.querySelector('span:nth-child(2)');
-    const knob=label.querySelector('span:nth-child(3)');
-    if(track) track.style.background=cb.checked?'#D4AF37':'rgba(212,175,55,0.2)';
-    if(knob) knob.style.transform=cb.checked?'translateX(22px)':'translateX(0)';
+  // kept for compatibility
+}
+
+function initLhNotifToggles(){
+  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
+    const val = localStorage.getItem(id);
+    const isOn = val === null ? true : val === 'true';
+    const track = document.getElementById(id+'-track');
+    const knob = document.getElementById(id+'-knob');
+    if(track) track.style.background = isOn ? '#D4AF37' : 'rgba(212,175,55,0.2)';
+    if(knob) knob.style.transform = isOn ? 'translateX(22px)' : 'translateX(0)';
   });
 }
 
