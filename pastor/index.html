@@ -1048,7 +1048,7 @@ function showPage(name) {
   if (name === 'analytics') loadAnalytics(7, document.querySelector('.period-tab.active'));
   if (name === 'live') loadStreams();
   if (name === 'notifications') loadNotifications();
-  if (name === 'admin') loadAdmin();
+  if (name === 'admin' && ['admin','moderator'].includes(user?.role)) loadAdmin();
   if (name === 'profile') loadProfile();
   if (name === 'inbox') loadInbox();
   if (name === 'users') loadUsers();
@@ -1102,6 +1102,10 @@ async function handleLogin() {
       }
       if (role === 'pending') {
         showAlert('login-error', '⏳ Your pastor application is under review. You will be notified once approved.', false, true);
+        return;
+      }
+      if (!['pastor','admin','moderator'].includes(role)) {
+        showAlert('login-error', 'Your account does not have pastor access.');
         return;
       }
       initDashboard();
@@ -1257,6 +1261,12 @@ function initDashboard() {
   if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
   if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
   if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
+  // Hide admin items unless admin/moderator
+  const isAdmin = ['admin', 'moderator'].includes(user?.role);
+  ['admin-nav','users-nav','pastors-nav'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=isAdmin?'flex':'none';
+  });
   loadOverview();
 }
 

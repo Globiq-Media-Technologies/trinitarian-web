@@ -793,7 +793,7 @@ function goTo(page){
   if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
-  window.location.hash=page==='home'?'':page;
+  if(page!=='reset')window.location.hash=page==='home'?'':page;
 }
 
 function scrollTo_(selector){goTo('home');setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);}
@@ -813,7 +813,7 @@ window.addEventListener('load',async()=>{
   if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
 });
 
-window.addEventListener('hashchange',()=>{const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
+window.addEventListener('hashchange',()=>{if(new URLSearchParams(window.location.search).get('token'))return;const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
 
 let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='';
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
@@ -1001,7 +1001,7 @@ async function sendDmMessage(){if(!dmCurrentPastor)return;const input=document.g
 function showLhForgotPwd(){goTo('listener');setTimeout(()=>llShow('forgot'),200);}
 async function lhDeleteAccount(){if(!confirm('Delete your account?\n\nThis permanently removes all your data.'))return;try{await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});alert('Account deleted.');localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('home');}catch(e){alert('Deletion failed. Email support@trinitarian.app to request deletion.');}}
 
-async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
+async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';window.history.replaceState({},'','/');setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
 
 function lhToggleNotif(id){
   const current=localStorage.getItem(id);
