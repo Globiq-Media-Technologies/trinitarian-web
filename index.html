@@ -350,34 +350,6 @@
     </div>
   </div>
 
-  <!-- Bottom Nav -->
-  <div class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
-    <div onclick="lhBottomNav('sermons',this)" class="lh-bnav active-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">🏠</span>
-      <span style="color:#D4AF37;font-size:10px;">Home</span>
-    </div>
-    <div onclick="lhBottomNav('pastors',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">🛡️</span>
-      <span style="color:#8fa3c0;font-size:10px;">Pastors</span>
-    </div>
-    <div onclick="lhBottomNav('saved',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">🔖</span>
-      <span style="color:#8fa3c0;font-size:10px;">Saved</span>
-    </div>
-    <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">📬</span>
-      <span style="color:#8fa3c0;font-size:10px;">Inbox</span>
-    </div>
-    <div onclick="goTo('lh-settings')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
-      <span style="font-size:22px;">⚙️</span>
-      <span style="color:#8fa3c0;font-size:10px;">Settings</span>
-    </div>
-  </div>
-  <!-- Admin indicator -->
-  <div id="lh-admin-bar" style="display:none;background:rgba(212,175,55,0.1);border-bottom:1px solid rgba(212,175,55,0.2);padding:8px 20px;text-align:center;">
-    <span style="color:#D4AF37;font-size:12px;">🛡️ Admin Mode — <a onclick="window.open('https://trinitarian.app/pastor/index.html','_blank')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Open Pastor Dashboard</a></span>
-  </div>
-
   <!-- Content area with bottom padding for nav -->
   <div style="padding-bottom:70px;">
 
@@ -712,6 +684,37 @@
     </div>
   </div>
 </div>
+
+<!-- ══ GLOBAL BOTTOM NAV (shown when logged in) ══ -->
+<!-- Bottom Nav -->
+  <div class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+    <div onclick="lhBottomNav('sermons',this)" class="lh-bnav active-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">🏠</span>
+      <span style="color:#D4AF37;font-size:10px;">Home</span>
+    </div>
+    <div onclick="lhBottomNav('pastors',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">🛡️</span>
+      <span style="color:#8fa3c0;font-size:10px;">Pastors</span>
+    </div>
+    <div onclick="lhBottomNav('saved',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">🔖</span>
+      <span style="color:#8fa3c0;font-size:10px;">Saved</span>
+    </div>
+    <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">📬</span>
+      <span style="color:#8fa3c0;font-size:10px;">Inbox</span>
+    </div>
+    <div onclick="goTo('lh-settings')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
+      <span style="font-size:22px;">⚙️</span>
+      <span style="color:#8fa3c0;font-size:10px;">Settings</span>
+    </div>
+  </div>
+  <!-- Admin indicator -->
+  <div id="lh-admin-bar" style="display:none;background:rgba(212,175,55,0.1);border-bottom:1px solid rgba(212,175,55,0.2);padding:8px 20px;text-align:center;">
+    <span style="color:#D4AF37;font-size:12px;">🛡️ Admin Mode — <a onclick="window.open('https://trinitarian.app/pastor/index.html','_blank')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Open Pastor Dashboard</a></span>
+  </div>
+
+  
 <script>
 const API='https://trinitarian-backend-production.up.railway.app';
 
@@ -782,11 +785,22 @@ function goTo(page){
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+  // Show/hide global bottom nav
+  const lhNav=document.querySelector('.lh-bottom-nav');
+  const lhPages=['listener-home','lh-inbox','lh-notifications','lh-settings','lh-dm'];
+  if(lhNav) lhNav.style.display=lhPages.includes(page)?'flex':'none';
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
   if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
+  // Highlight active bottom nav item
+  const lhNavItems=document.querySelectorAll('.lh-bnav');
+  const navMap={'listener-home':'sermons','lh-inbox':'inbox','lh-settings':'settings','lh-notifications':'alerts','lh-dm':'messages'};
+  if(navMap[page]){
+    lhNavItems.forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});
+    lhNavItems.forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(navMap[page])){b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}});
+  }
   window.location.hash=page==='home'?'':page;
 }
 
@@ -824,7 +838,6 @@ function applyTranslations(lang){
 
 async function initListenerHome(){
   applyTranslations(localStorage.getItem('lh_lang')||'en');
-  const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';
   lhAllSermons=[];lhCurrentCat='';lhCurrentType='all';
   const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){const el=document.getElementById('lh-username');if(el)el.textContent=u.display_name||'';if(['admin','moderator'].includes(u.role)){const bar=document.getElementById('lh-admin-bar');if(bar)bar.style.display='block';}}
@@ -897,7 +910,7 @@ function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){
 
 function lhShowSaved(){const el=document.getElementById('lh-sermons');el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};if(!saved.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">No saved sermons yet</p></div>';return;}el.innerHTML=saved.map(s=>'<div onclick="openSermonById(\''+s.id+'\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;"><div style="font-size:36px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">'+s.title+'</div><div style="color:#D4AF37;font-size:12px;">'+(s.pastor_name||'Verified Pastor')+'</div></div>').join('');}
 
-function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('listener');}
+function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');const lhNav=document.querySelector('.lh-bottom-nav');if(lhNav)lhNav.style.display='none';goTo('listener');}
 function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});if(btn){btn.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}if(section==='sermons'){lhCurrentType='all';document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();}else if(section==='pastors'){lhCurrentType='pastors';lhShowPastors();}else if(section==='saved'){lhCurrentType='saved';lhShowSaved();}}
 
 let currentSermon=null,ptFontSz=15,ptIsNight=false;
@@ -907,8 +920,7 @@ let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
 function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
 
 function openSermon(s){
-  currentSermon=s;const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
-  goTo('player');
+  currentSermon=s;goTo('player');
   document.getElementById('player-title').textContent=s.title;
   document.getElementById('player-title2').textContent=s.title;
   document.getElementById('player-pastor').textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
