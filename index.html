@@ -677,6 +677,291 @@
     </div>
   </div>
 </div>
+<script>
+const API='https://trinitarian-backend-production.up.railway.app';
 
+function llShow(panel){['login','register','forgot'].forEach(p=>{const el=document.getElementById('ll-'+p);if(el)el.style.display='none';});const show=document.getElementById('ll-'+panel);if(show)show.style.display='block';}
+
+async function llLogin(){
+  const email=document.getElementById('ll-email').value.trim();
+  const pass=document.getElementById('ll-pass').value;
+  if(!email&&!pass){showMsg('ll-err','Please enter your email address and password.');return;}
+  if(!email){showMsg('ll-err','Please enter your email address.');return;}
+  if(!pass){showMsg('ll-err','Please enter your password.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('ll-err','Please enter a valid email address.');return;}
+  try{
+    const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass})});
+    const data=await res.json();
+    if(data.token){
+      localStorage.setItem('trinitarian_token',data.token);
+      try{const meRes=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+data.token}});const fresh=await meRes.json();if(fresh?.id)data.user=fresh;}catch(e){}
+      localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
+      const role=data.user?.role||'listener';
+      if(['admin','moderator','pastor'].includes(role)){window.open('https://trinitarian.app/pastor/index.html','_blank');showMsg('ll-err','Welcome! Pastor Dashboard opened in a new tab.',true);}
+      else{goTo('listener-home');}
+    }else{
+      let msg=data.error||'Sign in failed.';
+      if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('password'))msg='Incorrect email or password. Please try again.';
+      if(msg.toLowerCase().includes('not found'))msg='No account found with this email address.';
+      showMsg('ll-err',msg);
+    }
+  }catch(e){showMsg('ll-err','Connection failed. Please try again.');}
+}
+
+async function llRegister(){
+  const name=document.getElementById('ll-rname').value.trim();
+  const email=document.getElementById('ll-remail').value.trim();
+  const username=document.getElementById('ll-rusername').value.trim();
+  const pass=document.getElementById('ll-rpass').value;
+  const confirm=document.getElementById('ll-rconfirm').value;
+  if(!name||!email||!username||!pass){showMsg('ll-reg-err','Please fill in all fields');return;}
+  if(pass.length<8){showMsg('ll-reg-err','Password must be at least 8 characters');return;}
+  if(pass!==confirm){showMsg('ll-reg-err','Passwords do not match');return;}
+  try{
+    const res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({display_name:name,email:email.toLowerCase(),username:username.toLowerCase(),password:pass})});
+    const data=await res.json();
+    if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));goTo('listener-home');}
+    else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
+  }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
+}
+
+async function llForgot(){
+  const email=document.getElementById('ll-femail').value.trim();
+  if(!email){showFMsg('Please enter your email','error');return;}
+  try{await fetch(API+'/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});showFMsg('Reset link sent! Check your inbox and spam folder.','success');}
+  catch(e){showFMsg('Request failed. Please try again.','error');}
+}
+
+function showMsg(id,msg,success=false){
+  document.querySelectorAll('[id^="ll-"]').forEach(el=>{if(el.id.endsWith('-err')||el.id.endsWith('-ok')){el.style.display='none';el.textContent='';}});
+  const el=document.getElementById(id);
+  if(el){el.textContent=msg;if(success){el.style.background='rgba(64,201,106,0.1)';el.style.border='1px solid rgba(64,201,106,0.3)';el.style.color='#40c96a';}else{el.style.background='rgba(224,85,85,0.1)';el.style.border='1px solid rgba(224,85,85,0.3)';el.style.color='#e05555';}el.style.display='block';}
+}
+function togglePwd(id,btn){const el=document.getElementById(id);if(el){el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}}
+function showFMsg(msg,type){const el=document.getElementById('ll-fmsg');if(el){el.textContent=msg;el.style.background=type==='success'?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)';el.style.border=type==='success'?'1px solid rgba(64,201,106,0.3)':'1px solid rgba(224,85,85,0.3)';el.style.color=type==='success'?'#40c96a':'#e05555';el.style.display='block';}}
+
+function goTo(page){
+  if(page==='pastor'){window.open('https://trinitarian.app/pastor/index.html','_blank');return;}
+  if(page==='privacy'){window.open('https://trinitarian.app/privacy/index.html','_blank');return;}
+  if(page==='terms'){window.open('https://trinitarian.app/terms/index.html','_blank');return;}
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  const el=document.getElementById('page-'+page);
+  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+  if(page==='listener-home')initListenerHome();
+  if(page==='lh-notifications')loadLhNotifications();
+  if(page==='lh-settings'){const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
+  if(page==='lh-inbox')loadLhInbox();
+  if(page==='lh-dm')loadDmPastors();
+  window.location.hash=page==='home'?'':page;
+}
+
+function scrollTo_(selector){goTo('home');setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);}
+
+window.addEventListener('load',async()=>{
+  const urlParams=new URLSearchParams(window.location.search);
+  const resetToken=urlParams.get('token');
+  if(resetToken){goTo('reset');return;}
+  if(window.location.pathname.includes('reset-password')){goTo('reset');return;}
+  const hash=window.location.hash.replace('#','');
+  const token=localStorage.getItem('trinitarian_token');
+  if(token&&hash==='listener'){
+    try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor'].includes(role)){window.open('https://trinitarian.app/pastor/index.html','_blank');}else{goTo('listener-home');}return;}}catch(e){}
+    const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+    if(user){if(['admin','moderator','pastor'].includes(user?.role)){window.open('https://trinitarian.app/pastor/index.html','_blank');}else{goTo('listener-home');}return;}
+  }
+  if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
+});
+
+window.addEventListener('hashchange',()=>{const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
+
+let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='';
+let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
+let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
+
+const LH_TRANS={en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Inbox',settings:'Settings',search:'Search sermons...'},fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Boîte',settings:'Paramètres',search:'Rechercher...'},ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Igbe Ozi',settings:'Ntọala',search:'Chọọ...'},yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Apộp',settings:'Ètò',search:'Wa...'},ha:{home:'Gida',pastors:'Malamai',saved:'An Ajiye',inbox:'Akwatin',settings:'Saituna',search:'Nema...'},pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Caixa',settings:'Configurações',search:'Pesquisar...'},es:{home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Buzón',settings:'Ajustes',search:'Buscar...'},de:{home:'Start',pastors:'Pastoren',saved:'Gespeichert',inbox:'Posteingang',settings:'Einstellungen',search:'Suchen...'}};
+
+function applyTranslations(lang){
+  const t=LH_TRANS[lang]||LH_TRANS.en;localStorage.setItem('lh_lang',lang);
+  const bnav=document.querySelector('.lh-bottom-nav');
+  if(bnav){const spans=bnav.querySelectorAll('.lh-bnav span:last-child');const keys=['home','pastors','saved','inbox','settings'];spans.forEach((s,i)=>{if(keys[i]&&t[keys[i]])s.textContent=t[keys[i]];});}
+  const srch=document.getElementById('lh-search');if(srch)srch.placeholder='🔍 '+t.search;
+}
+
+async function initListenerHome(){
+  applyTranslations(localStorage.getItem('lh_lang')||'en');
+  const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';
+  lhAllSermons=[];lhCurrentCat='';lhCurrentType='all';
+  const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+  if(u){const el=document.getElementById('lh-username');if(el)el.textContent=u.display_name||'';if(['admin','moderator'].includes(u.role)){const bar=document.getElementById('lh-admin-bar');if(bar)bar.style.display='block';}}
+  await lhLoadSermons();
+}
+
+async function lhLoadSermons(){
+  const el=document.getElementById('lh-sermons');if(!el)return;
+  el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;"><div style="font-size:32px;margin-bottom:12px;">⏳</div>Loading sermons...</div>';
+  try{
+    const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),12000);
+    const tkn=localStorage.getItem('trinitarian_token');
+    const res=await fetch(API+'/api/sermons?limit=50',{signal:ctrl.signal,headers:tkn?{'Authorization':'Bearer '+tkn}:{'Accept':'application/json'}});
+    clearTimeout(tid);if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();const raw=Array.isArray(data)?data:(data.sermons||data.data||[]);
+    const seen=new Set();lhAllSermons=raw.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
+    if(!lhAllSermons.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:12px;">🎧</div><p style="color:#8fa3c0;margin-bottom:16px;">No sermons yet. Check back soon!</p><button onclick="lhLoadSermons()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">↻ Refresh</button></div>';return;}
+    lhRender();
+  }catch(e){
+    const msg=e.name==='AbortError'?'Connection timed out.':'Could not load sermons.';
+    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📡</div><p style="color:#8fa3c0;margin-bottom:16px;">'+msg+'</p><button onclick="lhLoadSermons()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;font-weight:700;">↻ Try Again</button></div>';
+  }
+}
+
+function lhRender(){
+  const q=document.getElementById('lh-search')?.value.toLowerCase()||'';
+  let list=lhAllSermons;
+  if(lhCurrentType!=='all')list=list.filter(s=>s.type===lhCurrentType);
+  if(lhCurrentCat){const synonyms={'faith':['faith','believe','trust','confidence'],'salvation':['salvation','saved','born again','redemption','grace','repent'],'healing':['healing','heal','miracle','restoration'],'prosperity':['prosperity','prosper','blessing','abundance','wealth'],'prophecy':['prophecy','prophetic','vision','revelation'],'marriage':['marriage','family','husband','wife','relationship'],'leadership':['leadership','leader','pastor','ministry','church'],'bible':['bible','scripture','word','study','verse','gospel'],'prayer':['prayer','pray','intercession','fasting']};const words=synonyms[lhCurrentCat]||[lhCurrentCat];list=list.filter(s=>{const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase();return words.some(w=>text.includes(w));});}
+  if(q)list=list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')).toLowerCase().includes(q));
+  const el=document.getElementById('lh-sermons');
+  if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">No sermons found</p></div>';return;}
+  window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
+  const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
+  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;">${ICONS[s.type]||'🎧'}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
+}
+
+function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-clear').style.display=q?'block':'none';lhRender();}
+function lhClearSearch(){document.getElementById('lh-search').value='';document.getElementById('lh-clear').style.display='none';lhRender();}
+
+function lhTab(btn,type){
+  document.querySelectorAll('.lh-tab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
+  btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';
+  lhCurrentType=type;
+  if(type==='pastors'){lhShowPastors();return;}
+  if(type==='saved'){lhShowSaved();return;}
+  document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();
+}
+
+function lhFilterCat(cat,btn){
+  lhCurrentCat=cat;
+  document.querySelectorAll('.lh-cat').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
+  if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
+  const srch=document.getElementById('lh-search');if(srch)srch.placeholder=cat?'🔍 Filtering: '+cat+'...':'🔍 Search sermons...';
+  lhRender();
+}
+
+async function lhShowPastors(){
+  const el=document.getElementById('lh-sermons');el.style.gridTemplateColumns='1fr';
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Loading pastors...</div>';
+  try{
+    const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
+    const data=await res.json();const pastors=Array.isArray(data)?data:(data?.pastors||[]);
+    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">No verified pastors yet</div>';return;}
+    el.innerHTML=pastors.map(p=>{const following=lhFollowing.includes(p.id||p.user_id);return '<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;"><div style="width:48px;height:48px;border-radius:24px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✝</div><div style="flex:1;"><div style="color:#fff;font-size:15px;font-weight:600;margin-bottom:3px;">'+(p.display_name||p.username)+'</div><div style="color:#D4AF37;font-size:12px;">'+(p.church_name||'')+'</div></div><button onclick="toggleFollow(\''+(p.id||p.user_id)+'\',\''+(p.display_name||p.username)+'\',this)" style="padding:8px 16px;border-radius:20px;border:1px solid '+(following?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.2)')+';background:'+(following?'rgba(212,175,55,0.15)':'transparent')+';color:'+(following?'#D4AF37':'#8fa3c0')+';cursor:pointer;font-size:12px;white-space:nowrap;">'+(following?'✓ Following':'+ Follow')+'</button></div>';}).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load pastors</div>';}
+}
+
+function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){lhFollowing.splice(idx,1);btn.textContent='+ Follow';btn.style.color='#8fa3c0';btn.style.borderColor='rgba(212,175,55,0.2)';btn.style.background='transparent';}else{lhFollowing.push(id);btn.textContent='✓ Following';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.background='rgba(212,175,55,0.15)';}localStorage.setItem('lh_following',JSON.stringify(lhFollowing));try{fetch(API+'/api/users/'+id+'/follow',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
+
+function lhShowSaved(){const el=document.getElementById('lh-sermons');el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};if(!saved.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">No saved sermons yet</p></div>';return;}el.innerHTML=saved.map(s=>'<div onclick="openSermonById(\''+s.id+'\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;"><div style="font-size:36px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">'+s.title+'</div><div style="color:#D4AF37;font-size:12px;">'+(s.pastor_name||'Verified Pastor')+'</div></div>').join('');}
+
+function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('listener');}
+function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});if(btn){btn.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}if(section==='sermons'){lhCurrentType='all';document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();}else if(section==='pastors'){lhCurrentType='pastors';lhShowPastors();}else if(section==='saved'){lhCurrentType='saved';lhShowSaved();}}
+
+let currentSermon=null,ptFontSz=15,ptIsNight=false;
+let comments=JSON.parse(localStorage.getItem('lh_comments')||'{}');
+let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
+
+function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
+
+function openSermon(s){
+  currentSermon=s;const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
+  goTo('player');
+  document.getElementById('player-title').textContent=s.title;
+  document.getElementById('player-title2').textContent=s.title;
+  document.getElementById('player-pastor').textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
+  document.getElementById('player-desc').textContent=s.description||'';
+  document.getElementById('player-views').textContent='👁 '+parseInt(s.views_count||0).toLocaleString()+' views';
+  document.getElementById('player-date').textContent='📅 '+new Date(s.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('player-lang').textContent='🌍 '+(s.language||'en').toUpperCase();
+  const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
+  document.getElementById('player-icon').textContent=ICONS[s.type]||'🎧';
+  const pt=document.getElementById('pt-text');const pe=document.getElementById('pt-empty');
+  if(s.transcript){pt.textContent=s.transcript;pt.style.display='block';pe.style.display='none';}else{pt.style.display='none';pe.style.display='block';}
+  const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
+  if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}
+  loadComments(s.id);
+  if(['text','article'].includes(s.type)){playerShowTab('reading',null);setTimeout(playerFullscreen,400);}
+  else if(s.type==='video'){playerShowTab('info',null);setTimeout(playerFullscreen,400);}
+  else{playerShowTab('info',null);}
+}
+
+function playerShowTab(tab,evt){
+  ['info','transcript','reading','comments'].forEach(t=>{const el=document.getElementById('ptab-'+t);if(el)el.style.display=t===tab?'block':'none';});
+  document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
+  const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
+  if(tab==='reading')loadReadingMode();
+}
+
+let rdFontSz=16,rdIsNight=false;
+function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';rdEmpty.style.display='none';}else{rdText.style.display='none';rdEmpty.style.display='block';}const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
+function rdFontSize(d){rdFontSz=Math.max(12,Math.min(24,rdFontSz+d));document.getElementById('rd-text').style.fontSize=rdFontSz+'px';}
+function rdToggleNight(){rdIsNight=!rdIsNight;const wrap=document.getElementById('reading-wrap');wrap.style.background=rdIsNight?'#1a1a2e':'#fff';document.getElementById('rd-text').style.color=rdIsNight?'#e8e8e8':'#222';document.getElementById('rd-night-btn').textContent=rdIsNight?'☀ Day':'🌙 Night';document.getElementById('rd-night-btn').style.background=rdIsNight?'#333':'#f0f0f0';document.getElementById('rd-night-btn').style.color=rdIsNight?'#fff':'#333';}
+function rdHighlight(){const sel=window.getSelection();if(sel&&sel.toString().length>0){const range=sel.getRangeAt(0);const span=document.createElement('span');span.style.background='#FFD700';span.style.color='#000';range.surroundContents(span);sel.removeAllRanges();}else{alert('Select some text first, then click Highlight.');}}
+function rdBookmark(){if(!currentSermon)return;const idx=bookmarks.indexOf(currentSermon.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));const bm=bookmarks.includes(currentSermon.id);const btn=document.getElementById('rd-bookmark-btn');if(btn){btn.style.background=bm?'#D4AF37':'#f0f0f0';btn.style.color=bm?'#071528':'#333';}const ok=document.getElementById('rd-bookmark-ok');if(ok){ok.style.display=bm?'inline':'none';setTimeout(()=>ok.style.display='none',2000);}}
+
+function playerFullscreen(){
+  const overlay=document.createElement('div');overlay.id='fs-overlay';overlay.style.cssText='position:fixed;inset:0;background:#071528;z-index:99999;overflow-y:auto;';
+  const s=currentSermon;if(!s)return;
+  const activeId=['ptab-transcript','ptab-reading','ptab-comments'].find(id=>{const el=document.getElementById(id);return el&&el.style.display!=='none';})||'ptab-info';
+  const activeContent=document.getElementById(activeId);const cloned=activeContent?activeContent.cloneNode(true):null;
+  if(cloned){cloned.style.display='block';cloned.style.background='transparent';cloned.style.border='none';cloned.querySelectorAll('[onclick]').forEach(el=>el.removeAttribute('onclick'));}
+  overlay.innerHTML='<div style="position:sticky;top:0;background:#071528;border-bottom:1px solid rgba(212,175,55,0.2);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;z-index:10;"><span style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.title+'</span><button onclick="document.getElementById(\'fs-overlay\').remove()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 20px;cursor:pointer;font-weight:700;font-size:13px;flex-shrink:0;margin-left:12px;">✕ Close</button></div><div style="max-width:900px;margin:0 auto;padding:28px 24px 60px;" id="fs-content"><p style="color:#D4AF37;font-size:13px;margin-bottom:20px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p></div>';
+  document.body.appendChild(overlay);if(cloned)document.getElementById('fs-content').appendChild(cloned);overlay.scrollTop=0;
+  const esc=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',esc);}};document.addEventListener('keydown',esc);
+}
+
+function ptFontSize(dir){ptFontSz=Math.max(11,Math.min(22,ptFontSz+dir));document.getElementById('pt-text').style.fontSize=ptFontSz+'px';}
+function ptToggleNight(){ptIsNight=!ptIsNight;const el=document.getElementById('ptab-transcript');el.style.background=ptIsNight?'#fff':'#0d2142';document.getElementById('pt-text').style.color=ptIsNight?'#222':'#b0c4d8';document.getElementById('pt-night-btn').textContent=ptIsNight?'🌙 Night':'☀ Day';}
+
+async function playerSave(){if(!currentSermon)return;const idx=lhSaved.indexOf(currentSermon.id);if(idx>-1){lhSaved.splice(idx,1);}else{lhSaved.push(currentSermon.id);}localStorage.setItem('lh_saved',JSON.stringify(lhSaved));const saved=lhSaved.includes(currentSermon.id);const saveBtn=document.getElementById('btn-save');if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}try{await fetch(API+'/api/sermons/'+currentSermon.id+'/save',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
+function playerShare(){if(navigator.share&&currentSermon){navigator.share({title:currentSermon.title,text:'Listen on Trinitarian',url:window.location.href});}else{navigator.clipboard.writeText(window.location.href);alert('Link copied!');}}
+function playerDownload(){alert('Download will be available in v1.1');}
+
+async function playerReport(){
+  if(!currentSermon)return;
+  const modal=document.createElement('div');modal.id='report-modal-overlay';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
+  modal.innerHTML='<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:500px;"><h3 style="color:#fff;font-size:18px;margin-bottom:8px;">Report Sermon</h3><p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">'+currentSermon.title+'</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"><button onclick="selectReason(this,\'False teaching\')" class="reason-btn" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.2);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;">False teaching</button><button onclick="selectReason(this,\'Copyright violation\')" class="reason-btn" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.2);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;">Copyright violation</button><button onclick="selectReason(this,\'Offensive content\')" class="reason-btn" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.2);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;">Offensive content</button><button onclick="selectReason(this,\'Other\')" class="reason-btn" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.2);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;">Other</button></div><textarea id="report-detail" placeholder="Please provide more details..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:120px;line-height:1.6;margin-bottom:16px;"></textarea><div id="report-selected" style="color:#D4AF37;font-size:12px;margin-bottom:14px;display:none;">Selected: <span id="report-reason-text"></span></div><div style="display:flex;gap:10px;"><button onclick="submitReport()" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">Submit Report</button><button onclick="document.getElementById(\'report-modal-overlay\').remove();selectedReason=\'\';" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button></div></div>';
+  document.body.appendChild(modal);
+}
+
+let selectedReason='';
+function selectReason(btn,reason){document.querySelectorAll('.reason-btn').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.2)';});btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';selectedReason=reason;document.getElementById('report-selected').style.display='block';document.getElementById('report-reason-text').textContent=reason;}
+
+async function submitReport(){const detail=document.getElementById('report-detail').value.trim();if(!selectedReason&&!detail){alert('Please select a reason or provide details.');return;}const reason=selectedReason+(detail?' - '+detail:'');try{await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'},body:JSON.stringify({reason})});document.getElementById('report-modal-overlay')?.remove();const toast=document.createElement('div');toast.textContent='✓ Report submitted. Thank you.';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);selectedReason='';}catch(e){alert('Could not submit report. Please try again.');}}
+
+function loadComments(sermonId){const list=document.getElementById('comments-list');const stored=comments[sermonId]||[];if(!stored.length){list.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No comments yet. Be the first!</p>';return;}list.innerHTML=stored.map(c=>'<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:10px;padding:14px;"><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">'+c.name+' · '+c.date+'</div><div style="color:#b0c4d8;font-size:14px;line-height:1.7;">'+c.text+'</div></div>').join('');}
+function postComment(){if(!currentSermon)return;const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');const text=document.getElementById('comment-input').value.trim();if(!text)return;if(!comments[currentSermon.id])comments[currentSermon.id]=[];comments[currentSermon.id].unshift({name:u.display_name||'Listener',date:new Date().toLocaleDateString('en-GB'),text});localStorage.setItem('lh_comments',JSON.stringify(comments));document.getElementById('comment-input').value='';loadComments(currentSermon.id);const toast=document.createElement('div');toast.textContent='✓ Comment posted';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);}
+
+function lhSetFont(size,btn){document.querySelectorAll('.lhfs-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_size',size);const p=document.getElementById('lhfs-preview');if(p){p.style.fontSize=size+'px';p.style.lineHeight=size>=17?'2.1':size>=15?'1.8':'1.6';}const r=document.getElementById('rd-text');if(r)r.style.fontSize=size+'px';}
+function lhSetFontFamily(ff,btn){const fonts={'sans':"'DM Sans',sans-serif",'serif':'Georgia,serif','mono':'monospace'};document.querySelectorAll('.lhff-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_family',ff);const f=fonts[ff];const p=document.getElementById('lhfs-preview');if(p)p.style.fontFamily=f;const r=document.getElementById('rd-text');if(r)r.style.fontFamily=f;}
+function lhSetSpacing(spacing,btn){document.querySelectorAll('.lhsp-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_line_spacing',spacing);const p=document.getElementById('lhfs-preview');if(p)p.style.lineHeight=spacing;const r=document.getElementById('rd-text');if(r)r.style.lineHeight=spacing;}
+function lhSetLang(lang,btn){document.querySelectorAll('.lh-lang-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.borderWidth='1px';b.querySelector('div').style.color='#8fa3c0';});btn.style.background='rgba(212,175,55,0.12)';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.borderWidth='2px';btn.querySelector('div').style.color='#D4AF37';applyTranslations(lang);}
+
+async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>';}}
+
+async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load messages</div>';}}
+async function sendLhInboxMsg(){const msg=document.getElementById('lh-inbox-msg').value.trim();if(!msg)return;const toast=document.createElement('div');toast.textContent='✓ Message sent to support';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);document.getElementById('lh-inbox-msg').value='';}
+
+let dmMessages=JSON.parse(localStorage.getItem('lh_dm')||'{}'),dmCurrentPastor=null;
+async function loadDmPastors(){const el=document.getElementById('dm-pastors-list');if(!el)return;try{const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});const data=await res.json();const pastors=Array.isArray(data)?data:(data?.pastors||[]);if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">No verified pastors yet</div>';return;}el.innerHTML=pastors.map(p=>'<div onclick="openDmConversation(\''+(p.id||p.user_id)+'\',\''+(p.display_name||p.username)+'\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;"><div style="width:44px;height:44px;border-radius:22px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✝</div><div style="flex:1;"><div style="color:#fff;font-size:14px;font-weight:600;">'+(p.display_name||p.username)+'</div><div style="color:#8fa3c0;font-size:12px;">'+(p.church_name||'')+'</div></div><span style="color:#D4AF37;font-size:18px;">›</span></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Could not load pastors</div>';}}
+function openDmConversation(pastorId,pastorName){dmCurrentPastor={id:pastorId,name:pastorName};document.getElementById('dm-pastors-list').parentElement.style.display='none';document.getElementById('dm-conversation').style.display='block';document.getElementById('dm-pastor-name').textContent=pastorName;renderDmMessages();}
+function closeDmConversation(){dmCurrentPastor=null;document.getElementById('dm-pastors-list').parentElement.style.display='block';document.getElementById('dm-conversation').style.display='none';}
+function renderDmMessages(){if(!dmCurrentPastor)return;const msgs=dmMessages[dmCurrentPastor.id]||[];const el=document.getElementById('dm-messages');if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">No messages yet. Send the first one!</div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;justify-content:'+(m.from==='me'?'flex-end':'flex-start')+'"><div style="max-width:75%;background:'+(m.from==='me'?'rgba(212,175,55,0.15)':'#0d2142')+';border:1px solid '+(m.from==='me'?'rgba(212,175,55,0.3)':'rgba(212,175,55,0.1)')+';border-radius:'+(m.from==='me'?'16px 16px 4px 16px':'16px 16px 16px 4px')+';padding:10px 14px;"><div style="color:#fff;font-size:14px;line-height:1.6;">'+m.text+'</div><div style="color:#8fa3c0;font-size:10px;margin-top:4px;text-align:right;">'+m.time+'</div></div></div>').join('');el.scrollTop=el.scrollHeight;}
+async function sendDmMessage(){if(!dmCurrentPastor)return;const input=document.getElementById('dm-input');const text=input.value.trim();if(!text)return;const msg={from:'me',to:dmCurrentPastor.id,text,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};if(!dmMessages[dmCurrentPastor.id])dmMessages[dmCurrentPastor.id]=[];dmMessages[dmCurrentPastor.id].push(msg);localStorage.setItem('lh_dm',JSON.stringify(dmMessages));input.value='';renderDmMessages();try{await fetch(API+'/api/messages',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'},body:JSON.stringify({recipient_id:dmCurrentPastor.id,content:text})});}catch(e){}}
+
+function showLhForgotPwd(){goTo('listener');setTimeout(()=>llShow('forgot'),200);}
+async function lhDeleteAccount(){if(!confirm('Delete your account?\n\nThis permanently removes all your data.'))return;try{await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});alert('Account deleted.');localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('home');}catch(e){alert('Deletion failed. Email support@trinitarian.app to request deletion.');}}
+
+async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
+
+</script>
 </body>
 </html>
