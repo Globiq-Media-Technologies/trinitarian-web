@@ -351,7 +351,7 @@
   </div>
 
   <!-- Bottom Nav -->
-  <div class="lh-bottom-nav" class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <div class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:10px 0 12px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
     <div onclick="lhBottomNav('sermons',this)" class="lh-bnav active-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">🏠</span>
       <span style="color:#D4AF37;font-size:10px;">Home</span>
@@ -405,7 +405,6 @@
   <!-- Sermons grid -->
   <div id="lh-sermons" style="padding:0 24px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
     <div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Loading sermons...</div>
-  </div>
   </div>
 </div>
 
@@ -602,8 +601,8 @@
         </div>
       </div>
     </div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-sermons" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;"><div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-streams" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
-    </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;"><div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-streams" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
+      </div>
 
     <!-- Language -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Language</div>
@@ -648,7 +647,8 @@
     <!-- Sign Out & Delete -->
     <div style="background:#0d2142;border:1px solid rgba(224,85,85,0.2);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div onclick="lhLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(224,85,85,0.1);"><span style="color:#e05555;font-size:14px;">Sign Out</span><span style="color:#e05555;">&#8250;</span></div>
-      <div onclick="lhDeleteAccount()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;"><div><div style="color:#e05555;font-size:14px;">Delete Account</div><div style="color:#8fa3c0;font-size:11px;">Permanently delete your account and data</div></div><span style="color:#e05555;">&#8250;</span></div>
+      <div onclick="lhDeleteAccount()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;"><div><div style="color:#e05555;font-size:14px;">Delete Account</div><div style="color:#8fa3c0;font-size:11px;">Permanently delete your account and data</div></div><span style="color:#e05555;">&#8250;</span>
+      </div>
     </div>
 
     <p style="color:#8fa3c0;font-size:11px;text-align:center;">Trinitarian v1.0 &#183; Globiq Media Technologies Ltd</p>
