@@ -11,7 +11,7 @@
 
     /* Pages */
     .page{display:none;}
-    .page{display:none;}.page.active{display:block;}
+    .page{display:none !important;}.page.active{display:block !important;}
 
     /* Nav */
     nav{display:flex;justify-content:space-between;align-items:center;padding:14px 40px;border-bottom:1px solid rgba(212,175,55,0.2);position:sticky;top:0;background:#071528;z-index:100;}
@@ -782,9 +782,9 @@ function goTo(page){
   if(page==='pastor'){window.open('https://trinitarian.app/pastor/index.html','_blank');return;}
   if(page==='privacy'){window.open('https://trinitarian.app/privacy/index.html','_blank');return;}
   if(page==='terms'){window.open('https://trinitarian.app/terms/index.html','_blank');return;}
-  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');});
   const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+  if(el){el.classList.add('active');document.body.scrollTop=0;document.documentElement.scrollTop=0;}
   // Show/hide global bottom nav
   const lhNav=document.querySelector('.lh-bottom-nav');
   const lhPages=['listener-home','lh-inbox','lh-notifications','lh-settings','lh-dm'];
