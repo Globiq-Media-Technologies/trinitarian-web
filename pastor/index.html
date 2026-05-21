@@ -520,10 +520,10 @@
         <p class="page-sub">Here's how your ministry is performing</p>
       </div>
       <div class="stats-grid" id="stats-grid">
-        <div class="stat-card"><div class="stat-icon">🎧</div><div class="stat-value" id="stat-sermons">—</div><div class="stat-label">Total Sermons</div></div>
-        <div class="stat-card"><div class="stat-icon">👁️</div><div class="stat-value" id="stat-views">—</div><div class="stat-label">Total Views</div></div>
-        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label">Followers</div></div>
-        <div class="stat-card"><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label">Live Streams</div></div>
+        <div class="stat-card" onclick="showPage('sermons')" style="cursor:pointer;" title="View my sermons"><div class="stat-icon">🎧</div><div class="stat-value" id="stat-sermons">—</div><div class="stat-label">Total Sermons</div></div>
+        <div class="stat-card" onclick="showPage('analytics')" style="cursor:pointer;" title="View analytics"><div class="stat-icon">👁️</div><div class="stat-value" id="stat-views">—</div><div class="stat-label">Total Views</div></div>
+        <div class="stat-card" onclick="showPage('analytics')" style="cursor:pointer;" title="View analytics"><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label">Followers</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label">Live Streams</div></div>
       </div>
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
         <span style="color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Recent Sermons</span>
@@ -681,9 +681,9 @@
         <button class="period-tab" onclick="loadAnalytics(90,this)">90 Days</button>
       </div>
       <div class="stats-grid" id="analytics-stats">
-        <div class="stat-card"><div class="stat-icon">👁️</div><div class="stat-value" id="an-views">—</div><div class="stat-label">Views</div></div>
-        <div class="stat-card"><div class="stat-icon">🎧</div><div class="stat-value" id="an-sermons">—</div><div class="stat-label">Sermons</div></div>
-        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-icon">—</div><div class="stat-label">New Followers</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👁️</div><div class="stat-value" id="an-views">—</div><div class="stat-label">Views</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">🎧</div><div class="stat-value" id="an-sermons">—</div><div class="stat-label">Sermons</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👥</div><div class="stat-icon">—</div><div class="stat-label">New Followers</div></div>
       </div>
       <div style="margin-top:20px;">
         <span class="section-label">🔥 Top Performing Sermons</span>
@@ -712,10 +712,10 @@
         <p class="page-sub">Manage platform users and content</p>
       </div>
       <div class="stats-grid" id="admin-stats">
-        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="ad-users">—</div><div class="stat-label">Total Users</div></div>
-        <div class="stat-card"><div class="stat-icon">🎧</div><div class="stat-value" id="ad-sermons">—</div><div class="stat-label">Sermons</div></div>
-        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="ad-pending">—</div><div class="stat-label">Pending Applications</div></div>
-        <div class="stat-card"><div class="stat-icon">⚑</div><div class="stat-value" id="ad-flags">—</div><div class="stat-label">Unresolved Flags</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👥</div><div class="stat-value" id="ad-users">—</div><div class="stat-label">Total Users</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">🎧</div><div class="stat-value" id="ad-sermons">—</div><div class="stat-label">Sermons</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">⏳</div><div class="stat-value" id="ad-pending">—</div><div class="stat-label">Pending Applications</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">⚑</div><div class="stat-value" id="ad-flags">—</div><div class="stat-label">Unresolved Flags</div></div>
       </div>
       <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
         <span class="section-label">Pastor Applications</span>
@@ -1288,7 +1288,7 @@ function renderSermonList(sermons, containerId) {
     return;
   }
   el.innerHTML = sermons.map(s => `
-    <div class="sermon-card">
+    <div class="sermon-card" onclick="viewSermon('${s.id}')" style="cursor:pointer;">
       <div class="sermon-thumb">${s.type === 'video' ? '🎬' : s.type === 'audio' ? '🎧' : '📄'}</div>
       <div class="sermon-info">
         <div class="sermon-title">${s.title}</div>
@@ -1861,17 +1861,32 @@ function setLang(lang, el) {
 
 // ── Notification Preferences ──
 function saveNotifPref() {
-  localStorage.setItem('notif_sermons', document.getElementById('notif-sermons')?.checked||true);
-  localStorage.setItem('notif_streams', document.getElementById('notif-streams')?.checked||true);
-  localStorage.setItem('notif_inbox', document.getElementById('notif-inbox')?.checked||true);
+  ['notif-sermons','notif-streams','notif-inbox'].forEach(id=>{
+    const cb=document.getElementById(id);
+    if(!cb) return;
+    localStorage.setItem(id, cb.checked);
+    // Move knob and change track colour
+    const label=cb.closest('label');
+    if(!label) return;
+    const track=label.querySelector('span:nth-child(2)');
+    const knob=label.querySelector('span:nth-child(3)');
+    if(track) track.style.background=cb.checked?'var(--gold)':'var(--border)';
+    if(knob) knob.style.transform=cb.checked?'translateX(22px)':'translateX(0)';
+  });
 }
 function loadNotifPrefs() {
-  const s=localStorage.getItem('notif_sermons');
-  const st=localStorage.getItem('notif_streams');
-  const i=localStorage.getItem('notif_inbox');
-  if(s!==null&&document.getElementById('notif-sermons')) document.getElementById('notif-sermons').checked=s==='true';
-  if(st!==null&&document.getElementById('notif-streams')) document.getElementById('notif-streams').checked=st==='true';
-  if(i!==null&&document.getElementById('notif-inbox')) document.getElementById('notif-inbox').checked=i==='true';
+  ['notif-sermons','notif-streams','notif-inbox'].forEach(id=>{
+    const val=localStorage.getItem(id);
+    const cb=document.getElementById(id);
+    if(!cb) return;
+    cb.checked = val === null ? true : val === 'true';
+    const label=cb.closest('label');
+    if(!label) return;
+    const track=label.querySelector('span:nth-child(2)');
+    const knob=label.querySelector('span:nth-child(3)');
+    if(track) track.style.background=cb.checked?'var(--gold)':'var(--border)';
+    if(knob) knob.style.transform=cb.checked?'translateX(22px)':'translateX(0)';
+  });
 }
 
 // ── Apply saved font settings on load ──

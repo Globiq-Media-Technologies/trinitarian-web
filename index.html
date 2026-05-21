@@ -960,6 +960,20 @@ function postComment(){if(!currentSermon)return;const u=JSON.parse(localStorage.
 function lhSetFont(size,btn){document.querySelectorAll('.lhfs-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_size',size);const p=document.getElementById('lhfs-preview');if(p){p.style.fontSize=size+'px';p.style.lineHeight=size>=17?'2.1':size>=15?'1.8':'1.6';}const r=document.getElementById('rd-text');if(r)r.style.fontSize=size+'px';}
 function lhSetFontFamily(ff,btn){const fonts={'sans':"'DM Sans',sans-serif",'serif':'Georgia,serif','mono':'monospace'};document.querySelectorAll('.lhff-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_family',ff);const f=fonts[ff];const p=document.getElementById('lhfs-preview');if(p)p.style.fontFamily=f;const r=document.getElementById('rd-text');if(r)r.style.fontFamily=f;}
 function lhSetSpacing(spacing,btn){document.querySelectorAll('.lhsp-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_line_spacing',spacing);const p=document.getElementById('lhfs-preview');if(p)p.style.lineHeight=spacing;const r=document.getElementById('rd-text');if(r)r.style.lineHeight=spacing;}
+function saveLhNotifPref(){
+  ['lhs-notif-sermons','lhs-notif-streams'].forEach(id=>{
+    const cb=document.getElementById(id);
+    if(!cb) return;
+    localStorage.setItem(id, cb.checked);
+    const label=cb.closest('label');
+    if(!label) return;
+    const track=label.querySelector('span:nth-child(2)');
+    const knob=label.querySelector('span:nth-child(3)');
+    if(track) track.style.background=cb.checked?'#D4AF37':'rgba(212,175,55,0.2)';
+    if(knob) knob.style.transform=cb.checked?'translateX(22px)':'translateX(0)';
+  });
+}
+
 function lhSetLang(lang,btn){document.querySelectorAll('.lh-lang-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.borderWidth='1px';b.querySelector('div').style.color='#8fa3c0';});btn.style.background='rgba(212,175,55,0.12)';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.borderWidth='2px';btn.querySelector('div').style.color='#D4AF37';applyTranslations(lang);}
 
 async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>';}}
