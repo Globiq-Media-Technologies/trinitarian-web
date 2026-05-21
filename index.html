@@ -12,8 +12,6 @@
     /* Pages */
     .page{display:none;}
     .page{display:none;}.page.active{display:block;}
-    .lh-overlay{display:none;position:fixed;inset:0;background:#071528;z-index:200;overflow-y:auto;}
-    .lh-overlay.active{display:block;}
 
     /* Nav */
     nav{display:flex;justify-content:space-between;align-items:center;padding:14px 40px;border-bottom:1px solid rgba(212,175,55,0.2);position:sticky;top:0;background:#071528;z-index:100;}
@@ -496,7 +494,7 @@
 
 
 <!-- ══ LISTENER INBOX ══ -->
-<div id="page-lh-inbox" class="lh-overlay">
+<div id="page-lh-inbox" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="closeOverlay()" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Inbox</span>
@@ -514,7 +512,7 @@
 </div>
 
 <!-- ══ LISTENER NOTIFICATIONS ══ -->
-<div id="page-lh-notifications" class="lh-overlay">
+<div id="page-lh-notifications" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Notifications</span>
@@ -527,7 +525,7 @@
 </div>
 
 <!-- ══ LISTENER SETTINGS ══ -->
-<div id="page-lh-settings" class="lh-overlay">
+<div id="page-lh-settings" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="closeOverlay()" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
@@ -591,26 +589,23 @@
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div>
-        <div onclick="lhToggleNotif('lhs-notif-sermons',this)" id="lhs-notif-sermons-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
-          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        <div id="lhs-notif-sermons-track" onclick="lhToggleNotif('lhs-notif-sermons')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
+          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div>
-        <div onclick="lhToggleNotif('lhs-notif-streams',this)" id="lhs-notif-streams-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
-          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        <div id="lhs-notif-streams-track" onclick="lhToggleNotif('lhs-notif-streams')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
+          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
         <div><div style="color:#e8e8e8;font-size:14px;">Inbox Messages</div><div style="color:#8fa3c0;font-size:12px;">When you receive a message</div></div>
-        <div onclick="lhToggleNotif('lhs-notif-inbox',this)" id="lhs-notif-inbox-track" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;transition:background 0.3s;flex-shrink:0;">
-          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+        <div id="lhs-notif-inbox-track" onclick="lhToggleNotif('lhs-notif-inbox')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
+          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
-    </div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-sermons" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;"><div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="lhs-notif-streams" checked style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:#D4AF37;border-radius:24px;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
-      </div>
-
+    </div>
     <!-- Language -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Language</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
@@ -691,7 +686,7 @@
 </div>
 
 <!-- ══ DIRECT MESSAGE ══ -->
-<div id="page-lh-dm" class="lh-overlay">
+<div id="page-lh-dm" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="closeOverlay()" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Messages</span>
@@ -718,6 +713,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 
@@ -788,24 +784,14 @@ function goTo(page){
   if(page==='pastor'){window.open('https://trinitarian.app/pastor/index.html','_blank');return;}
   if(page==='privacy'){window.open('https://trinitarian.app/privacy/index.html','_blank');return;}
   if(page==='terms'){window.open('https://trinitarian.app/terms/index.html','_blank');return;}
-  // Close all overlays first
-  document.querySelectorAll('.lh-overlay').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-  // Check if this is an overlay page
-  const overlayPages=['lh-settings','lh-inbox','lh-notifications','lh-dm'];
-  if(overlayPages.includes(page)){
-    const el=document.getElementById('page-'+page);
-    if(el){el.classList.add('active');el.style.display='block';el.scrollTop=0;}
-    if(page==='lh-notifications')loadLhNotifications();
-    if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
-    if(page==='lh-inbox')loadLhInbox();
-    if(page==='lh-dm')loadDmPastors();
-    return;
-  }
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-
   if(page==='listener-home')initListenerHome();
+  if(page==='lh-notifications')loadLhNotifications();
+  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
+  if(page==='lh-inbox')loadLhInbox();
+  if(page==='lh-dm')loadDmPastors();
   window.location.hash=page==='home'?'':page;
 }
 
@@ -843,6 +829,7 @@ function applyTranslations(lang){
 
 async function initListenerHome(){
   applyTranslations(localStorage.getItem('lh_lang')||'en');
+  const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';
   lhAllSermons=[];lhCurrentCat='';lhCurrentType='all';
   const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){const el=document.getElementById('lh-username');if(el)el.textContent=u.display_name||'';if(['admin','moderator'].includes(u.role)){const bar=document.getElementById('lh-admin-bar');if(bar)bar.style.display='block';}}
@@ -915,11 +902,7 @@ function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){
 
 function lhShowSaved(){const el=document.getElementById('lh-sermons');el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};if(!saved.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">No saved sermons yet</p></div>';return;}el.innerHTML=saved.map(s=>'<div onclick="openSermonById(\''+s.id+'\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;"><div style="font-size:36px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">'+s.title+'</div><div style="color:#D4AF37;font-size:12px;">'+(s.pastor_name||'Verified Pastor')+'</div></div>').join('');}
 
-function closeOverlay(){
-  document.querySelectorAll('.lh-overlay').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-}
-
-function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');const lhNav=document.querySelector('.lh-bottom-nav');if(lhNav)lhNav.style.display='none';goTo('listener');}
+function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('listener');}
 function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});if(btn){btn.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}if(section==='sermons'){lhCurrentType='all';document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();}else if(section==='pastors'){lhCurrentType='pastors';lhShowPastors();}else if(section==='saved'){lhCurrentType='saved';lhShowSaved();}}
 
 let currentSermon=null,ptFontSz=15,ptIsNight=false;
@@ -929,7 +912,8 @@ let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
 function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
 
 function openSermon(s){
-  currentSermon=s;goTo('player');
+  currentSermon=s;const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
+  goTo('player');
   document.getElementById('player-title').textContent=s.title;
   document.getElementById('player-title2').textContent=s.title;
   document.getElementById('player-pastor').textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
@@ -999,31 +983,6 @@ function postComment(){if(!currentSermon)return;const u=JSON.parse(localStorage.
 function lhSetFont(size,btn){document.querySelectorAll('.lhfs-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_size',size);const p=document.getElementById('lhfs-preview');if(p){p.style.fontSize=size+'px';p.style.lineHeight=size>=17?'2.1':size>=15?'1.8':'1.6';}const r=document.getElementById('rd-text');if(r)r.style.fontSize=size+'px';}
 function lhSetFontFamily(ff,btn){const fonts={'sans':"'DM Sans',sans-serif",'serif':'Georgia,serif','mono':'monospace'};document.querySelectorAll('.lhff-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_font_family',ff);const f=fonts[ff];const p=document.getElementById('lhfs-preview');if(p)p.style.fontFamily=f;const r=document.getElementById('rd-text');if(r)r.style.fontFamily=f;}
 function lhSetSpacing(spacing,btn){document.querySelectorAll('.lhsp-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.color='#8fa3c0';});if(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.borderColor='rgba(212,175,55,0.3)';btn.style.color='#D4AF37';}localStorage.setItem('lh_line_spacing',spacing);const p=document.getElementById('lhfs-preview');if(p)p.style.lineHeight=spacing;const r=document.getElementById('rd-text');if(r)r.style.lineHeight=spacing;}
-function lhToggleNotif(id, trackEl){
-  const current = localStorage.getItem(id);
-  const newVal = current === 'false' ? true : (current === null ? false : !JSON.parse(current));
-  localStorage.setItem(id, newVal);
-  const track = document.getElementById(id+'-track');
-  const knob = document.getElementById(id+'-knob');
-  if(track) track.style.background = newVal ? '#D4AF37' : 'rgba(212,175,55,0.2)';
-  if(knob) knob.style.transform = newVal ? 'translateX(22px)' : 'translateX(0)';
-}
-
-function saveLhNotifPref(){
-  // kept for compatibility
-}
-
-function initLhNotifToggles(){
-  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
-    const val = localStorage.getItem(id);
-    const isOn = val === null ? true : val === 'true';
-    const track = document.getElementById(id+'-track');
-    const knob = document.getElementById(id+'-knob');
-    if(track) track.style.background = isOn ? '#D4AF37' : 'rgba(212,175,55,0.2)';
-    if(knob) knob.style.transform = isOn ? 'translateX(22px)' : 'translateX(0)';
-  });
-}
-
 function lhSetLang(lang,btn){document.querySelectorAll('.lh-lang-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='rgba(212,175,55,0.1)';b.style.borderWidth='1px';b.querySelector('div').style.color='#8fa3c0';});btn.style.background='rgba(212,175,55,0.12)';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.borderWidth='2px';btn.querySelector('div').style.color='#D4AF37';applyTranslations(lang);}
 
 async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>';}}
@@ -1042,6 +1001,27 @@ function showLhForgotPwd(){goTo('listener');setTimeout(()=>llShow('forgot'),200)
 async function lhDeleteAccount(){if(!confirm('Delete your account?\n\nThis permanently removes all your data.'))return;try{await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});alert('Account deleted.');localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('home');}catch(e){alert('Deletion failed. Email support@trinitarian.app to request deletion.');}}
 
 async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
+
+function lhToggleNotif(id){
+  const current=localStorage.getItem(id);
+  const newVal=current===null?false:current!=='true';
+  localStorage.setItem(id,newVal);
+  const track=document.getElementById(id+'-track');
+  const knob=document.getElementById(id+'-knob');
+  if(track)track.style.background=newVal?'#D4AF37':'rgba(212,175,55,0.2)';
+  if(knob)knob.style.transform=newVal?'translateX(22px)':'translateX(0)';
+}
+
+function initLhNotifToggles(){
+  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
+    const val=localStorage.getItem(id);
+    const isOn=val===null?true:val==='true';
+    const track=document.getElementById(id+'-track');
+    const knob=document.getElementById(id+'-knob');
+    if(track)track.style.background=isOn?'#D4AF37':'rgba(212,175,55,0.2)';
+    if(knob)knob.style.transform=isOn?'translateX(22px)':'translateX(0)';
+  });
+}
 
 </script>
 </body>
