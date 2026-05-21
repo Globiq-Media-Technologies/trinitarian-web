@@ -542,16 +542,33 @@
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
       <div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Font Size</div>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button onclick="lhSetFont(13,this)" class="lhfs-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;">Small</button>
-        <button onclick="lhSetFont(15,this)" class="lhfs-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:12px;">Medium</button>
-        <button onclick="lhSetFont(17,this)" class="lhfs-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;">Large</button>
-        <button onclick="lhSetFont(20,this)" class="lhfs-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:14px;">XL</button>
+        <button onclick="lhSetFont(13,this)" class="lhfs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;text-align:center;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;">Small</div>
+        </button>
+        <button onclick="lhSetFont(15,this)" class="lhfs-btn active-lhfs" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;text-align:center;">
+          <div style="font-size:16px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;">Medium</div>
+        </button>
+        <button onclick="lhSetFont(17,this)" class="lhfs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;text-align:center;">
+          <div style="font-size:19px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;">Large</div>
+        </button>
+        <button onclick="lhSetFont(20,this)" class="lhfs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;text-align:center;">
+          <div style="font-size:22px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;">XL</div>
+        </button>
       </div>
       <div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Font Style</div>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button onclick="lhSetFontFamily('sans',this)" class="lhff-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:13px;font-family:sans-serif;">Clean</button>
-        <button onclick="lhSetFontFamily('serif',this)" class="lhff-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;font-family:Georgia,serif;">Classic</button>
-        <button onclick="lhSetFontFamily('mono',this)" class="lhff-btn" style="flex:1;padding:10px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;font-family:monospace;">Mono</button>
+        <button onclick="lhSetFontFamily('sans',this)" class="lhff-btn active-lhff" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-family:sans-serif;text-align:center;">
+          <div style="font-size:15px;margin-bottom:3px;">Aa</div>
+          <div style="font-size:10px;">Sans-serif</div>
+        </button>
+        <button onclick="lhSetFontFamily('serif',this)" class="lhff-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-family:Georgia,serif;text-align:center;">
+          <div style="font-size:15px;margin-bottom:3px;">Aa</div>
+          <div style="font-size:10px;">Serif</div>
+        </button>
+        <button onclick="lhSetFontFamily('mono',this)" class="lhff-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-family:monospace;text-align:center;">
+          <div style="font-size:15px;margin-bottom:3px;">Aa</div>
+          <div style="font-size:10px;">Monospace</div>
+        </button>
       </div>
       <div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Line Spacing</div>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
