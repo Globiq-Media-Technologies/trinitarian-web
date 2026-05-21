@@ -410,6 +410,18 @@
         style="resize:vertical;min-height:120px;"></textarea>
     </div>
 
+    <!-- Optional documents -->
+    <div style="margin-bottom:20px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">
+        Ordination Certificate <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional — PDF, JPG or PNG)</span>
+      </label>
+      <div style="background:var(--navy2);border:2px dashed rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;" onclick="document.getElementById('cert-file').click()">
+        <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="updateCertLabel(this)"/>
+        <div id="cert-label" style="color:var(--text-muted);font-size:13px;">📎 Click to attach document</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Uploading a certificate speeds up verification but is not required.</p>
+    </div>
+
     <button onclick="handleApply()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:12px;">
       Submit Application
     </button>
@@ -1163,6 +1175,14 @@ function prefillApply() {
   if (emailEl && !emailEl.value) emailEl.value = user.email || '';
 }
 
+function updateCertLabel(input) {
+  const label = document.getElementById('cert-label');
+  if (input.files && input.files[0]) {
+    label.textContent = '✅ ' + input.files[0].name;
+    label.style.color = '#40c96a';
+  }
+}
+
 async function handleApply() {
   const denom = document.getElementById('apply-denom').value;
   const denomOther = document.getElementById('apply-denom-other').value.trim();
@@ -1178,20 +1198,40 @@ async function handleApply() {
     return;
   }
   try {
-    const res = await fetch(API + '/api/pastors/apply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeToken },
-      body: JSON.stringify({
-        full_name: document.getElementById('apply-name').value.trim(),
-        church_name: document.getElementById('apply-church').value.trim(),
-        denomination: finalDenom,
-        country: document.getElementById('apply-country').value.trim(),
-        city: document.getElementById('apply-city').value.trim(),
-        ordination_body: (document.getElementById('apply-ordination')?.value || '').trim(),
-        years_in_ministry: parseInt(document.getElementById('apply-years')?.value) || null,
-        statement
-      })
-    });
+    const certFile = document.getElementById('cert-file')?.files?.[0];
+      let res;
+      if (certFile) {
+        const fd = new FormData();
+        fd.append('full_name', document.getElementById('apply-name').value.trim());
+        fd.append('church_name', document.getElementById('apply-church').value.trim());
+        fd.append('denomination', finalDenom);
+        fd.append('country', document.getElementById('apply-country').value.trim());
+        fd.append('city', document.getElementById('apply-city').value.trim());
+        fd.append('ordination_body', (document.getElementById('apply-ordination')?.value || '').trim());
+        fd.append('years_in_ministry', parseInt(document.getElementById('apply-years')?.value) || '');
+        fd.append('statement', statement);
+        fd.append('certificate', certFile);
+        res = await fetch(API + '/api/pastors/apply', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + activeToken },
+          body: fd
+        });
+      } else {
+        res = await fetch(API + '/api/pastors/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeToken },
+          body: JSON.stringify({
+            full_name: document.getElementById('apply-name').value.trim(),
+            church_name: document.getElementById('apply-church').value.trim(),
+            denomination: finalDenom,
+            country: document.getElementById('apply-country').value.trim(),
+            city: document.getElementById('apply-city').value.trim(),
+            ordination_body: (document.getElementById('apply-ordination')?.value || '').trim(),
+            years_in_ministry: parseInt(document.getElementById('apply-years')?.value) || null,
+            statement
+          })
+        });
+      }
     const data = await res.json();
     if (data.id || data.status || data.message) {
       if (data.auto_verified) {
