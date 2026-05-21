@@ -591,19 +591,19 @@
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div>
         <div id="lhs-notif-sermons-track" onclick="lhToggleNotif('lhs-notif-sermons')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div>
         <div id="lhs-notif-streams-track" onclick="lhToggleNotif('lhs-notif-streams')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
         <div><div style="color:#e8e8e8;font-size:14px;">Inbox Messages</div><div style="color:#8fa3c0;font-size:12px;">When you receive a message</div></div>
         <div id="lhs-notif-inbox-track" onclick="lhToggleNotif('lhs-notif-inbox')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:26px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
+          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
         </div>
       </div>
     </div>
@@ -1021,6 +1021,27 @@ function initLhNotifToggles(){
     const knob=document.getElementById(id+'-knob');
     if(track)track.style.background=isOn?'#D4AF37':'rgba(212,175,55,0.2)';
     if(knob)knob.style.transform=isOn?'translateX(22px)':'translateX(0)';
+  });
+}
+
+function lhToggleNotif(id){
+  const val=localStorage.getItem(id);
+  const newVal=val===null?false:val!=='true';
+  localStorage.setItem(id,newVal);
+  const track=document.getElementById(id+'-track');
+  const knob=document.getElementById(id+'-knob');
+  if(track)track.style.background=newVal?'#D4AF37':'rgba(212,175,55,0.2)';
+  if(knob)knob.style.transform=newVal?'translateX(0)':'translateX(-22px)';
+}
+
+function initLhNotifToggles(){
+  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
+    const val=localStorage.getItem(id);
+    const isOn=val===null?true:val==='true';
+    const track=document.getElementById(id+'-track');
+    const knob=document.getElementById(id+'-knob');
+    if(track)track.style.background=isOn?'#D4AF37':'rgba(212,175,55,0.2)';
+    if(knob)knob.style.transform=isOn?'translateX(0)':'translateX(-22px)';
   });
 }
 
