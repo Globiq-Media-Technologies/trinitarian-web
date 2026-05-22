@@ -966,12 +966,18 @@
     <!-- INBOX -->
     <div id="page-inbox" class="page">
       <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div><h1 class="page-title">Inbox</h1><p class="page-sub">Messages from the Trinitarian team</p></div>
+        <div><h1 class="page-title">Inbox</h1><p class="page-sub">Notifications and support messages</p></div>
         <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <!-- Tabs: Notifications | Support Messages (admin only) -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;" id="inbox-tabs">
+        <button onclick="showInboxTab('notifications',this)" class="btn btn-gold btn-sm" id="tab-notifications">Notifications</button>
+        <button onclick="showInboxTab('support',this)" class="btn btn-ghost btn-sm" id="tab-support" style="display:none;">📨 Support Messages</button>
       </div>
       <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <div id="inbox-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
       </div>
+      <div id="support-list" style="display:none;background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;"></div>
       <div style="margin-top:20px;">
         <span class="section-label">📨 Send Message to Admin</span>
         <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:10px;">
@@ -1337,6 +1343,8 @@ function initDashboard() {
     const el=document.getElementById(id);
     if(el) el.style.display=isAdmin?'flex':'none';
   });
+  const supportTab=document.getElementById('tab-support');
+  if(supportTab) supportTab.style.display=isAdmin?'block':'none';
   loadOverview();
 }
 
@@ -1787,6 +1795,52 @@ function clearSermonSearch() { document.getElementById('sermon-search').value=''
 function renderFilteredSermons(list) { renderSermonList(list, 'all-sermons'); }
 
 // ── Inbox ──
+function showInboxTab(tab, btn) {
+  document.querySelectorAll('#inbox-tabs .btn').forEach(b => { b.className = 'btn btn-ghost btn-sm'; });
+  if (btn) btn.className = 'btn btn-gold btn-sm';
+  document.getElementById('inbox-list').style.display = tab === 'notifications' ? 'block' : 'none';
+  document.getElementById('support-list').style.display = tab === 'support' ? 'block' : 'none';
+  if (tab === 'support') loadSupportMessages();
+}
+
+async function loadSupportMessages() {
+  const el = document.getElementById('support-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const data = await api('/api/admin/support');
+    const msgs = data?.messages || [];
+    if (!msgs.length) {
+      el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-muted);">No support messages yet</div>';
+      return;
+    }
+    el.innerHTML = msgs.map(m => `
+      <div onclick="markSupportRead('${m.id}',this)" style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;background:${m.is_read ? 'transparent' : 'rgba(212,175,55,0.03)'}">
+        <div style="font-size:20px;flex-shrink:0;">📩</div>
+        <div style="flex:1;">
+          <div style="color:${m.is_read ? 'var(--text-sec)' : 'var(--white)'};font-weight:${m.is_read ? '400' : '600'};font-size:14px;margin-bottom:2px;">${m.display_name || m.email || 'Listener'}</div>
+          <div style="color:var(--gold);font-size:12px;margin-bottom:4px;">${m.subject || 'Support Request'}</div>
+          <div style="color:var(--text-muted);font-size:13px;line-height:1.5;">${m.body}</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        ${!m.is_read ? '<div style="width:8px;height:8px;border-radius:4px;background:var(--gold);flex-shrink:0;margin-top:4px;"></div>' : ''}
+      </div>
+    `).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="padding:20px;color:var(--text-muted);">Could not load support messages</div>';
+  }
+}
+
+async function markSupportRead(id, row) {
+  try {
+    await api('/api/admin/support/' + id + '/read', 'PUT');
+    row.style.background = 'transparent';
+    const dot = row.querySelector('[style*="border-radius:4px"]');
+    if (dot) dot.remove();
+    const name = row.querySelector('div[style*="font-weight"]');
+    if (name) { name.style.fontWeight = '400'; name.style.color = 'var(--text-sec)'; }
+  } catch(e) {}
+}
+
 async function loadInbox() {
   try {
     const data = await api('/api/notifications');

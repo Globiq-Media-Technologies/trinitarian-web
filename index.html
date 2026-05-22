@@ -506,8 +506,10 @@
     </div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:20px;">
       <div style="color:#D4AF37;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Send Message to Support</div>
-      <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:10px;"></textarea>
-      <button onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
+      <input type="text" id="lh-inbox-subject" placeholder="Subject (optional)" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:10px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:8px;"/>
+    <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:8px;"></textarea>
+    <div id="lh-inbox-ok" style="display:none;color:#40c96a;font-size:13px;margin-bottom:8px;"></div>
+      <button id="lh-inbox-send-btn" onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
     </div>
   </div>
 </div>
