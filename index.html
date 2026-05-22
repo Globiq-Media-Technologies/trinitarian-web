@@ -467,17 +467,17 @@
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
       <div style="text-align:center;margin-bottom:12px;"><span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;">⛶ <span>Tap for fullscreen reading &amp; video · <b>A-</b> / <b>A+</b> resize text</span></span></div>
-    <div id="reading-wrap" style="background:transparent;border-radius:16px;padding:0;min-height:400px;">
+    <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
         <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
-          <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
-          <button onclick="rdFontSize(1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A+</button>
+          <button onclick="rdFontSize(-1)" style="background:#e0e0e0;border:1px solid #bbb;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;">A-</button>
+          <button onclick="rdFontSize(1)" style="background:#e0e0e0;border:1px solid #bbb;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;">A+</button>
           <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
-          <button id="rd-hl-btn" onclick="rdHighlight()" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);color:#D4AF37;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
+          <button onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
           <button onclick="rdBookmark()" id="rd-bookmark-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🔖 Bookmark</button>
           <span id="rd-bookmark-ok" style="color:green;font-size:12px;display:none;">✓ Bookmarked!</span>
         </div>
-        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;background:#fff;border-radius:12px;padding:24px;margin-top:8px;"></div>
-        <p id="rd-empty" style="color:#666;text-align:center;padding:20px;background:#fff;border-radius:12px;">No transcript available for this sermon.</p>
+        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;"></div>
+        <p id="rd-empty" style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>
       </div>
     </div>
 
@@ -937,42 +937,29 @@ function playerShowTab(tab,evt){
 
 let rdFontSz=16,rdIsNight=false;
 function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';rdEmpty.style.display='none';}else{rdText.style.display='none';rdEmpty.style.display='block';}const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
-function rdFontSize(d){rdFontSz=Math.max(12,Math.min(24,rdFontSz+d));document.getElementById('rd-text').style.fontSize=rdFontSz+'px';}
+function rdFontSize(d){rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));['rd-text','rd-empty'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});}
 function rdToggleNight(){
   rdIsNight=!rdIsNight;
-  const rdTextEl=document.getElementById('rd-text');
-  if(rdTextEl){rdTextEl.style.background=rdIsNight?'#1a1a2e':'#fff';}
-  const rdEmptyEl=document.getElementById('rd-empty');
-  if(rdEmptyEl){rdEmptyEl.style.background=rdIsNight?'#1a1a2e':'#fff';}
+  const wrap=document.getElementById('reading-wrap');
+  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
   const txt=document.getElementById('rd-text');
-  if(txt){txt.style.color=rdIsNight?'#e8e8e8':'#222';}
+  if(txt)txt.style.color=rdIsNight?'#e8e8e8':'#222';
   const nightBtn=document.getElementById('rd-night-btn');
   if(nightBtn){nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';nightBtn.style.background=rdIsNight?'#333':'#f0f0f0';nightBtn.style.color=rdIsNight?'#fff':'#333';}
-  const bookmarkBtn=document.getElementById('rd-bookmark-btn');
-  if(bookmarkBtn){bookmarkBtn.style.background=rdIsNight?'#333':'#f0f0f0';bookmarkBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
-  const hlBtn=document.querySelector('#ptab-reading button[onclick="rdHighlight()"]');
-  if(hlBtn){hlBtn.style.background=rdIsNight?'#333':'#f0f0f0';hlBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
+  const bmBtn=document.getElementById('rd-bookmark-btn');
+  if(bmBtn){bmBtn.style.background=rdIsNight?'#333':'#f0f0f0';bmBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
 }
 function rdHighlight(){
-  // If clicking highlight with no selection, remove all highlights
   const sel=window.getSelection();
   if(!sel||sel.toString().length===0){
     const rdText=document.getElementById('rd-text');
-    if(!rdText){showRdToast('Select text first, then tap Highlight');return;}
+    if(!rdText)return;
     const highlights=rdText.querySelectorAll('span.rd-hl');
     if(highlights.length>0){
-      highlights.forEach(span=>{
-        const parent=span.parentNode;
-        while(span.firstChild)parent.insertBefore(span.firstChild,span);
-        parent.removeChild(span);
-      });
+      highlights.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
       rdText.normalize();
-      showRdToast('All highlights removed');
-      const hlBtn=document.getElementById('rd-hl-btn');
-      if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.background='#f0f0f0';hlBtn.style.color='#333';}
-    }else{
-      showRdToast('Select text first, then tap Highlight');
-    }
+      showRdToast('All highlights cleared');
+    }else{showRdToast('Select text first, then tap Highlight');}
     return;
   }
   try{
@@ -980,24 +967,13 @@ function rdHighlight(){
     const span=document.createElement('span');
     span.className='rd-hl';
     span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
-    span.title='Tap to remove this highlight';
-    span.onclick=function(){
-      const p=this.parentNode;
-      while(this.firstChild)p.insertBefore(this.firstChild,this);
-      p.removeChild(this);
-      p.normalize();
-      showRdToast('Highlight removed');
-    };
+    span.title='Tap to remove';
+    span.onclick=function(){const p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();showRdToast('Highlight removed');};
     range.surroundContents(span);
     sel.removeAllRanges();
-    const hlBtn=document.getElementById('rd-hl-btn');
-    if(hlBtn){hlBtn.textContent='🖊 Clear All';hlBtn.style.background='#FFD700';hlBtn.style.color='#000';}
-    showRdToast('Highlighted — tap again with no selection to clear all');
-  }catch(e){
-    showRdToast('Select a single continuous block of text to highlight');
-  }
+    showRdToast('Highlighted — tap highlight or tap button with no selection to clear all');
+  }catch(e){showRdToast('Select a single block of text to highlight');}
 }
-
 function showRdToast(msg){
   const t=document.createElement('div');
   t.textContent=msg;
@@ -1092,7 +1068,7 @@ function lhToggleNotif(id){
   if(knob)knob.style.transform=newVal?'translateX(0)':'translateX(-22px)';
 }
 function initLhNotifToggles(){
-  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
+  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(function(id){
     const val=localStorage.getItem(id);
     const isOn=val===null?true:val==='true';
     const track=document.getElementById(id+'-track');
