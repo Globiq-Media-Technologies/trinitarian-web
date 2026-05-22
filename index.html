@@ -467,17 +467,17 @@
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
       <div style="text-align:center;margin-bottom:12px;"><span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;">⛶ <span>Tap for fullscreen reading &amp; video · <b>A-</b> / <b>A+</b> resize text</span></span></div>
-    <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
+    <div id="reading-wrap" style="background:transparent;border-radius:16px;padding:0;min-height:400px;">
         <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
           <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
           <button onclick="rdFontSize(1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A+</button>
           <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
-          <button id="rd-hl-btn" onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
+          <button id="rd-hl-btn" onclick="rdHighlight()" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);color:#D4AF37;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
           <button onclick="rdBookmark()" id="rd-bookmark-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🔖 Bookmark</button>
           <span id="rd-bookmark-ok" style="color:green;font-size:12px;display:none;">✓ Bookmarked!</span>
         </div>
-        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;"></div>
-        <p id="rd-empty" style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>
+        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;background:#fff;border-radius:12px;padding:24px;margin-top:8px;"></div>
+        <p id="rd-empty" style="color:#666;text-align:center;padding:20px;background:#fff;border-radius:12px;">No transcript available for this sermon.</p>
       </div>
     </div>
 
@@ -940,8 +940,10 @@ function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.tran
 function rdFontSize(d){rdFontSz=Math.max(12,Math.min(24,rdFontSz+d));document.getElementById('rd-text').style.fontSize=rdFontSz+'px';}
 function rdToggleNight(){
   rdIsNight=!rdIsNight;
-  const wrap=document.getElementById('reading-wrap');
-  if(wrap){wrap.style.background=rdIsNight?'#1a1a2e':'#fff';}
+  const rdTextEl=document.getElementById('rd-text');
+  if(rdTextEl){rdTextEl.style.background=rdIsNight?'#1a1a2e':'#fff';}
+  const rdEmptyEl=document.getElementById('rd-empty');
+  if(rdEmptyEl){rdEmptyEl.style.background=rdIsNight?'#1a1a2e':'#fff';}
   const txt=document.getElementById('rd-text');
   if(txt){txt.style.color=rdIsNight?'#e8e8e8':'#222';}
   const nightBtn=document.getElementById('rd-night-btn');
