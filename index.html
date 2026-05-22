@@ -466,23 +466,53 @@
     </div>
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
-      <div style="text-align:center;margin-bottom:12px;"><span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;">⛶ <span>Tap for fullscreen reading &amp; video · <b>A-</b> / <b>A+</b> resize text</span></span></div>
-    <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
-        <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
-          <button onclick="rdFontSize(-1)" style="background:#e0e0e0;border:1px solid #bbb;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;">A-</button>
-          <button onclick="rdFontSize(1)" style="background:#e0e0e0;border:1px solid #bbb;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;">A+</button>
-          <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
-          <button onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
-          <button onclick="rdBookmark()" id="rd-bookmark-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🔖 Bookmark</button>
-          <span id="rd-bookmark-ok" style="color:green;font-size:12px;display:none;">✓ Bookmarked!</span>
-        </div>
-        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;"></div>
-        <p id="rd-empty" style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>
+
+      <!-- Toolbar -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:#0d2142;border-radius:12px;align-items:center;">
+
+        <!-- Font Size -->
+        <button onclick="rdFontSize(-1)"
+          style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:15px;font-weight:700;min-width:40px;">A-</button>
+        <span id="rd-size-label" style="color:#8fa3c0;font-size:11px;min-width:26px;text-align:center;">16</span>
+        <button onclick="rdFontSize(1)"
+          style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:15px;font-weight:700;min-width:40px;">A+</button>
+
+        <!-- Divider -->
+        <span style="color:rgba(212,175,55,0.2);font-size:18px;">|</span>
+
+        <!-- Font Style -->
+        <button id="rd-font-sans" onclick="rdSetFont('sans')"
+          style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:sans-serif;">Sans</button>
+        <button id="rd-font-serif" onclick="rdSetFont('serif')"
+          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:Georgia,serif;">Serif</button>
+
+        <!-- Divider -->
+        <span style="color:rgba(212,175,55,0.2);font-size:18px;">|</span>
+
+        <!-- Night -->
+        <button id="rd-night-btn" onclick="rdToggleNight()"
+          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🌙 Night</button>
+
+        <!-- Highlight -->
+        <button id="rd-hl-btn" onclick="rdHighlight()"
+          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🖊 Highlight</button>
+
+        <!-- Bookmark -->
+        <button id="rd-bookmark-btn" onclick="rdBookmark()"
+          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🔖 Bookmark</button>
+
       </div>
+
+      <!-- Reading area -->
+      <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:28px;min-height:300px;">
+        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
+        <p id="rd-empty" style="font-size:16px;color:#666;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
+      </div>
+
     </div>
 
     <!-- Comments tab -->
-    <div id="ptab-comments" style="display:none;">
+    <div  style="display:none;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
@@ -936,53 +966,7 @@ function playerShowTab(tab,evt){
 }
 
 let rdFontSz=16,rdIsNight=false;
-function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';rdEmpty.style.display='none';}else{rdText.style.display='none';rdEmpty.style.display='block';}const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
-function rdFontSize(d){rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));['rd-text','rd-empty'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});}
-function rdToggleNight(){
-  rdIsNight=!rdIsNight;
-  const wrap=document.getElementById('reading-wrap');
-  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
-  const txt=document.getElementById('rd-text');
-  if(txt)txt.style.color=rdIsNight?'#e8e8e8':'#222';
-  const nightBtn=document.getElementById('rd-night-btn');
-  if(nightBtn){nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';nightBtn.style.background=rdIsNight?'#333':'#f0f0f0';nightBtn.style.color=rdIsNight?'#fff':'#333';}
-  const bmBtn=document.getElementById('rd-bookmark-btn');
-  if(bmBtn){bmBtn.style.background=rdIsNight?'#333':'#f0f0f0';bmBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
-}
-function rdHighlight(){
-  const sel=window.getSelection();
-  if(!sel||sel.toString().length===0){
-    const rdText=document.getElementById('rd-text');
-    if(!rdText)return;
-    const highlights=rdText.querySelectorAll('span.rd-hl');
-    if(highlights.length>0){
-      highlights.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
-      rdText.normalize();
-      showRdToast('All highlights cleared');
-    }else{showRdToast('Select text first, then tap Highlight');}
-    return;
-  }
-  try{
-    const range=sel.getRangeAt(0);
-    const span=document.createElement('span');
-    span.className='rd-hl';
-    span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
-    span.title='Tap to remove';
-    const removeHL=function(){const p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();showRdToast('Highlight removed');};
-    span.onclick=removeHL;
-    span.ontouchend=function(e){e.preventDefault();removeHL.call(this);};
-    range.surroundContents(span);
-    sel.removeAllRanges();
-    showRdToast('Highlighted — tap highlight or tap button with no selection to clear all');
-  }catch(e){showRdToast('Select a single block of text to highlight');}
-}
-function showRdToast(msg){
-  const t=document.createElement('div');
-  t.textContent=msg;
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;max-width:90%;text-align:center;';
-  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
-}
-function rdBookmark(){if(!currentSermon)return;const idx=bookmarks.indexOf(currentSermon.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));const bm=bookmarks.includes(currentSermon.id);const btn=document.getElementById('rd-bookmark-btn');if(btn){btn.style.background=bm?'#D4AF37':'#f0f0f0';btn.style.color=bm?'#071528':'#333';}const ok=document.getElementById('rd-bookmark-ok');if(ok){ok.style.display=bm?'inline':'none';setTimeout(()=>ok.style.display='none',2000);}}
+
 
 function playerFullscreen(){
   const overlay=document.createElement('div');overlay.id='fs-overlay';overlay.style.cssText='position:fixed;inset:0;background:#071528;z-index:99999;overflow-y:auto;';
@@ -1078,6 +1062,168 @@ function initLhNotifToggles(){
     if(track)track.style.background=isOn?'#D4AF37':'rgba(212,175,55,0.2)';
     if(knob)knob.style.transform=isOn?'translateX(0)':'translateX(-22px)';
   });
+}
+
+let rdFontSz=16;let rdIsNight=false;let rdFontFamily='serif';
+
+function rdFontSize(d){
+  rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));
+  const txt=document.getElementById('rd-text');
+  const empty=document.getElementById('rd-empty');
+  if(txt)txt.style.fontSize=rdFontSz+'px';
+  if(empty)empty.style.fontSize=rdFontSz+'px';
+  const lbl=document.getElementById('rd-size-label');
+  if(lbl)lbl.textContent=rdFontSz;
+}
+
+function rdSetFont(ff){
+  rdFontFamily=ff;
+  const fonts={sans:"system-ui,sans-serif",serif:"Georgia,serif"};
+  const txt=document.getElementById('rd-text');
+  if(txt)txt.style.fontFamily=fonts[ff];
+  // Update button states
+  ['sans','serif'].forEach(f=>{
+    const btn=document.getElementById('rd-font-'+f);
+    if(!btn)return;
+    if(f===ff){
+      btn.style.background='rgba(212,175,55,0.18)';
+      btn.style.borderColor='rgba(212,175,55,0.5)';
+      btn.style.color='#D4AF37';
+    }else{
+      btn.style.background='rgba(212,175,55,0.05)';
+      btn.style.borderColor='rgba(212,175,55,0.15)';
+      btn.style.color='#8fa3c0';
+    }
+  });
+}
+
+function rdToggleNight(){
+  rdIsNight=!rdIsNight;
+  const wrap=document.getElementById('reading-wrap');
+  const txt=document.getElementById('rd-text');
+  const empty=document.getElementById('rd-empty');
+  const nightBtn=document.getElementById('rd-night-btn');
+  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
+  if(txt)txt.style.color=rdIsNight?'#e0e0e0':'#222';
+  if(empty)empty.style.color=rdIsNight?'#8fa3c0':'#666';
+  if(nightBtn){
+    nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';
+    nightBtn.style.background=rdIsNight?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
+    nightBtn.style.borderColor=rdIsNight?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
+    nightBtn.style.color=rdIsNight?'#D4AF37':'#8fa3c0';
+  }
+  // Also update bookmark button in night
+  const bmBtn=document.getElementById('rd-bookmark-btn');
+  if(bmBtn&&!bookmarks.includes(currentSermon?.id)){
+    bmBtn.style.color=rdIsNight?'#b0c4d8':'#8fa3c0';
+  }
+}
+
+function rdHighlight(){
+  const sel=window.getSelection();
+  // No selection = clear all highlights
+  if(!sel||sel.toString().length===0){
+    const rdText=document.getElementById('rd-text');
+    if(!rdText){showRdToast('Select text first, then tap Highlight');return;}
+    const hls=rdText.querySelectorAll('span.rd-hl');
+    if(hls.length>0){
+      hls.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
+      rdText.normalize();
+      const hlBtn=document.getElementById('rd-hl-btn');
+      if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.color='#8fa3c0';}
+      showRdToast('All highlights cleared');
+    }else{
+      showRdToast('Select text first, then tap Highlight');
+    }
+    return;
+  }
+  // Apply highlight
+  try{
+    const range=sel.getRangeAt(0);
+    const span=document.createElement('span');
+    span.className='rd-hl';
+    span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
+    span.title='Tap to remove this highlight';
+    // Remove on click (desktop) and touch (mobile)
+    function removeThis(){
+      const p=this.parentNode;
+      while(this.firstChild)p.insertBefore(this.firstChild,this);
+      p.removeChild(this);p.normalize();
+      showRdToast('Highlight removed');
+    }
+    span.addEventListener('click',removeThis);
+    span.addEventListener('touchend',function(e){e.preventDefault();removeThis.call(this);});
+    range.surroundContents(span);
+    sel.removeAllRanges();
+    const hlBtn=document.getElementById('rd-hl-btn');
+    if(hlBtn){hlBtn.textContent='🖊 Clear All';hlBtn.style.color='#D4AF37';}
+    showRdToast('Tap highlighted text to remove · Tap button to clear all');
+  }catch(e){
+    showRdToast('Select a single block of text to highlight');
+  }
+}
+
+function rdBookmark(){
+  if(!currentSermon)return;
+  const idx=bookmarks.indexOf(currentSermon.id);
+  if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}
+  localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
+  const bm=bookmarks.includes(currentSermon.id);
+  const btn=document.getElementById('rd-bookmark-btn');
+  if(btn){
+    btn.style.background=bm?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
+    btn.style.borderColor=bm?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
+    btn.style.color=bm?'#D4AF37':'#8fa3c0';
+    btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';
+  }
+  showRdToast(bm?'✓ Bookmarked':'Bookmark removed');
+}
+
+function loadReadingMode(){
+  if(!currentSermon)return;
+  const txt=currentSermon.transcript||'';
+  const rdText=document.getElementById('rd-text');
+  const rdEmpty=document.getElementById('rd-empty');
+  if(txt){
+    rdText.innerHTML=txt;
+    rdText.style.display='block';
+    rdEmpty.style.display='none';
+  }else{
+    rdText.style.display='none';
+    rdEmpty.style.display='block';
+  }
+  // Restore font size and family
+  rdText.style.fontSize=rdFontSz+'px';
+  rdEmpty.style.fontSize=rdFontSz+'px';
+  const fonts={sans:"system-ui,sans-serif",serif:"Georgia,serif"};
+  rdText.style.fontFamily=fonts[rdFontFamily]||'Georgia,serif';
+  // Restore bookmark state
+  const bm=bookmarks.includes(currentSermon.id);
+  const btn=document.getElementById('rd-bookmark-btn');
+  if(btn){
+    btn.style.background=bm?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
+    btn.style.borderColor=bm?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
+    btn.style.color=bm?'#D4AF37':'#8fa3c0';
+    btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';
+  }
+  // Reset night state visual
+  const wrap=document.getElementById('reading-wrap');
+  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
+  // Reset highlight btn
+  const hlBtn=document.getElementById('rd-hl-btn');
+  if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.color='#8fa3c0';}
+  // Init font label
+  const lbl=document.getElementById('rd-size-label');
+  if(lbl)lbl.textContent=rdFontSz;
+}
+
+function showRdToast(msg){
+  document.querySelectorAll('.rd-toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='rd-toast';
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#071528;border:1px solid rgba(212,175,55,0.4);color:#D4AF37;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;max-width:90%;text-align:center;';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
 }
 
 </script>
