@@ -1015,7 +1015,7 @@ function playerFullscreen(){
 
   var fSz=rdFontSz, fNight=rdIsNight, fFam=rdFont;
 
-  function makeBtn(label,onclick,active){
+  var makeBtn=function(label,onclick,active){
     var b=document.createElement('button');
     b.textContent=label;
     b.style.cssText=active
@@ -1023,7 +1023,7 @@ function playerFullscreen(){
       :'background:#f5f5f5;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;';
     b.onclick=onclick;
     return b;
-  }
+  };
 
   var content_div=document.createElement('div');
   content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#fff')+';border-radius:12px;padding:24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#222')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;';
