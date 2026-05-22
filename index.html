@@ -106,6 +106,10 @@
   </div>
 </nav>
 
+;display:inline-block;line-height:1;">Pastor Login</span>
+  </div>
+</nav>
+
 <!-- ══ HOME ══ -->
 <div id="page-home" class="page active">
   <section class="hero">
@@ -742,7 +746,9 @@
 
 
 
+
 <script>
+
 const API='https://trinitarian-backend-production.up.railway.app';
 
 function llShow(panel){['login','register','forgot'].forEach(p=>{const el=document.getElementById('ll-'+p);if(el)el.style.display='none';});const show=document.getElementById('ll-'+panel);if(show)show.style.display='block';}
@@ -965,7 +971,7 @@ function playerShowTab(tab,evt){
   if(tab==='reading')loadReadingMode();
 }
 
-let rdFontSz=16,rdIsNight=false;
+let rdFontSz=16,rdIsNight=false,rdFont='serif';
 
 
 function playerFullscreen(){
@@ -1064,159 +1070,8 @@ function initLhNotifToggles(){
   });
 }
 
-let rdFontSz=16;let rdIsNight=false;let rdFontFamily='serif';
 
-function rdFontSize(d){
-  rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));
-  const txt=document.getElementById('rd-text');
-  const empty=document.getElementById('rd-empty');
-  if(txt)txt.style.fontSize=rdFontSz+'px';
-  if(empty)empty.style.fontSize=rdFontSz+'px';
-  const lbl=document.getElementById('rd-size-label');
-  if(lbl)lbl.textContent=rdFontSz;
-}
 
-function rdSetFont(ff){
-  rdFontFamily=ff;
-  const fonts={sans:"system-ui,sans-serif",serif:"Georgia,serif"};
-  const txt=document.getElementById('rd-text');
-  if(txt)txt.style.fontFamily=fonts[ff];
-  // Update button states
-  ['sans','serif'].forEach(f=>{
-    const btn=document.getElementById('rd-font-'+f);
-    if(!btn)return;
-    if(f===ff){
-      btn.style.background='rgba(212,175,55,0.18)';
-      btn.style.borderColor='rgba(212,175,55,0.5)';
-      btn.style.color='#D4AF37';
-    }else{
-      btn.style.background='rgba(212,175,55,0.05)';
-      btn.style.borderColor='rgba(212,175,55,0.15)';
-      btn.style.color='#8fa3c0';
-    }
-  });
-}
-
-function rdToggleNight(){
-  rdIsNight=!rdIsNight;
-  const wrap=document.getElementById('reading-wrap');
-  const txt=document.getElementById('rd-text');
-  const empty=document.getElementById('rd-empty');
-  const nightBtn=document.getElementById('rd-night-btn');
-  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
-  if(txt)txt.style.color=rdIsNight?'#e0e0e0':'#222';
-  if(empty)empty.style.color=rdIsNight?'#8fa3c0':'#666';
-  if(nightBtn){
-    nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';
-    nightBtn.style.background=rdIsNight?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
-    nightBtn.style.borderColor=rdIsNight?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
-    nightBtn.style.color=rdIsNight?'#D4AF37':'#8fa3c0';
-  }
-  // Also update bookmark button in night
-  const bmBtn=document.getElementById('rd-bookmark-btn');
-  if(bmBtn&&!bookmarks.includes(currentSermon?.id)){
-    bmBtn.style.color=rdIsNight?'#b0c4d8':'#8fa3c0';
-  }
-}
-
-function rdHighlight(){
-  const sel=window.getSelection();
-  // No selection = clear all highlights
-  if(!sel||sel.toString().length===0){
-    const rdText=document.getElementById('rd-text');
-    if(!rdText){showRdToast('Select text first, then tap Highlight');return;}
-    const hls=rdText.querySelectorAll('span.rd-hl');
-    if(hls.length>0){
-      hls.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
-      rdText.normalize();
-      const hlBtn=document.getElementById('rd-hl-btn');
-      if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.color='#8fa3c0';}
-      showRdToast('All highlights cleared');
-    }else{
-      showRdToast('Select text first, then tap Highlight');
-    }
-    return;
-  }
-  // Apply highlight
-  try{
-    const range=sel.getRangeAt(0);
-    const span=document.createElement('span');
-    span.className='rd-hl';
-    span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
-    span.title='Tap to remove this highlight';
-    // Remove on click (desktop) and touch (mobile)
-    const removeHL=function(e){
-      const sp=e.currentTarget;
-      const p=sp.parentNode;
-      while(sp.firstChild)p.insertBefore(sp.firstChild,sp);
-      p.removeChild(sp);p.normalize();
-      showRdToast('Highlight removed');
-    };
-    span.addEventListener('click',removeHL);
-    span.addEventListener('touchend',function(e){e.preventDefault();removeHL(e);});
-    range.surroundContents(span);
-    sel.removeAllRanges();
-    const hlBtn=document.getElementById('rd-hl-btn');
-    if(hlBtn){hlBtn.textContent='🖊 Clear All';hlBtn.style.color='#D4AF37';}
-    showRdToast('Tap highlighted text to remove · Tap button to clear all');
-  }catch(e){
-    showRdToast('Select a single block of text to highlight');
-  }
-}
-
-function rdBookmark(){
-  if(!currentSermon)return;
-  const idx=bookmarks.indexOf(currentSermon.id);
-  if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}
-  localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
-  const bm=bookmarks.includes(currentSermon.id);
-  const btn=document.getElementById('rd-bookmark-btn');
-  if(btn){
-    btn.style.background=bm?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
-    btn.style.borderColor=bm?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
-    btn.style.color=bm?'#D4AF37':'#8fa3c0';
-    btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';
-  }
-  showRdToast(bm?'✓ Bookmarked':'Bookmark removed');
-}
-
-function loadReadingMode(){
-  if(!currentSermon)return;
-  const txt=currentSermon.transcript||'';
-  const rdText=document.getElementById('rd-text');
-  const rdEmpty=document.getElementById('rd-empty');
-  if(txt){
-    rdText.innerHTML=txt;
-    rdText.style.display='block';
-    rdEmpty.style.display='none';
-  }else{
-    rdText.style.display='none';
-    rdEmpty.style.display='block';
-  }
-  // Restore font size and family
-  rdText.style.fontSize=rdFontSz+'px';
-  rdEmpty.style.fontSize=rdFontSz+'px';
-  const fonts={sans:"system-ui,sans-serif",serif:"Georgia,serif"};
-  rdText.style.fontFamily=fonts[rdFontFamily]||'Georgia,serif';
-  // Restore bookmark state
-  const bm=bookmarks.includes(currentSermon.id);
-  const btn=document.getElementById('rd-bookmark-btn');
-  if(btn){
-    btn.style.background=bm?'rgba(212,175,55,0.2)':'rgba(212,175,55,0.05)';
-    btn.style.borderColor=bm?'rgba(212,175,55,0.5)':'rgba(212,175,55,0.15)';
-    btn.style.color=bm?'#D4AF37':'#8fa3c0';
-    btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';
-  }
-  // Reset night state visual
-  const wrap=document.getElementById('reading-wrap');
-  if(wrap)wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
-  // Reset highlight btn
-  const hlBtn=document.getElementById('rd-hl-btn');
-  if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.color='#8fa3c0';}
-  // Init font label
-  const lbl=document.getElementById('rd-size-label');
-  if(lbl)lbl.textContent=rdFontSz;
-}
 
 function showRdToast(msg){
   document.querySelectorAll('.rd-toast').forEach(t=>t.remove());
@@ -1226,6 +1081,103 @@ function showRdToast(msg){
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#071528;border:1px solid rgba(212,175,55,0.4);color:#D4AF37;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;max-width:90%;text-align:center;';
   document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
 }
+
+
+function rdFontSize(d){
+  rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));
+  var t=document.getElementById('rd-text');
+  var e=document.getElementById('rd-empty');
+  if(t)t.style.fontSize=rdFontSz+'px';
+  if(e)e.style.fontSize=rdFontSz+'px';
+}
+
+function rdSetFont(f){
+  rdFont=f;
+  var t=document.getElementById('rd-text');
+  if(t)t.style.fontFamily=f==='sans'?'system-ui,sans-serif':'Georgia,serif';
+  var s=document.getElementById('rd-font-sans');
+  var r=document.getElementById('rd-font-serif');
+  if(s){s.style.background=f==='sans'?'#D4AF37':'#e8e8e8';s.style.color=f==='sans'?'#000':'#333';}
+  if(r){r.style.background=f==='serif'?'#D4AF37':'#e8e8e8';r.style.color=f==='serif'?'#000':'#333';}
+}
+
+function rdToggleNight(){
+  rdIsNight=!rdIsNight;
+  var w=document.getElementById('reading-wrap');
+  var t=document.getElementById('rd-text');
+  var e=document.getElementById('rd-empty');
+  var n=document.getElementById('rd-night-btn');
+  if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
+  if(t)t.style.color=rdIsNight?'#e0e0e0':'#222';
+  if(e)e.style.color=rdIsNight?'#aaa':'#666';
+  if(n){n.textContent=rdIsNight?'☀ Day':'🌙 Night';n.style.background=rdIsNight?'#333':'#e8e8e8';n.style.color=rdIsNight?'#fff':'#333';}
+  var buttons=['rd-font-sans','rd-font-serif','rd-bookmark-btn'];
+  for(var i=0;i<buttons.length;i++){
+    var b=document.getElementById(buttons[i]);
+    if(b&&b.style.background!=='rgb(212, 175, 55)'){b.style.background=rdIsNight?'#333':'#e8e8e8';b.style.color=rdIsNight?'#fff':'#333';}
+  }
+}
+
+function rdHighlight(){
+  var sel=window.getSelection();
+  if(!sel||sel.toString().length===0){
+    var c=document.getElementById('rd-text');
+    if(!c)return;
+    var hls=c.querySelectorAll('.rd-hl');
+    if(hls.length){
+      for(var i=hls.length-1;i>=0;i--){
+        var sp=hls[i],p=sp.parentNode;
+        while(sp.firstChild)p.insertBefore(sp.firstChild,sp);
+        p.removeChild(sp);
+      }
+      c.normalize();
+      alert('All highlights cleared');
+    }else{alert('Select text first, then tap Highlight');}
+    return;
+  }
+  try{
+    var range=sel.getRangeAt(0);
+    var span=document.createElement('span');
+    span.className='rd-hl';
+    span.style.background='#FFD700';
+    span.style.color='#000';
+    span.style.cursor='pointer';
+    span.setAttribute('onclick','var p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();alert("Highlight removed");');
+    range.surroundContents(span);
+    sel.removeAllRanges();
+  }catch(e){alert('Select a single block of text to highlight');}
+}
+
+function rdBookmark(){
+  if(!currentSermon)return;
+  var idx=bookmarks.indexOf(currentSermon.id);
+  if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}
+  localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
+  var bm=bookmarks.includes(currentSermon.id);
+  var btn=document.getElementById('rd-bookmark-btn');
+  if(btn){btn.style.background=bm?'#D4AF37':'#e8e8e8';btn.style.color=bm?'#000':'#333';btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';}
+}
+
+function loadReadingMode(){
+  if(!currentSermon)return;
+  var txt=currentSermon.transcript||'';
+  var t=document.getElementById('rd-text');
+  var e=document.getElementById('rd-empty');
+  if(txt){t.innerHTML=txt;t.style.display='block';e.style.display='none';}
+  else{t.style.display='none';e.style.display='block';}
+  t.style.fontSize=rdFontSz+'px';
+  e.style.fontSize=rdFontSz+'px';
+  t.style.fontFamily=rdFont==='sans'?'system-ui,sans-serif':'Georgia,serif';
+  var bm=bookmarks.includes(currentSermon.id);
+  var btn=document.getElementById('rd-bookmark-btn');
+  if(btn){btn.style.background=bm?'#D4AF37':'#e8e8e8';btn.style.color=bm?'#000':'#333';btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';}
+  if(rdIsNight){
+    var w=document.getElementById('reading-wrap');
+    if(w)w.style.background='#1a1a2e';
+    t.style.color='#e0e0e0';
+  }
+}
+
 
 </script>
 </body>
