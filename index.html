@@ -945,8 +945,9 @@ function playerShowTab(tab,evt){
 }
 
 let rdFontSz=16,rdIsNight=false;
-function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';rdEmpty.style.display='none';}else{rdText.style.display='none';rdEmpty.style.display='block';}const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
-function rdFontSize(d){rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));const el=document.getElementById('rd-text');if(el)el.style.fontSize=rdFontSz+'px';const sz=document.getElementById('rd-font-size-label');if(sz)sz.textContent=rdFontSz+'px';}
+function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';if(rdEmpty)rdEmpty.style.display='none';}else{if(rdText)rdText.style.display='none';if(rdEmpty){rdEmpty.style.display='block';rdEmpty.style.fontSize=rdFontSz+'px';}}// Restore saved font size
+['rd-text','rd-empty'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
+function rdFontSize(d){rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));['rd-text','rd-empty'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});const sz=document.getElementById('rd-font-size-label');if(sz)sz.textContent=rdFontSz+'px';}
 function rdToggleNight(){
   rdIsNight=!rdIsNight;
   const wrap=document.getElementById('reading-wrap');
