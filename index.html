@@ -998,39 +998,66 @@ function playerFullscreen(){
   var existing=document.getElementById('fs-overlay');
   if(existing){existing.remove();return;}
 
+  // Detect which tab is currently active
+  var activeTab='info';
+  ['info','transcript','reading','comments'].forEach(function(t){
+    var el=document.getElementById('ptab-'+t);
+    if(el&&el.style.display!=='none')activeTab=t;
+  });
+
+  // For info tab (video/audio) - show media info only, no reading toolbar
+  if(activeTab==='info'){
+    var overlay=document.createElement('div');
+    overlay.id='fs-overlay';
+    overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#071528;z-index:99999;overflow-y:auto;';
+    var header=document.createElement('div');
+    header.style.cssText='position:sticky;top:0;background:#071528;border-bottom:1px solid rgba(212,175,55,0.2);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;';
+    var titleEl=document.createElement('span');
+    titleEl.style.cssText='color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    titleEl.textContent=s.title;
+    var closeBtn=document.createElement('button');
+    closeBtn.textContent='✕ Close';
+    closeBtn.style.cssText='background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;font-size:13px;margin-left:12px;flex-shrink:0;';
+    closeBtn.onclick=function(){overlay.remove();};
+    header.appendChild(titleEl);header.appendChild(closeBtn);
+    overlay.appendChild(header);
+    var body=document.createElement('div');
+    body.style.cssText='padding:32px 24px;color:#e8e8e8;max-width:700px;margin:0 auto;';
+    body.innerHTML='<div style="font-size:48px;text-align:center;margin-bottom:20px;">'+(s.type==='video'?'🎬':'🎧')+'</div>'
+      +'<h2 style="color:#fff;font-size:22px;margin-bottom:12px;line-height:1.4;">'+s.title+'</h2>'
+      +'<p style="color:#D4AF37;font-size:14px;margin-bottom:16px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
+      +(s.description?'<p style="color:#b0c4d8;font-size:15px;line-height:1.8;">'+s.description+'</p>':'')
+      +'<div style="margin-top:24px;color:#8fa3c0;font-size:13px;">👁 '+parseInt(s.views_count||0).toLocaleString()+' views &nbsp;·&nbsp; '+(s.type||'').toUpperCase()+'</div>';
+    overlay.appendChild(body);
+    document.body.appendChild(overlay);
+    document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',esc);}});
+    return;
+  }
+
+  // For reading/transcript/comments - show full reading overlay with toolbar
   var overlay=document.createElement('div');
   overlay.id='fs-overlay';
   overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#071528;z-index:99999;overflow-y:auto;';
-
-  // Header
   var header=document.createElement('div');
   header.style.cssText='position:sticky;top:0;background:#071528;border-bottom:1px solid rgba(212,175,55,0.2);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;z-index:10;';
-  var title=document.createElement('span');
-  title.style.cssText='color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-  title.textContent=s.title;
+  var titleEl=document.createElement('span');
+  titleEl.style.cssText='color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+  titleEl.textContent=s.title;
   var closeBtn=document.createElement('button');
   closeBtn.textContent='✕ Close';
   closeBtn.style.cssText='background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;font-size:13px;margin-left:12px;flex-shrink:0;';
   closeBtn.onclick=function(){overlay.remove();};
-  header.appendChild(title);
-  header.appendChild(closeBtn);
+  header.appendChild(titleEl);header.appendChild(closeBtn);
   overlay.appendChild(header);
-
-  // Body
   var body=document.createElement('div');
   body.style.cssText='width:100%;padding:16px;box-sizing:border-box;';
-
   var pastor=document.createElement('p');
   pastor.style.cssText='color:#D4AF37;font-size:13px;margin-bottom:16px;';
   pastor.textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
   body.appendChild(pastor);
-
-  // Toolbar
   var toolbar=document.createElement('div');
   toolbar.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding:10px;background:#0d2142;border-radius:10px;';
-
-  var fSz=rdFontSz, fNight=rdIsNight, fFam=rdFont;
-
+  var fSz=rdFontSz,fNight=rdIsNight,fFam=rdFont;
   var BTN_BASE='border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;border:1px solid #ccc;';
   var makeBtn=function(label,onclick,active){
     var b=document.createElement('button');
@@ -1042,65 +1069,23 @@ function playerFullscreen(){
     b.onclick=onclick;
     return b;
   };
-  var setActive=function(btn){
-    btn.style.background='#D4AF37';btn.style.color='#000';btn.style.borderColor='#b8972a';
-  };
-  var setInactive=function(btn){
-    btn.style.background='#f5f5f5';btn.style.color='#333';btn.style.borderColor='#ccc';
-  };
-
+  var setActive=function(btn){btn.style.background='#D4AF37';btn.style.color='#000';btn.style.borderColor='#b8972a';};
+  var setInactive=function(btn){btn.style.background='#f5f5f5';btn.style.color='#333';btn.style.borderColor='#ccc';};
   var content_div=document.createElement('div');
   content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#fff')+';border-radius:0;padding:20px 24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#222')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;width:100%;box-sizing:border-box;min-height:calc(100vh - 120px);';
   content_div.innerHTML=s.transcript||'<p style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
-
   var btnAm=makeBtn('A-',function(){fSz=Math.max(12,Math.min(28,fSz-2));content_div.style.fontSize=fSz+'px';},false);
   var btnAp=makeBtn('A+',function(){fSz=Math.max(12,Math.min(28,fSz+2));content_div.style.fontSize=fSz+'px';},false);
   var btnSans=makeBtn('Sans',function(){fFam='sans';content_div.style.fontFamily='system-ui,sans-serif';setActive(btnSans);setInactive(btnSerif);},fFam==='sans');
   var btnSerif=makeBtn('Serif',function(){fFam='serif';content_div.style.fontFamily='Georgia,serif';setActive(btnSerif);setInactive(btnSans);},fFam==='serif');
-  var btnNight=makeBtn(fNight?'☀ Day':'🌙 Night',function(){
-    fNight=!fNight;
-    content_div.style.background=fNight?'#1a1a2e':'#fff';
-    content_div.style.color=fNight?'#e0e0e0':'#222';
-    btnNight.textContent=fNight?'☀ Day':'🌙 Night';
-    if(fNight){setActive(btnNight);}else{setInactive(btnNight);}
-  },fNight);
-  var btnHL=makeBtn('🖊 Highlight',function(){
-    var sel=window.getSelection();
-    if(!sel||!sel.toString()){
-      var hls=content_div.querySelectorAll('.rd-hl');
-      hls.forEach(function(sp){var p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
-      content_div.normalize();
-      return;
-    }
-    try{
-      var range=sel.getRangeAt(0);
-      var span=document.createElement('span');
-      span.className='rd-hl';
-      span.style.background='#FFD700';
-      span.style.color='#000';
-      span.style.cursor='pointer';
-      span.onclick=function(){var p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();};
-      range.surroundContents(span);
-      sel.removeAllRanges();
-    }catch(e){}
-  },false);
-
-  var btnBM=makeBtn(bookmarks.includes(s.id)?'🔖 Saved':'🔖 Bookmark',function(){
-    var idx=bookmarks.indexOf(s.id);
-    if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(s.id);}
-    localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
-    var bm=bookmarks.includes(s.id);
-    btnBM.textContent=bm?'🔖 Saved':'🔖 Bookmark';
-    if(bm){setActive(btnBM);}else{setInactive(btnBM);}
-  },bookmarks.includes(s.id));
+  var btnNight=makeBtn(fNight?'☀ Day':'🌙 Night',function(){fNight=!fNight;content_div.style.background=fNight?'#1a1a2e':'#fff';content_div.style.color=fNight?'#e0e0e0':'#222';btnNight.textContent=fNight?'☀ Day':'🌙 Night';if(fNight){setActive(btnNight);}else{setInactive(btnNight);}},fNight);
+  var btnHL=makeBtn('🖊 Highlight',function(){var sel=window.getSelection();if(!sel||!sel.toString()){var hls=content_div.querySelectorAll('.rd-hl');hls.forEach(function(sp){var p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});content_div.normalize();return;}try{var range=sel.getRangeAt(0);var span=document.createElement('span');span.className='rd-hl';span.style.background='#FFD700';span.style.color='#000';span.style.cursor='pointer';span.onclick=function(){var p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();};range.surroundContents(span);sel.removeAllRanges();}catch(e){}},false);
+  var btnBM=makeBtn(bookmarks.includes(s.id)?'🔖 Saved':'🔖 Bookmark',function(){var idx=bookmarks.indexOf(s.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(s.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));var bm=bookmarks.includes(s.id);btnBM.textContent=bm?'🔖 Saved':'🔖 Bookmark';if(bm){setActive(btnBM);}else{setInactive(btnBM);}},bookmarks.includes(s.id));
   [btnAm,btnAp,btnSans,btnSerif,btnNight,btnHL,btnBM].forEach(function(b){toolbar.appendChild(b);});
-  body.appendChild(toolbar);
-  body.appendChild(content_div);
+  body.appendChild(toolbar);body.appendChild(content_div);
   overlay.appendChild(body);
   document.body.appendChild(overlay);
-
-  var esc=function(e){if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',esc);}};
-  document.addEventListener('keydown',esc);
+  document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',esc);}});
 }
 
 function ptFontSize(dir){ptFontSz=Math.max(11,Math.min(22,ptFontSz+dir));document.getElementById('pt-text').style.fontSize=ptFontSz+'px';}
