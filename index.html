@@ -960,11 +960,11 @@ function rdToggleNight(){
     nightBtn.style.background=rdIsNight?'#2d2d3a':'#f0f0f0';
     nightBtn.style.color=rdIsNight?'#e8e8e8':'#333';
   }
-  // Update all toolbar buttons for night contrast
+  // Update all toolbar buttons for night contrast except the night toggle itself
   const toolbar=document.getElementById('rd-toolbar');
   if(toolbar){
     toolbar.querySelectorAll('button').forEach(btn=>{
-      if(btn.id!=='rd-night-btn'&&!btn.id.includes('bookmark')){
+      if(btn.id!=='rd-night-btn'){
         btn.style.background=rdIsNight?'#2d2d3a':'#f0f0f0';
         btn.style.color=rdIsNight?'#e8e8e8':'#333';
       }
