@@ -472,7 +472,7 @@
           <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
           <button onclick="rdFontSize(1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A+</button>
           <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
-          <button onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
+          <button id="rd-hl-btn" onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
           <button onclick="rdBookmark()" id="rd-bookmark-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🔖 Bookmark</button>
           <span id="rd-bookmark-ok" style="color:green;font-size:12px;display:none;">✓ Bookmarked!</span>
         </div>
@@ -951,7 +951,57 @@ function rdToggleNight(){
   const hlBtn=document.querySelector('#ptab-reading button[onclick="rdHighlight()"]');
   if(hlBtn){hlBtn.style.background=rdIsNight?'#333':'#f0f0f0';hlBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
 }
-function rdHighlight(){const sel=window.getSelection();if(sel&&sel.toString().length>0){const range=sel.getRangeAt(0);const span=document.createElement('span');span.style.background='#FFD700';span.style.color='#000';range.surroundContents(span);sel.removeAllRanges();}else{alert('Select some text first, then click Highlight.');}}
+function rdHighlight(){
+  // If clicking highlight with no selection, remove all highlights
+  const sel=window.getSelection();
+  if(!sel||sel.toString().length===0){
+    const rdText=document.getElementById('rd-text');
+    if(!rdText){showRdToast('Select text first, then tap Highlight');return;}
+    const highlights=rdText.querySelectorAll('span.rd-hl');
+    if(highlights.length>0){
+      highlights.forEach(span=>{
+        const parent=span.parentNode;
+        while(span.firstChild)parent.insertBefore(span.firstChild,span);
+        parent.removeChild(span);
+      });
+      rdText.normalize();
+      showRdToast('All highlights removed');
+      const hlBtn=document.getElementById('rd-hl-btn');
+      if(hlBtn){hlBtn.textContent='🖊 Highlight';hlBtn.style.background='#f0f0f0';hlBtn.style.color='#333';}
+    }else{
+      showRdToast('Select text first, then tap Highlight');
+    }
+    return;
+  }
+  try{
+    const range=sel.getRangeAt(0);
+    const span=document.createElement('span');
+    span.className='rd-hl';
+    span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
+    span.title='Tap to remove this highlight';
+    span.onclick=function(){
+      const p=this.parentNode;
+      while(this.firstChild)p.insertBefore(this.firstChild,this);
+      p.removeChild(this);
+      p.normalize();
+      showRdToast('Highlight removed');
+    };
+    range.surroundContents(span);
+    sel.removeAllRanges();
+    const hlBtn=document.getElementById('rd-hl-btn');
+    if(hlBtn){hlBtn.textContent='🖊 Clear All';hlBtn.style.background='#FFD700';hlBtn.style.color='#000';}
+    showRdToast('Highlighted — tap again with no selection to clear all');
+  }catch(e){
+    showRdToast('Select a single continuous block of text to highlight');
+  }
+}
+
+function showRdToast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;max-width:90%;text-align:center;';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
 function rdBookmark(){if(!currentSermon)return;const idx=bookmarks.indexOf(currentSermon.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));const bm=bookmarks.includes(currentSermon.id);const btn=document.getElementById('rd-bookmark-btn');if(btn){btn.style.background=bm?'#D4AF37':'#f0f0f0';btn.style.color=bm?'#071528':'#333';}const ok=document.getElementById('rd-bookmark-ok');if(ok){ok.style.display=bm?'inline':'none';setTimeout(()=>ok.style.display='none',2000);}}
 
 function playerFullscreen(){
