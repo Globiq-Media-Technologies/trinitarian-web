@@ -468,9 +468,8 @@
     <div id="ptab-reading" style="display:none;">
       <div style="text-align:center;margin-bottom:12px;"><span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;">⛶ <span>Tap for fullscreen reading &amp; video · <b>A-</b> / <b>A+</b> resize text</span></span></div>
     <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:32px;min-height:400px;">
-        <div id="rd-toolbar" style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
-          <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;font-weight:700;">A-</button>
-          <span id="rd-font-size-label" style="color:#8fa3c0;font-size:11px;min-width:28px;text-align:center;">16px</span>
+        <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center;flex-wrap:wrap;">
+          <button onclick="rdFontSize(-1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A-</button>
           <button onclick="rdFontSize(1)" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;">A+</button>
           <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
           <button onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
@@ -507,10 +506,8 @@
     </div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:20px;">
       <div style="color:#D4AF37;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Send Message to Support</div>
-      <input type="text" id="lh-inbox-subject" placeholder="Subject (optional)" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:10px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:8px;"/>
-    <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:8px;"></textarea>
-    <div id="lh-inbox-ok" style="display:none;color:#40c96a;font-size:13px;margin-bottom:8px;"></div>
-      <button id="lh-inbox-send-btn" onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
+      <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:10px;"></textarea>
+      <button onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
     </div>
   </div>
 </div>
@@ -593,21 +590,15 @@
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div>
-        <div id="lhs-notif-sermons-track" onclick="lhToggleNotif('lhs-notif-sermons')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
-        </div>
+        <div id="lhs-notif-sermons-track" onclick="lhToggleNotif('lhs-notif-sermons')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-sermons-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">Live Streams</div><div style="color:#8fa3c0;font-size:12px;">When pastors go live</div></div>
-        <div id="lhs-notif-streams-track" onclick="lhToggleNotif('lhs-notif-streams')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
-        </div>
+        <div id="lhs-notif-streams-track" onclick="lhToggleNotif('lhs-notif-streams')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
         <div><div style="color:#e8e8e8;font-size:14px;">Inbox Messages</div><div style="color:#8fa3c0;font-size:12px;">When you receive a message</div></div>
-        <div id="lhs-notif-inbox-track" onclick="lhToggleNotif('lhs-notif-inbox')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;">
-          <div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div>
-        </div>
+        <div id="lhs-notif-inbox-track" onclick="lhToggleNotif('lhs-notif-inbox')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
       </div>
     </div>
     <!-- Language -->
@@ -796,7 +787,7 @@ function goTo(page){
   if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
-  if(page!=='reset')window.location.hash=page==='home'?'':page;
+  window.location.hash=page==='home'?'':page;
 }
 
 function scrollTo_(selector){goTo('home');setTimeout(()=>{const el=document.querySelector(selector);if(el)el.scrollIntoView({behavior:'smooth'});},100);}
@@ -816,7 +807,7 @@ window.addEventListener('load',async()=>{
   if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
 });
 
-window.addEventListener('hashchange',()=>{if(new URLSearchParams(window.location.search).get('token'))return;const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
+window.addEventListener('hashchange',()=>{const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
 
 let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='';
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
@@ -945,77 +936,23 @@ function playerShowTab(tab,evt){
 }
 
 let rdFontSz=16,rdIsNight=false;
-function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';if(rdEmpty)rdEmpty.style.display='none';}else{if(rdText)rdText.style.display='none';if(rdEmpty){rdEmpty.style.display='block';rdEmpty.style.fontSize=rdFontSz+'px';}}// Restore saved font size
-['rd-text','rd-empty'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
-function rdFontSize(d){rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));['rd-text','rd-empty'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontSize=rdFontSz+'px';});const sz=document.getElementById('rd-font-size-label');if(sz)sz.textContent=rdFontSz+'px';}
+function loadReadingMode(){if(!currentSermon)return;const txt=currentSermon.transcript||'';const rdText=document.getElementById('rd-text');const rdEmpty=document.getElementById('rd-empty');if(txt){rdText.innerHTML=txt;rdText.style.display='block';rdEmpty.style.display='none';}else{rdText.style.display='none';rdEmpty.style.display='block';}const bm=bookmarks.includes(currentSermon.id);const bmBtn=document.getElementById('rd-bookmark-btn');if(bmBtn){bmBtn.style.background=bm?'#D4AF37':'#f0f0f0';bmBtn.style.color=bm?'#071528':'#333';}}
+function rdFontSize(d){rdFontSz=Math.max(12,Math.min(24,rdFontSz+d));document.getElementById('rd-text').style.fontSize=rdFontSz+'px';}
 function rdToggleNight(){
   rdIsNight=!rdIsNight;
   const wrap=document.getElementById('reading-wrap');
-  if(wrap) wrap.style.background=rdIsNight?'#1a1a2e':'#fff';
+  if(wrap){wrap.style.background=rdIsNight?'#1a1a2e':'#fff';}
   const txt=document.getElementById('rd-text');
-  if(txt) txt.style.color=rdIsNight?'#e8e8e8':'#222';
+  if(txt){txt.style.color=rdIsNight?'#e8e8e8':'#222';}
   const nightBtn=document.getElementById('rd-night-btn');
-  if(nightBtn){
-    nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';
-    nightBtn.style.background=rdIsNight?'#2d2d3a':'#f0f0f0';
-    nightBtn.style.color=rdIsNight?'#e8e8e8':'#333';
-  }
-  // Update all toolbar buttons for night contrast except the night toggle itself
-  const toolbar=document.getElementById('rd-toolbar');
-  if(toolbar){
-    toolbar.querySelectorAll('button').forEach(btn=>{
-      if(btn.id!=='rd-night-btn'){
-        btn.style.background=rdIsNight?'#2d2d3a':'#f0f0f0';
-        btn.style.color=rdIsNight?'#e8e8e8':'#333';
-      }
-    });
-  }
+  if(nightBtn){nightBtn.textContent=rdIsNight?'☀ Day':'🌙 Night';nightBtn.style.background=rdIsNight?'#333':'#f0f0f0';nightBtn.style.color=rdIsNight?'#fff':'#333';}
+  const bookmarkBtn=document.getElementById('rd-bookmark-btn');
+  if(bookmarkBtn){bookmarkBtn.style.background=rdIsNight?'#333':'#f0f0f0';bookmarkBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
+  const hlBtn=document.querySelector('#ptab-reading button[onclick="rdHighlight()"]');
+  if(hlBtn){hlBtn.style.background=rdIsNight?'#333':'#f0f0f0';hlBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
 }
-function rdHighlight(){
-  const sel=window.getSelection();
-  if(sel&&sel.toString().length>0){
-    try{
-      const range=sel.getRangeAt(0);
-      const span=document.createElement('span');
-      span.className='rd-highlight';
-      span.style.cssText='background:#FFD700;color:#000;border-radius:2px;padding:0 1px;';
-      range.surroundContents(span);
-      sel.removeAllRanges();
-      const toast=document.createElement('div');
-      toast.textContent='✏ Text highlighted';
-      toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#D4AF37;color:#071528;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-      document.body.appendChild(toast);setTimeout(()=>toast.remove(),1500);
-    }catch(e){
-      const toast=document.createElement('div');
-      toast.textContent='Select a continuous text block to highlight';
-      toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#8fa3c0;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-      document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);
-    }
-  }else{
-    const toast=document.createElement('div');
-    toast.textContent='Select some text first, then tap Highlight';
-    toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#8fa3c0;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-    document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);
-  }
-}
-function rdBookmark(){
-  if(!currentSermon)return;
-  const idx=bookmarks.indexOf(currentSermon.id);
-  if(idx>-1){bookmarks.splice(idx,1);}
-  else{bookmarks.push(currentSermon.id);}
-  localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
-  const bm=bookmarks.includes(currentSermon.id);
-  const btn=document.getElementById('rd-bookmark-btn');
-  if(btn){
-    btn.style.background=bm?'#D4AF37':'#f0f0f0';
-    btn.style.color=bm?'#071528':'#555';
-    btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';
-  }
-  const toast=document.createElement('div');
-  toast.textContent=bm?'✅ Bookmarked':'Bookmark removed';
-  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:'+(bm?'#40c96a':'#8fa3c0')+';color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-  document.body.appendChild(toast);setTimeout(()=>toast.remove(),2000);
-}
+function rdHighlight(){const sel=window.getSelection();if(sel&&sel.toString().length>0){const range=sel.getRangeAt(0);const span=document.createElement('span');span.style.background='#FFD700';span.style.color='#000';range.surroundContents(span);sel.removeAllRanges();}else{alert('Select some text first, then click Highlight.');}}
+function rdBookmark(){if(!currentSermon)return;const idx=bookmarks.indexOf(currentSermon.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(currentSermon.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));const bm=bookmarks.includes(currentSermon.id);const btn=document.getElementById('rd-bookmark-btn');if(btn){btn.style.background=bm?'#D4AF37':'#f0f0f0';btn.style.color=bm?'#071528':'#333';}const ok=document.getElementById('rd-bookmark-ok');if(ok){ok.style.display=bm?'inline':'none';setTimeout(()=>ok.style.display='none',2000);}}
 
 function playerFullscreen(){
   const overlay=document.createElement('div');overlay.id='fs-overlay';overlay.style.cssText='position:fixed;inset:0;background:#071528;z-index:99999;overflow-y:auto;';
@@ -1070,7 +1007,7 @@ async function sendDmMessage(){if(!dmCurrentPastor)return;const input=document.g
 function showLhForgotPwd(){goTo('listener');setTimeout(()=>llShow('forgot'),200);}
 async function lhDeleteAccount(){if(!confirm('Delete your account?\n\nThis permanently removes all your data.'))return;try{await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});alert('Account deleted.');localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('home');}catch(e){alert('Deletion failed. Email support@trinitarian.app to request deletion.');}}
 
-async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';window.history.replaceState({},'','/');setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
+async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
 
 function lhToggleNotif(id){
   const current=localStorage.getItem(id);
@@ -1102,7 +1039,6 @@ function lhToggleNotif(id){
   if(track)track.style.background=newVal?'#D4AF37':'rgba(212,175,55,0.2)';
   if(knob)knob.style.transform=newVal?'translateX(0)':'translateX(-22px)';
 }
-
 function initLhNotifToggles(){
   ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
     const val=localStorage.getItem(id);
