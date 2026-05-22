@@ -979,7 +979,6 @@ function openSermon(s){
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}
   loadComments(s.id);
   if(['text','article'].includes(s.type)){playerShowTab('reading',null);setTimeout(playerFullscreen,400);}
-  else if(s.type==='video'){playerShowTab('info',null);setTimeout(playerFullscreen,400);}
   else{playerShowTab('info',null);}
 }
 
