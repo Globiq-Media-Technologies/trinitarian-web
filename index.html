@@ -468,49 +468,24 @@
     </div>
     <!-- Reading Mode tab -->
     <div id="ptab-reading" style="display:none;">
-
-      <!-- Toolbar -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:#0d2142;border-radius:12px;align-items:center;">
-
-        <!-- Font Size -->
-        <button onclick="rdFontSize(-1)"
-          style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:15px;font-weight:700;min-width:40px;">A-</button>
-        <span id="rd-size-label" style="color:#8fa3c0;font-size:11px;min-width:26px;text-align:center;">16</span>
-        <button onclick="rdFontSize(1)"
-          style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:15px;font-weight:700;min-width:40px;">A+</button>
-
-        <!-- Divider -->
-        <span style="color:rgba(212,175,55,0.2);font-size:18px;">|</span>
-
-        <!-- Font Style -->
-        <button id="rd-font-sans" onclick="rdSetFont('sans')"
-          style="background:#f5f5f5;border:1px solid #ccc;color:#333;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:sans-serif;">Sans</button>
-        <button id="rd-font-serif" onclick="rdSetFont('serif')"
-          style="background:#D4AF37;border:1px solid #b8972a;color:#000;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:Georgia,serif;">Serif</button>
-
-        <!-- Divider -->
-        <span style="color:rgba(212,175,55,0.2);font-size:18px;">|</span>
-
-        <!-- Night -->
-        <button id="rd-night-btn" onclick="rdToggleNight()"
-          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🌙 Night</button>
-
-        <!-- Highlight -->
-        <button id="rd-hl-btn" onclick="rdHighlight()"
-          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🖊 Highlight</button>
-
-        <!-- Bookmark -->
-        <button id="rd-bookmark-btn" onclick="rdBookmark()"
-          style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);color:#8fa3c0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🔖 Bookmark</button>
-
+      <div style="text-align:center;margin-bottom:10px;">
+        <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
       </div>
-
-      <!-- Reading area -->
-      <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:28px;min-height:300px;">
-        <div id="rd-text" style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
-        <p id="rd-empty" style="font-size:16px;color:#666;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
+      <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:20px;min-height:300px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
+          <button onclick="rdFontSize(-1)" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A-</button>
+          <button onclick="rdFontSize(1)"  style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A+</button>
+          <span style="color:#ccc;font-size:18px;line-height:30px;">|</span>
+          <button id="rd-font-sans"     onclick="rdSetFont('sans')"   style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;font-family:sans-serif;">Sans</button>
+          <button id="rd-font-serif"    onclick="rdSetFont('serif')"  style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#000;font-family:Georgia,serif;">Serif</button>
+          <span style="color:#ccc;font-size:18px;line-height:30px;">|</span>
+          <button id="rd-night-btn"     onclick="rdToggleNight()"     style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🌙 Night</button>
+          <button                       onclick="rdHighlight()"       style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🖊 Highlight</button>
+          <button id="rd-bookmark-btn"  onclick="rdBookmark()"        style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🔖 Bookmark</button>
+        </div>
+        <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
+        <p   id="rd-empty" style="font-size:16px;color:#666;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
-
     </div>
 
     <!-- Comments tab -->
@@ -1044,7 +1019,7 @@ function playerFullscreen(){
 
   // Body
   var body=document.createElement('div');
-  body.style.cssText='max-width:860px;margin:0 auto;padding:24px 20px 60px;';
+  body.style.cssText='width:100%;max-width:900px;margin:0 auto;padding:24px 20px 60px;box-sizing:border-box;';
 
   var pastor=document.createElement('p');
   pastor.style.cssText='color:#D4AF37;font-size:13px;margin-bottom:16px;';
@@ -1245,8 +1220,8 @@ function rdSetFont(f){
   if(t)t.style.fontFamily=f==='sans'?'system-ui,sans-serif':'Georgia,serif';
   var s=document.getElementById('rd-font-sans');
   var r=document.getElementById('rd-font-serif');
-  if(s){s.style.background=f==='sans'?'#D4AF37':'#e8e8e8';s.style.color=f==='sans'?'#000':'#333';}
-  if(r){r.style.background=f==='serif'?'#D4AF37':'#e8e8e8';r.style.color=f==='serif'?'#000':'#333';}
+  if(s){s.style.background=f==='sans'?'#D4AF37':'#eee';s.style.color=f==='sans'?'#000':'#333';s.style.borderColor=f==='sans'?'#b8972a':'#ccc';}
+  if(r){r.style.background=f==='serif'?'#D4AF37':'#eee';r.style.color=f==='serif'?'#000':'#333';r.style.borderColor=f==='serif'?'#b8972a':'#ccc';}
 }
 
 function rdToggleNight(){
@@ -1262,7 +1237,7 @@ function rdToggleNight(){
   var buttons=['rd-font-sans','rd-font-serif','rd-bookmark-btn'];
   for(var i=0;i<buttons.length;i++){
     var b=document.getElementById(buttons[i]);
-    if(b&&b.style.background!=='rgb(212, 175, 55)'){b.style.background=rdIsNight?'#333':'#e8e8e8';b.style.color=rdIsNight?'#fff':'#333';}
+    if(b&&b.style.background!=='rgb(212, 175, 55)'){b.style.background=rdIsNight?'#333':'#eee';b.style.color=rdIsNight?'#fff':'#333';}
   }
 }
 
@@ -1317,17 +1292,15 @@ function loadReadingMode(){
   e.style.fontSize=rdFontSz+'px';
   t.style.fontFamily=rdFont==='sans'?'system-ui,sans-serif':'Georgia,serif';
   // Restore font button states
-  var sansBtn=document.getElementById('rd-font-sans');
-  var serifBtn=document.getElementById('rd-font-serif');
-  var ACT='background:#D4AF37;border:1px solid #b8972a;color:#000;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;';
-  var DEF='background:#f5f5f5;border:1px solid #ccc;color:#333;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;';
-  if(sansBtn)sansBtn.setAttribute('style',rdFont==='sans'?ACT+'font-family:sans-serif;':DEF+'font-family:sans-serif;');
-  if(serifBtn)serifBtn.setAttribute('style',rdFont==='serif'?ACT+'font-family:Georgia,serif;':DEF+'font-family:Georgia,serif;');
+  var s=document.getElementById('rd-font-sans');
+  var r=document.getElementById('rd-font-serif');
+  if(s){s.style.background=rdFont==='sans'?'#D4AF37':'#eee';s.style.color=rdFont==='sans'?'#000':'#333';s.style.borderColor=rdFont==='sans'?'#b8972a':'#ccc';}
+  if(r){r.style.background=rdFont==='serif'?'#D4AF37':'#eee';r.style.color=rdFont==='serif'?'#000':'#333';r.style.borderColor=rdFont==='serif'?'#b8972a':'#ccc';}
   // Restore bookmark state
   var bm=bookmarks.includes(currentSermon.id);
   var btn=document.getElementById('rd-bookmark-btn');
-  if(btn){btn.style.background=bm?'#D4AF37':'#e8e8e8';btn.style.color=bm?'#000':'#333';btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';}
-  // Restore night state
+  if(btn){btn.style.background=bm?'#D4AF37':'#eee';btn.style.color=bm?'#000':'#333';btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';}
+  // Restore night mode
   var w=document.getElementById('reading-wrap');
   if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
   t.style.color=rdIsNight?'#e0e0e0':'#222';
