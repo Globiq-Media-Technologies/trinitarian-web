@@ -1145,14 +1145,15 @@ function rdHighlight(){
     span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
     span.title='Tap to remove this highlight';
     // Remove on click (desktop) and touch (mobile)
-    function removeThis(){
-      const p=this.parentNode;
-      while(this.firstChild)p.insertBefore(this.firstChild,this);
-      p.removeChild(this);p.normalize();
+    const removeHL=function(e){
+      const sp=e.currentTarget;
+      const p=sp.parentNode;
+      while(sp.firstChild)p.insertBefore(sp.firstChild,sp);
+      p.removeChild(sp);p.normalize();
       showRdToast('Highlight removed');
-    }
-    span.addEventListener('click',removeThis);
-    span.addEventListener('touchend',function(e){e.preventDefault();removeThis.call(this);});
+    };
+    span.addEventListener('click',removeHL);
+    span.addEventListener('touchend',function(e){e.preventDefault();removeHL(e);});
     range.surroundContents(span);
     sel.removeAllRanges();
     const hlBtn=document.getElementById('rd-hl-btn');
