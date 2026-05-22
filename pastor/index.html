@@ -1157,13 +1157,43 @@ async function handleRegister() {
   } catch(e) { showAlert('register-error', 'Connection failed'); }
 }
 
+function showFMsg(msg, type) {
+  const el = document.getElementById('ll-fmsg');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.padding = '12px 16px';
+  el.style.borderRadius = '10px';
+  el.style.fontSize = '13px';
+  el.style.marginBottom = '16px';
+  if (type === 'success') {
+    el.style.background = 'rgba(64,201,106,0.1)';
+    el.style.border = '1px solid rgba(64,201,106,0.3)';
+    el.style.color = '#40c96a';
+  } else {
+    el.style.background = 'rgba(224,85,85,0.1)';
+    el.style.border = '1px solid rgba(224,85,85,0.3)';
+    el.style.color = '#e05555';
+  }
+}
+
 async function handleForgot() {
   const email = (document.getElementById('ll-femail') || document.getElementById('forgot-email'))?.value.trim();
   if (!email) { showFMsg('Please enter your email address.', 'error'); return; }
+  const btn = document.querySelector('#screen-forgot .btn-gold');
+  if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
   try {
-    await api('/api/auth/forgot-password', 'POST', { email });
-    showAlert('forgot-success', 'If that email exists, a reset link has been sent. Check your inbox and spam folder.', 'success');
-  } catch(e) { showAlert('forgot-error', 'Request failed. Please try again.'); }
+    await fetch(API + '/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    showFMsg('✅ Reset link sent! Check your inbox and spam folder.', 'success');
+    if (btn) { btn.textContent = 'Send Reset Link'; btn.disabled = false; }
+  } catch(e) {
+    showFMsg('Request failed. Please check your connection.', 'error');
+    if (btn) { btn.textContent = 'Send Reset Link'; btn.disabled = false; }
+  }
 }
 
 function prefillApply() {
