@@ -368,7 +368,7 @@
     </div>
     <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">📬</span>
-      <span style="color:#8fa3c0;font-size:10px;">Inbox</span>
+      <span style="color:#8fa3c0;font-size:10px;">Messages</span>
     </div>
     <div onclick="goTo('lh-settings')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:10px;">
       <span style="font-size:22px;">⚙️</span>
@@ -505,7 +505,7 @@
 <div id="page-lh-inbox" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
-    <span style="color:#fff;font-size:16px;font-weight:600;">Inbox</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;">Messages</span>
   </div>
   <div style="max-width:700px;margin:0 auto;padding:24px 24px 80px;">
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;" id="lh-inbox-list">
@@ -826,7 +826,7 @@ let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='';
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
 let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
 
-const LH_TRANS={en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Inbox',settings:'Settings',search:'Search sermons...'},fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Boîte',settings:'Paramètres',search:'Rechercher...'},ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Igbe Ozi',settings:'Ntọala',search:'Chọọ...'},yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Apộp',settings:'Ètò',search:'Wa...'},ha:{home:'Gida',pastors:'Malamai',saved:'An Ajiye',inbox:'Akwatin',settings:'Saituna',search:'Nema...'},pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Caixa',settings:'Configurações',search:'Pesquisar...'},es:{home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Buzón',settings:'Ajustes',search:'Buscar...'},de:{home:'Start',pastors:'Pastoren',saved:'Gespeichert',inbox:'Posteingang',settings:'Einstellungen',search:'Suchen...'}};
+const LH_TRANS={en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...'},fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...'},ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...'},yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wa...'},ha:{home:'Gida',pastors:'Malamai',saved:'An Ajiye',inbox:'Saƙo',settings:'Saituna',search:'Nema...'},pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Pesquisar...'},es:{home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar...'},de:{home:'Start',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Suchen...'}};
 
 function applyTranslations(lang){
   const t=LH_TRANS[lang]||LH_TRANS.en;localStorage.setItem('lh_lang',lang);
