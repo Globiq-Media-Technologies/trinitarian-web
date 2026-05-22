@@ -473,6 +473,7 @@
           <button onclick="rdFontSize(1)" style="background:#e0e0e0;border:1px solid #bbb;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;">A+</button>
           <button onclick="rdToggleNight()" id="rd-night-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🌙 Night</button>
           <button onclick="rdHighlight()" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🖊 Highlight</button>
+          <button id="rd-clear-hl-btn" onclick="rdClearAllHighlights()" style="display:none;background:#FFD700;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;color:#000;">✕ Clear</button>
           <button onclick="rdBookmark()" id="rd-bookmark-btn" style="background:#f0f0f0;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">🔖 Bookmark</button>
           <span id="rd-bookmark-ok" style="color:green;font-size:12px;display:none;">✓ Bookmarked!</span>
         </div>
@@ -949,17 +950,30 @@ function rdToggleNight(){
   const bmBtn=document.getElementById('rd-bookmark-btn');
   if(bmBtn){bmBtn.style.background=rdIsNight?'#333':'#f0f0f0';bmBtn.style.color=rdIsNight?'#e8e8e8':'#333';}
 }
+function removeHighlight(el){
+  const p=el.parentNode;
+  while(el.firstChild)p.insertBefore(el.firstChild,el);
+  p.removeChild(el);
+  p.normalize();
+  showRdToast('Highlight removed');
+}
+function rdClearAllHighlights(){
+  const rdText=document.getElementById('rd-text');
+  if(!rdText)return;
+  const highlights=rdText.querySelectorAll('span.rd-hl');
+  if(highlights.length>0){
+    highlights.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
+    rdText.normalize();
+    showRdToast('All highlights cleared');
+    document.getElementById('rd-clear-hl-btn').style.display='none';
+  }else{
+    showRdToast('No highlights to clear');
+  }
+}
 function rdHighlight(){
   const sel=window.getSelection();
   if(!sel||sel.toString().length===0){
-    const rdText=document.getElementById('rd-text');
-    if(!rdText)return;
-    const highlights=rdText.querySelectorAll('span.rd-hl');
-    if(highlights.length>0){
-      highlights.forEach(sp=>{const p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});
-      rdText.normalize();
-      showRdToast('All highlights cleared');
-    }else{showRdToast('Select text first, then tap Highlight');}
+    rdClearAllHighlights();
     return;
   }
   try{
@@ -967,12 +981,18 @@ function rdHighlight(){
     const span=document.createElement('span');
     span.className='rd-hl';
     span.style.cssText='background:#FFD700;color:#000;border-radius:2px;cursor:pointer;';
-    span.title='Tap to remove';
-    span.onclick=function(){const p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();showRdToast('Highlight removed');};
+    span.title='Tap to remove this highlight';
+    span.onclick=function(e){e.stopPropagation();removeHighlight(this);};
+    span.ontouchend=function(e){e.preventDefault();e.stopPropagation();removeHighlight(this);};
     range.surroundContents(span);
     sel.removeAllRanges();
-    showRdToast('Highlighted — tap highlight or tap button with no selection to clear all');
-  }catch(e){showRdToast('Select a single block of text to highlight');}
+    // Show clear button
+    const clearBtn=document.getElementById('rd-clear-hl-btn');
+    if(clearBtn)clearBtn.style.display='inline-block';
+    showRdToast('Highlighted ✓  Tap highlighted text to remove');
+  }catch(e){
+    showRdToast('Select a single block of text to highlight');
+  }
 }
 function showRdToast(msg){
   const t=document.createElement('div');
