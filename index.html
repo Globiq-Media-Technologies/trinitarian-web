@@ -1077,7 +1077,16 @@ function playerFullscreen(){
     }catch(e){}
   },false);
 
-  [btnAm,btnAp,btnSans,btnSerif,btnNight,btnHL].forEach(function(b){toolbar.appendChild(b);});
+  var btnBM=makeBtn(bookmarks.includes(s.id)?'🔖 Saved':'🔖 Bookmark',function(){
+    var idx=bookmarks.indexOf(s.id);
+    if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(s.id);}
+    localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));
+    var bm=bookmarks.includes(s.id);
+    btnBM.textContent=bm?'🔖 Saved':'🔖 Bookmark';
+    btnBM.style.background=bm?'#D4AF37':'#f5f5f5';
+    btnBM.style.color=bm?'#000':'#333';
+  },bookmarks.includes(s.id));
+  [btnAm,btnAp,btnSans,btnSerif,btnNight,btnHL,btnBM].forEach(function(b){toolbar.appendChild(b);});
   body.appendChild(toolbar);
   body.appendChild(content_div);
   overlay.appendChild(body);
