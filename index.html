@@ -1019,7 +1019,7 @@ function playerFullscreen(){
 
   // Body
   var body=document.createElement('div');
-  body.style.cssText='width:100%;max-width:900px;margin:0 auto;padding:24px 20px 60px;box-sizing:border-box;';
+  body.style.cssText='width:100%;padding:16px;box-sizing:border-box;';
 
   var pastor=document.createElement('p');
   pastor.style.cssText='color:#D4AF37;font-size:13px;margin-bottom:16px;';
@@ -1043,7 +1043,7 @@ function playerFullscreen(){
   };
 
   var content_div=document.createElement('div');
-  content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#fff')+';border-radius:12px;padding:24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#222')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;';
+  content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#fff')+';border-radius:0;padding:20px 24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#222')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;width:100%;box-sizing:border-box;min-height:calc(100vh - 120px);';
   content_div.innerHTML=s.transcript||'<p style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
 
   var btnAm=makeBtn('A-',function(){fSz=Math.max(12,Math.min(28,fSz-2));content_div.style.fontSize=fSz+'px';},false);
