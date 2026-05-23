@@ -1874,9 +1874,17 @@ async function markRead(id) { try { await api('/api/notifications/'+id+'/read','
 
 async function sendInboxMessage() {
   const msg = document.getElementById('inbox-msg').value.trim();
-  if (!msg) return;
-  alert('Message sent to Trinitarian support. We will respond within 24 hours.');
-  document.getElementById('inbox-msg').value = '';
+  if (!msg) { showAlert('inbox-send-error', 'Please enter a message.'); return; }
+  const btn = document.querySelector('#page-inbox .btn-gold');
+  if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+  try {
+    const res = await api('/api/admin/support', 'POST', { subject: 'Pastor Support Request', body: msg });
+    document.getElementById('inbox-msg').value = '';
+    showAlert('inbox-send-ok', '✅ Message sent to support team!', 'success');
+  } catch(e) {
+    showAlert('inbox-send-error', 'Failed to send. Please try again.');
+  }
+  if (btn) { btn.textContent = 'Send Message'; btn.disabled = false; }
 }
 
 // ── Users ──

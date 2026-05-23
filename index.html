@@ -518,7 +518,7 @@
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:20px;">
       <div style="color:#D4AF37;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Send Message to Support</div>
       <textarea id="lh-inbox-msg" placeholder="Type your message to Trinitarian support..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;margin-bottom:10px;"></textarea>
-      <button onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
+      <button id="lh-inbox-send-btn" onclick="sendLhInboxMsg()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Send Message</button>
     </div>
   </div>
 </div>
@@ -1147,7 +1147,29 @@ function updateNotifCount(){
 async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>';}}
 
 async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load messages</div>';}}
-async function sendLhInboxMsg(){const msg=document.getElementById('lh-inbox-msg').value.trim();if(!msg)return;const toast=document.createElement('div');toast.textContent='✓ Message sent to support';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);document.getElementById('lh-inbox-msg').value='';}
+async function sendLhInboxMsg(){
+  const msg=document.getElementById('lh-inbox-msg').value.trim();
+  const subj=document.getElementById('lh-inbox-subject')?.value.trim()||'Support Request';
+  if(!msg){alert('Please enter a message.');return;}
+  const btn=document.getElementById('lh-inbox-send-btn');
+  if(btn){btn.textContent='Sending...';btn.disabled=true;}
+  try{
+    const res=await fetch(API+'/api/admin/support',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')},
+      body:JSON.stringify({subject:subj,body:msg})
+    });
+    if(res.ok){
+      document.getElementById('lh-inbox-msg').value='';
+      if(document.getElementById('lh-inbox-subject'))document.getElementById('lh-inbox-subject').value='';
+      const t=document.createElement('div');
+      t.textContent='✅ Message sent to support team!';
+      t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+      document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+    }else{alert('Failed to send. Please try again.');}
+  }catch(e){alert('Connection error. Please try again.');}
+  if(btn){btn.textContent='Send Message';btn.disabled=false;}
+}
 
 let dmMessages=JSON.parse(localStorage.getItem('lh_dm')||'{}'),dmCurrentPastor=null;
 async function loadDmPastors(){
