@@ -830,8 +830,8 @@ function showFMsg(msg,type){const el=document.getElementById('ll-fmsg');if(el){e
 
 function goTo(page){
   if(page==='pastor'){window.open('https://trinitarian.app/pastor','_blank');return;}
-  if(page==='privacy'){window.open('https://trinitarian.app/privacy','_blank');return;}
-  if(page==='terms'){window.open('https://trinitarian.app/terms','_blank');return;}
+  if(page==='privacy'){window.location.href='https://trinitarian.app/privacy';return;}
+  if(page==='terms'){window.location.href='https://trinitarian.app/terms';return;}
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
