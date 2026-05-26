@@ -778,9 +778,9 @@ function togglePwd(id,btn){const el=document.getElementById(id);if(el){el.type=e
 function showFMsg(msg,type){const el=document.getElementById('ll-fmsg');if(el){el.textContent=msg;el.style.background=type==='success'?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)';el.style.border=type==='success'?'1px solid rgba(64,201,106,0.3)':'1px solid rgba(224,85,85,0.3)';el.style.color=type==='success'?'#40c96a':'#e05555';el.style.display='block';}}
 
 function goTo(page){
-  if(page==='pastor'){window.open('https://trinitarian.app/pastor/index.html','_blank');return;}
-  if(page==='privacy'){window.open('https://trinitarian.app/privacy/index.html','_blank');return;}
-  if(page==='terms'){window.open('https://trinitarian.app/terms/index.html','_blank');return;}
+  if(page==='pastor'){window.open('https://trinitarian.app/pastor','_blank');return;}
+  if(page==='privacy'){window.open('https://trinitarian.app/privacy','_blank');return;}
+  if(page==='terms'){window.open('https://trinitarian.app/terms','_blank');return;}
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
