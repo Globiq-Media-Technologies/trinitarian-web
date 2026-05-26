@@ -89,7 +89,17 @@
       .hero img{width:200px;}
       .nav-links a{font-size:12px;}
     }
-  </style>
+  
+    /* Features */
+    .features { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+    .features h2 { text-align: center; color: #fff; font-size: 28px; font-family: Georgia, serif; letter-spacing: 2px; margin-bottom: 48px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feature-card { background: #0d2142; border: 1px solid rgba(212,175,55,0.15); border-radius: 16px; padding: 28px; }
+    .feature-icon { font-size: 32px; margin-bottom: 14px; }
+    .feature-card h3 { color: #fff; font-size: 16px; margin-bottom: 10px; }
+    .feature-card p { color: #8fa3c0; font-size: 14px; line-height: 1.7; }
+
+    </style>
 </head>
 <body>
 
@@ -98,7 +108,7 @@
   <div></div>
   <div class="nav-links">
     <a onclick="goTo('home')">Home</a>
-    <a onclick="scrollTo_('#pastors')">Features</a>
+    <a onclick="scrollTo_('#features')">Features</a>
     <a onclick="goTo('privacy')">Privacy</a>
     <a onclick="goTo('terms')">Terms</a>
     <span onclick="goTo('listener')" style="color:#b0c4d8;font-size:14px;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#b0c4d8'">Sign In / Register</span>
@@ -131,6 +141,47 @@
       <p>✅ Track views and analytics</p>
       <p>✅ Reach believers in 14 languages</p>
       <p>✅ Free to join</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  
+    
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2>Everything you need to grow in faith</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3>Video Sermons</h3>
+        <p>Watch full sermon videos from verified pastors in high quality, streamed directly to your device.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎧</div>
+        <h3>Audio Sermons</h3>
+        <p>Listen while commuting, exercising or resting. Download for offline listening anytime.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📖</div>
+        <h3>Read Transcripts</h3>
+        <p>Full sermon transcripts with adjustable font size, day/night mode and text highlighting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📡</div>
+        <h3>Live Streaming</h3>
+        <p>Join live worship services and sermons in real time. Never miss a Sunday service again.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Verified Pastors</h3>
+        <p>Every pastor is authenticated and ordained. No fake accounts. No false teachers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3>14 Languages</h3>
+        <p>English, French, Igbo, Yorùbá, Hausa, Português, Twi, isiZulu, Arabic, 中文, Hindi and more.</p>
+      </div>
     </div>
   </section>
 
