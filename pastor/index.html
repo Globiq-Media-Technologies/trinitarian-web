@@ -428,6 +428,16 @@
       <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Uploading a certificate speeds up verification but is not required.</p>
     </div>
 
+    <!-- Declaration -->
+    <div style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="apply-declaration" style="margin-top:3px;accent-color:#D4AF37;width:16px;height:16px;flex-shrink:0;"/>
+        <span style="color:#b0c4d8;font-size:13px;line-height:1.6;">
+          I declare that the information submitted in this application is true and accurate to the best of my knowledge. I understand that submitting false information may result in permanent removal from the Trinitarian platform.
+        </span>
+      </label>
+    </div>
+
     <button onclick="handleApply()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:12px;">
       Submit Application
     </button>
@@ -1275,6 +1285,10 @@ async function handleApply() {
   const denomOther = document.getElementById('apply-denom-other').value.trim();
   const finalDenom = denom === 'Other' ? denomOther : denom;
   const statement = document.getElementById('apply-statement').value.trim();
+  if (!document.getElementById('apply-declaration')?.checked) {
+    showAlert('apply-error', 'Please confirm the declaration before submitting.');
+    return;
+  }
   const wordCount = statement.split(/\s+/).filter(Boolean).length;
   if (wordCount < 100) return showAlert('apply-error', `Personal statement must be at least 100 words. Currently ${wordCount} words.`);
   if (!finalDenom) return showAlert('apply-error', 'Please select or enter your denomination');
