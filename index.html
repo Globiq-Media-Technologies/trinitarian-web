@@ -413,6 +413,22 @@
     <button class="lh-tab" onclick="lhTab(this,'saved')" style="padding:8px 20px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">🔖 Saved</button>
   </div>
 
+  <!-- Category filter -->
+  <div style="padding:0 24px;margin-bottom:16px;overflow-x:auto;">
+    <div style="display:flex;gap:8px;width:max-content;">
+      <button class="lh-cat active" onclick="lhSetCategory('All')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;">All</button>
+      <button class="lh-cat" onclick="lhSetCategory('Faith')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Faith</button>
+      <button class="lh-cat" onclick="lhSetCategory('Salvation')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Salvation</button>
+      <button class="lh-cat" onclick="lhSetCategory('Healing')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Healing</button>
+      <button class="lh-cat" onclick="lhSetCategory('Prosperity')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prosperity</button>
+      <button class="lh-cat" onclick="lhSetCategory('Prophecy')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prophecy</button>
+      <button class="lh-cat" onclick="lhSetCategory('Marriage')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Marriage</button>
+      <button class="lh-cat" onclick="lhSetCategory('Leadership')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Leadership</button>
+      <button class="lh-cat" onclick="lhSetCategory('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Bible Study</button>
+      <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prayer</button>
+    </div>
+  </div>
+
   <!-- Sermons grid -->
   <div id="lh-sermons" style="padding:0 24px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
     <div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Loading sermons...</div>
@@ -869,6 +885,13 @@ async function lhLoadSermons(){
 function lhRender(){
   const q=document.getElementById('lh-search')?.value.toLowerCase()||'';
   let list=lhAllSermons;
+  // Filter by category
+  if(lhActiveCategory&&lhActiveCategory!=='All'){
+    list=list.filter(function(s){
+      return s.category===lhActiveCategory||
+             (s.tags&&s.tags.includes(lhActiveCategory));
+    });
+  }
   if(lhCurrentType!=='all')list=list.filter(s=>s.type===lhCurrentType);
   if(lhCurrentCat){const synonyms={'faith':['faith','believe','trust','confidence'],'salvation':['salvation','saved','born again','redemption','grace','repent'],'healing':['healing','heal','miracle','restoration'],'prosperity':['prosperity','prosper','blessing','abundance','wealth'],'prophecy':['prophecy','prophetic','vision','revelation'],'marriage':['marriage','family','husband','wife','relationship'],'leadership':['leadership','leader','pastor','ministry','church'],'bible':['bible','scripture','word','study','verse','gospel'],'prayer':['prayer','pray','intercession','fasting']};const words=synonyms[lhCurrentCat]||[lhCurrentCat];list=list.filter(s=>{const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase();return words.some(w=>text.includes(w));});}
   if(q)list=list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')).toLowerCase().includes(q));
