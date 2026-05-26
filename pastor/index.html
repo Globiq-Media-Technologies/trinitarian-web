@@ -1129,13 +1129,17 @@ function showPage(name) {
   }
 }
 
-function showAlert(id, msg, type = 'error') {
+function showAlert(id, msg, type = 'error', isHtml = false) {
   const el = document.getElementById(id);
-  if (el) { el.textContent = msg; el.className = `alert alert-${type} show`; }
+  if (el) {
+    if (isHtml) { el.innerHTML = msg; } else { el.textContent = msg; }
+    el.className = `alert alert-${type} show`;
+    el.style.display = 'block';
+  }
 }
 function hideAlert(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('show');
+  if (el) { el.style.display = 'none'; el.textContent = ''; }
 }
 
 // ── Auth ──
