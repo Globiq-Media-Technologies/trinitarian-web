@@ -925,6 +925,17 @@ function lhRender(){
 function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-clear').style.display=q?'block':'none';lhRender();}
 function lhClearSearch(){document.getElementById('lh-search').value='';document.getElementById('lh-clear').style.display='none';lhRender();}
 
+function lhSetCategory(cat){
+  lhActiveCategory=cat;
+  document.querySelectorAll('.lh-cat').forEach(function(b){
+    var active=b.textContent.trim()===cat;
+    b.style.background=active?'rgba(212,175,55,0.15)':'transparent';
+    b.style.color=active?'#D4AF37':'#8fa3c0';
+    b.style.borderColor=active?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';
+  });
+  lhRender();
+}
+
 function lhTab(btn,type){
   document.querySelectorAll('.lh-tab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';
