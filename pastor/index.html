@@ -2450,8 +2450,39 @@ async function resolveReport(id,action){
 
 
 function sanitizeInput(str){if(!str)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function initCookieConsent(){
+  if(!localStorage.getItem('cookie_consent')){
+    const b=document.getElementById('cookie-banner');
+    if(b)b.style.display='flex';
+  }
+}
+function acceptCookies(){
+  localStorage.setItem('cookie_consent','accepted');
+  localStorage.setItem('cookie_consent_date',new Date().toISOString());
+  const b=document.getElementById('cookie-banner');if(b)b.style.display='none';
+}
+function declineCookies(){
+  localStorage.setItem('cookie_consent','declined');
+  const b=document.getElementById('cookie-banner');if(b)b.style.display='none';
+}
+
 
 </script>
 
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d2142;border-top:1px solid rgba(212,175,55,0.3);padding:16px 20px;z-index:99998;display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+  <div style="flex:1;min-width:200px;">
+    <p style="color:#e8e8e8;font-size:13px;line-height:1.6;margin:0;">
+      We use cookies to improve your experience. By using Trinitarian you agree to our
+      <a href="https://trinitarian.app/privacy" style="color:#D4AF37;">Privacy Policy</a>
+      and <a href="https://trinitarian.app/terms" style="color:#D4AF37;">Terms of Service</a>.
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button onclick="acceptCookies()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 20px;cursor:pointer;font-size:13px;font-weight:700;">Accept</button>
+    <button onclick="declineCookies()" style="background:transparent;color:#8fa3c0;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">Decline</button>
+  </div>
+</div>
 </body>
 </html>
