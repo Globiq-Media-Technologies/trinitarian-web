@@ -476,6 +476,7 @@
       <button onclick="playerShare()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;">↗ Share</button>
       <button onclick="playerDownload()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;">⬇ Download</button>
       <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;">⚑ Report</button>
+        <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">♡ Like</button>
         <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">🔗 Share</button>
     </div>
     <!-- Transcript tabs -->
@@ -495,6 +496,8 @@
         <span id="player-date" style="color:#8fa3c0;font-size:12px;"></span>
         <span id="player-lang" style="color:#8fa3c0;font-size:12px;"></span>
       </div>
+    
+      <div id="lh-recommended" style="margin-top:20px;"></div>
     </div>
     <!-- Transcript tab -->
     <div id="ptab-transcript" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
@@ -940,7 +943,7 @@ function lhRender(){
   if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">No sermons found</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;">${ICONS[s.type]||'🎧'}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
+  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
 }
 
 function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-clear').style.display=q?'block':'none';lhRender();}
@@ -1056,7 +1059,7 @@ function openSermon(s){
   if(s.transcript){pt.textContent=s.transcript;pt.style.display='block';pe.style.display='none';}else{pt.style.display='none';pe.style.display='block';}
   const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}
-  loadComments(s.id);
+  loadComments(s.id);setTimeout(loadRecommended,500);
   if(['text','article'].includes(s.type)){playerShowTab('reading',null);setTimeout(playerFullscreen,400);}
   else{playerShowTab('info',null);}
 }
@@ -1065,7 +1068,7 @@ function playerShowTab(tab,evt){
   ['info','transcript','reading','comments'].forEach(t=>{const el=document.getElementById('ptab-'+t);if(el)el.style.display=t===tab?'block':'none';});
   document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
-  if(tab==='reading')loadReadingMode();
+  if(tab==='reading'){loadReadingMode();setTimeout(restoreReadingPosition,400);}
 }
 
 let rdFontSz=16,rdIsNight=false,rdFont='serif';
@@ -1543,6 +1546,65 @@ async function joinLiveStream(streamId,title){
     +'<p style="color:#b0c4d8;font-size:14px;text-align:center;max-width:300px;">Live video streaming will be available in the next update.<br>You are counted as watching.</p>'
     +'</div>';
   document.body.appendChild(overlay);
+}
+
+async function toggleLike(){
+  if(!currentSermon)return;
+  const btn=document.getElementById('lh-like-btn');
+  try{
+    const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/like',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}
+    });
+    const data=await res.json();
+    if(btn){
+      btn.textContent=data.liked?'❤ Liked':'♡ Like';
+      btn.style.color=data.liked?'#e05555':'#8fa3c0';
+      btn.style.borderColor=data.liked?'rgba(224,85,85,0.4)':'rgba(212,175,55,0.2)';
+    }
+  }catch(e){}
+}
+
+async function loadRecommended(){
+  if(!currentSermon)return;
+  const el=document.getElementById('lh-recommended');
+  if(!el)return;
+  try{
+    const res=await fetch(API+'/api/sermons?limit=4&type='+encodeURIComponent(currentSermon.type||''),
+      {headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
+    const data=await res.json();
+    const list=(data?.sermons||data||[]).filter(function(s){return s.id!==currentSermon.id;}).slice(0,3);
+    if(!list.length){el.style.display='none';return;}
+    const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
+    el.innerHTML='<h4 style="color:#D4AF37;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">You Might Also Like</h4>'
+      +'<div style="display:flex;flex-direction:column;gap:8px;">'
+      +list.map(function(s){
+        return '<div onclick="openSermonById('+s.id+')" style="display:flex;gap:12px;align-items:center;background:#0d2142;border-radius:10px;padding:10px;cursor:pointer;">'
+          +'<div style="font-size:24px;flex-shrink:0;">'+(ICONS[s.type]||'🎧')+'</div>'
+          +'<div><div style="color:#fff;font-size:13px;font-weight:600;line-height:1.3;">'+s.title+'</div>'
+          +'<div style="color:#D4AF37;font-size:11px;margin-top:2px;">'+(s.pastor_name||'Verified Pastor')+'</div></div>'
+          +'</div>';
+      }).join('')+'</div>';
+  }catch(e){el.style.display='none';}
+}
+
+function saveReadingPosition(){
+  if(!currentSermon)return;
+  const el=document.getElementById('rd-text');
+  if(!el||el.style.display==='none')return;
+  const pct=el.scrollTop/(el.scrollHeight||1);
+  const key='reading_pos_'+currentSermon.id;
+  localStorage.setItem(key,pct.toFixed(3));
+}
+
+function restoreReadingPosition(){
+  if(!currentSermon)return;
+  const key='reading_pos_'+currentSermon.id;
+  const pct=parseFloat(localStorage.getItem(key)||'0');
+  if(pct>0.02){
+    const el=document.getElementById('rd-text');
+    if(el)setTimeout(function(){el.scrollTop=pct*(el.scrollHeight||0);},300);
+  }
 }
 
 

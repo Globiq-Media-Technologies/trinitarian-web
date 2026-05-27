@@ -769,7 +769,7 @@
       <div class="profile-card">
         <div class="avatar-section">
           <div style="position:relative;cursor:pointer;" onclick="document.getElementById('photo-upload').click()">
-            <div class="avatar" id="profile-avatar" style="overflow:hidden;">P</div>
+            <div class="avatar" id="profile-avatar" onclick="uploadAvatar()" title="Click to change photo" style="cursor:pointer;" style="overflow:hidden;">P</div>
             <div style="position:absolute;bottom:0;right:0;background:var(--gold);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;">📷</div>
           </div>
           <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)"/>
@@ -1453,6 +1453,10 @@ function renderSermonList(sermons, containerId) {
         <button class="btn btn-sm" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:var(--error);" onclick="deleteSermon('${s.id}','${s.title.replace(/'/g,'')}')">Delete</button>
       </div>
     </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
   `).join('');
 }
 
@@ -1589,7 +1593,11 @@ async function loadStreams() {
         </div>
       </div>
       ${s.stream_key && s.status !== 'ended' ? `<div style="margin-bottom:12px;"><span class="section-label">Stream Key</span><div class="stream-key-box">${s.stream_key}</div><p style="color:var(--text-muted);font-size:11px;">Use this key in OBS or your streaming software (RTMP)</p></div>` : ''}
-    `).join('');
+      <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
+  `).join('');
   } catch(e) { document.getElementById('my-streams').innerHTML = '<p style="color:var(--text-muted);padding:12px 0;">Failed to load streams</p>'; }
 }
 
@@ -1638,7 +1646,11 @@ async function loadAnalytics(period, btn) {
           <div style="flex:1;min-width:0;"><div style="color:var(--white);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.title}</div></div>
           <div style="color:var(--text-muted);font-size:15px;font-weight:600;">👁 ${parseInt(s.views_count||0).toLocaleString()}</div>
         </div>
-      `).join('');
+        <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
+  `).join('');
     } else {
       top.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:12px 0;">No sermon data yet</p>';
     }
@@ -1665,7 +1677,11 @@ async function loadNotifications() {
         </div>
         ${!n.is_read ? '<div class="notif-dot"></div>' : ''}
       </div>
-    `).join('');
+      <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
+  `).join('');
   } catch(e) { document.getElementById('notifications-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load notifications</p>'; }
 }
 
@@ -1732,6 +1748,10 @@ function renderApplications(applications) {
         <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve</button>
         <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
       </div>`:''}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
     </div>
   `).join('');
 }
@@ -1900,7 +1920,11 @@ async function loadSupportMessages() {
         </div>
         ${!m.is_read ? '<div style="width:8px;height:8px;border-radius:4px;background:var(--gold);flex-shrink:0;margin-top:4px;"></div>' : ''}
       </div>
-    `).join('');
+      <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
+  `).join('');
   } catch(e) {
     el.innerHTML = '<div style="padding:20px;color:var(--text-muted);">Could not load support messages</div>';
   }
@@ -1934,7 +1958,11 @@ async function loadInbox() {
         </div>
         ${!n.is_read?'<div class="notif-dot"></div>':''}
       </div>
-    `).join('');
+      <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
+  `).join('');
   } catch(e) { document.getElementById('inbox-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load</p>'; }
 }
 
@@ -1983,6 +2011,10 @@ function renderUsers(list) {
         ${u.role==='listener'||u.role==='pastor'?`<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="upgradeMod('${u.id}','${u.display_name}')">⬆ Mod</button>`:''}
       </div>
     </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+    </div>
   `).join('')}</div>`;
 }
 async function upgradeMod(id, name) {
@@ -2024,6 +2056,10 @@ function renderPastors(list) {
         </div>
       </div>
       <div><span class="status-badge status-live">VERIFIED</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
     </div>
   `).join('')}</div>`;
 }
@@ -2199,6 +2235,118 @@ async function handleChangePassword() {
     showAlert('cp-error', e.message || 'Failed to update password. Check your current password.');
   }
 }
+
+function closeEditSermonModal(){var m=document.getElementById('edit-sermon-modal');if(m)m.remove();}
+
+async function openEditSermon(s){
+  const modal=document.createElement('div');
+  modal.id='edit-sermon-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML='<div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:500px;">'
+    +'<h3 style="color:#fff;font-size:18px;margin-bottom:20px;">Edit Sermon</h3>'
+    +'<div style="margin-bottom:14px;"><label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Title</label>'
+    +'<input type="text" id="edit-sermon-title" class="form-input" value="'+s.title+'"/></div>'
+    +'<div style="margin-bottom:14px;"><label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Description</label>'
+    +'<textarea id="edit-sermon-desc" class="form-input" rows="3">'+( s.description||'')+'</textarea></div>'
+    +'<div id="edit-sermon-error" style="display:none;" class="alert alert-error"></div>'
+    +'<div style="display:flex;gap:10px;margin-top:8px;">'
+    +'<button onclick="saveEditSermon('+s.id+')" class="btn btn-gold" style="flex:1;">Save Changes</button>'
+    +'<button onclick="closeEditSermonModal()" class="btn btn-ghost" style="flex:1;">Cancel</button>'
+    +'</div></div>';
+  document.body.appendChild(modal);
+}
+
+async function saveEditSermon(id){
+  const title=document.getElementById('edit-sermon-title').value.trim();
+  const description=document.getElementById('edit-sermon-desc').value.trim();
+  if(!title){showAlert('edit-sermon-error','Title is required');return;}
+  try{
+    await api('/api/sermons/'+id,'PUT',{title,description});
+    closeEditSermonModal();
+    loadSermons();
+  }catch(e){showAlert('edit-sermon-error',e.message||'Failed to save changes');}
+}
+
+async function deleteSermon(id,title){
+  if(!confirm('Delete "'+title+'"? This cannot be undone.'))return;
+  try{
+    await api('/api/sermons/'+id,'DELETE');
+    loadSermons();
+  }catch(e){alert('Failed to delete sermon: '+(e.message||'Unknown error'));}
+}
+
+
+async function uploadAvatar(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/jpeg,image/png,image/webp';
+  input.onchange=async function(){
+    const file=input.files[0];if(!file)return;
+    if(file.size>2*1024*1024){alert('Image must be under 2MB');return;}
+    const fd=new FormData();fd.append('avatar',file);
+    try{
+      const res=await fetch(API+'/api/users/avatar',{method:'POST',headers:{'Authorization':'Bearer '+activeToken},body:fd});
+      const data=await res.json();
+      if(data.avatar_url){
+        const av=document.getElementById('profile-avatar');
+        if(av)av.style.backgroundImage='url('+data.avatar_url+')';
+        showAlert('profile-success','Profile photo updated!','success');
+      }
+    }catch(e){alert('Failed to upload photo');}
+  };
+  input.click();
+}
+
+
+let bulkSelected=[];
+
+function toggleBulkSelect(id){
+  const idx=bulkSelected.indexOf(id);
+  if(idx>-1)bulkSelected.splice(idx,1);else bulkSelected.push(id);
+  document.getElementById('bulk-count').textContent=bulkSelected.length+' selected';
+  document.getElementById('bulk-actions-bar').style.display=bulkSelected.length?'flex':'none';
+}
+
+function clearBulkSelection(){
+  bulkSelected=[];
+  document.querySelectorAll('.bulk-checkbox').forEach(function(c){c.checked=false;});
+  document.getElementById('bulk-actions-bar').style.display='none';
+}
+
+async function bulkApprove(){
+  if(!bulkSelected.length)return;
+  if(!confirm('Approve '+bulkSelected.length+' applications?'))return;
+  for(const id of bulkSelected){
+    try{await api('/api/pastors/applications/'+id+'/approve','PUT',{});}catch(e){}
+  }
+  clearBulkSelection();loadApplications();
+}
+
+async function bulkReject(){
+  if(!bulkSelected.length)return;
+  if(!confirm('Reject '+bulkSelected.length+' applications?'))return;
+  for(const id of bulkSelected){
+    try{await api('/api/pastors/applications/'+id+'/reject','PUT',{reason:'Rejected via bulk action'});}catch(e){}
+  }
+  clearBulkSelection();loadApplications();
+}
+
+
+async function loadPlatformStats(){
+  try{
+    const data=await api('/api/admin/stats');
+    const stats={
+      'total-sermons': data.total_sermons||0,
+      'total-listeners': data.total_listeners||0,
+      'total-pastors': data.total_pastors||0,
+      'total-streams': data.total_streams||0,
+    };
+    Object.keys(stats).forEach(function(id){
+      const el=document.getElementById(id);
+      if(el)el.textContent=parseInt(stats[id]).toLocaleString();
+    });
+  }catch(e){}
+}
+
 
 </script>
 
