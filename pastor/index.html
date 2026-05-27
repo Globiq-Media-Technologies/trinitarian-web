@@ -1024,7 +1024,8 @@
       <div style="display:flex;gap:8px;margin-bottom:16px;" id="inbox-tabs">
         <button onclick="showInboxTab('notifications',this)" class="btn btn-gold btn-sm" id="tab-notifications">Notifications</button>
         <button onclick="showInboxTab('support',this)" class="btn btn-ghost btn-sm" id="tab-support" style="display:none;">📨 Support Messages</button>
-      </div>
+   
+        <button onclick="showInboxTab('flagged',this)" class="btn btn-ghost btn-sm" id="tab-flagged" style="display:none;">🚩 Flagged</button>   </div>
       <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <div id="inbox-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
       </div>
@@ -1409,6 +1410,8 @@ function initDashboard() {
   });
   const supportTab=document.getElementById('tab-support');
   if(supportTab) supportTab.style.display=isAdmin?'block':'none';
+  const flaggedTab=document.getElementById('tab-flagged');
+  if(flaggedTab) flaggedTab.style.display=isAdmin?'block':'none';
   loadOverview();
 }
 
@@ -2396,6 +2399,44 @@ async function exportMyData(){
     a.click();
     URL.revokeObjectURL(a.href);
   }catch(e){alert('Failed to export data. Please try again.');}
+}
+
+
+async function saveAdminNotes(appId){
+  const notes=document.getElementById('admin-notes-input')?.value||'';
+  try{
+    await api('/api/pastors/applications/'+appId+'/notes','PUT',{notes:notes});
+    showToast('Notes saved');
+  }catch(e){showToast('Failed to save notes','error');}
+}
+
+async function loadFlaggedContent(){
+  const el=document.getElementById('support-list');
+  if(!el)return;
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try{
+    const data=await api('/api/admin/flagged');
+    const reports=data?.reports||[];
+    if(!reports.length){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--text-muted);">No flagged content</div>';return;}
+    el.innerHTML=reports.map(function(r){
+      return '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'
+        +'<div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:4px;">'+( r.sermon_title||'Sermon')+'</div>'
+        +'<div style="color:#D4AF37;font-size:12px;margin-bottom:4px;">Reason: '+(r.reason||'Not specified')+'</div>'
+        +'<div style="color:var(--text-muted);font-size:12px;margin-bottom:10px;">'+(r.detail||'')+'</div>'
+        +'<div style="display:flex;gap:8px;">'
+        +'<button onclick="resolveReport('+r.id+',\'dismiss\')" class="btn btn-ghost btn-sm">Dismiss</button>'
+        +'<button onclick="resolveReport('+r.id+',\'remove\')" class="btn btn-ghost btn-sm" style="color:var(--error);">Remove Sermon</button>'
+        +'</div></div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div style="padding:20px;color:var(--text-muted);">Could not load reports</div>';}
+}
+
+async function resolveReport(id,action){
+  try{
+    await api('/api/admin/flagged/'+id,'PUT',{action:action});
+    showToast(action==='remove'?'Sermon removed':'Report dismissed');
+    loadFlaggedContent();
+  }catch(e){showToast('Failed to resolve report','error');}
 }
 
 

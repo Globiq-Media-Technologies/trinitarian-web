@@ -565,6 +565,35 @@
   </div>
 </div>
 
+
+<!-- ══ LISTENER PROFILE ══ -->
+<div id="page-lh-profile" class="page">
+  <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
+    <span onclick="goTo('lh-settings')" style="color:#D4AF37;font-size:20px;cursor:pointer;">‹</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;">My Profile</span>
+  </div>
+  <div style="padding:24px 20px;max-width:480px;">
+    <div id="lh-profile-success" style="display:none;" class="alert alert-success"></div>
+    <div id="lh-profile-error" style="display:none;" class="alert alert-error"></div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Display Name</label>
+      <input type="text" id="lh-profile-name" class="form-input" placeholder="Your name" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;"/>
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Email</label>
+      <input type="email" id="lh-profile-email" class="form-input" placeholder="your@email.com" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;"/>
+    </div>
+    <button onclick="saveLhProfile()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px;">Save Changes</button>
+    <div style="border-top:1px solid rgba(212,175,55,0.1);padding-top:20px;margin-top:8px;">
+      <h3 style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Change Password</h3>
+      <input type="password" id="lh-old-pwd" placeholder="Current password" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;"/>
+      <input type="password" id="lh-new-pwd" placeholder="New password (min. 8 chars)" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;"/>
+      <input type="password" id="lh-confirm-pwd" placeholder="Confirm new password" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;"/>
+      <button onclick="saveLhPassword()" style="width:100%;background:transparent;color:#D4AF37;border:1px solid rgba(212,175,55,0.3);border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Update Password</button>
+    </div>
+  </div>
+</div>
+
 <div id="page-lh-inbox" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
@@ -605,7 +634,11 @@
 
     <!-- Account -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Account</div>
-    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
+    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:12px;" onclick="goTo('lh-profile');loadLhProfile();">
+        <div><div style="color:#e8e8e8;font-size:14px;">My Profile</div><div style="color:#8fa3c0;font-size:12px;">Update name, email and password</div></div>
+        <span style="color:#D4AF37;font-size:20px;">›</span>
+      </div>
+      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);"><div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Display Name</div><div style="color:#fff;font-size:15px;font-weight:600;" id="lhs-name">&#8212;</div></div>
       <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);"><div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Email</div><div style="color:#b0c4d8;font-size:14px;" id="lhs-email">&#8212;</div></div>
       <div style="padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);"><div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Username</div><div style="color:#b0c4d8;font-size:14px;" id="lhs-username">&#8212;</div></div>
@@ -1051,7 +1084,9 @@ let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
 function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
 
 function openSermon(s){
-  currentSermon=s;const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
+  currentSermon=s;
+  // Increment view count
+  if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});}const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
   goTo('player');
   document.getElementById('player-title').textContent=s.title;
   document.getElementById('player-title2').textContent=s.title;
@@ -1649,6 +1684,64 @@ function downloadTranscript(){
   a.download=(currentSermon.title||'sermon').replace(/[^a-z0-9]/gi,'_')+'.txt';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+function markAllNotificationsRead(){
+  fetch(API+'/api/notifications/read-all',{method:'PUT',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}})
+  .then(function(){
+    var badge=document.getElementById('lh-notif-count');
+    if(badge)badge.style.display='none';
+  }).catch(function(){});
+}
+
+async function loadLhProfile(){
+  const user=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');
+  const nameEl=document.getElementById('lh-profile-name');
+  const emailEl=document.getElementById('lh-profile-email');
+  if(nameEl)nameEl.value=user.display_name||user.username||'';
+  if(emailEl)emailEl.value=user.email||'';
+}
+
+async function saveLhProfile(){
+  const name=document.getElementById('lh-profile-name').value.trim();
+  const email=document.getElementById('lh-profile-email').value.trim();
+  if(!name){showLhAlert('lh-profile-error','Display name is required.');return;}
+  try{
+    await fetch(API+'/api/users/profile',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')},
+      body:JSON.stringify({display_name:name,email:email})
+    });
+    const user=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');
+    user.display_name=name;user.email=email;
+    localStorage.setItem('trinitarian_user',JSON.stringify(user));
+    showLhAlert('lh-profile-success','✅ Profile updated!','success');
+  }catch(e){showLhAlert('lh-profile-error','Failed to update profile.');}
+}
+
+async function saveLhPassword(){
+  const oldPwd=document.getElementById('lh-old-pwd').value;
+  const newPwd=document.getElementById('lh-new-pwd').value;
+  const confirm=document.getElementById('lh-confirm-pwd').value;
+  if(!oldPwd||!newPwd){showLhAlert('lh-profile-error','Please fill in all password fields.');return;}
+  if(newPwd.length<8){showLhAlert('lh-profile-error','New password must be at least 8 characters.');return;}
+  if(newPwd!==confirm){showLhAlert('lh-profile-error','Passwords do not match.');return;}
+  try{
+    await fetch(API+'/api/auth/change-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')},
+      body:JSON.stringify({current_password:oldPwd,new_password:newPwd})
+    });
+    showLhAlert('lh-profile-success','✅ Password updated!','success');
+    document.getElementById('lh-old-pwd').value='';
+    document.getElementById('lh-new-pwd').value='';
+    document.getElementById('lh-confirm-pwd').value='';
+  }catch(e){showLhAlert('lh-profile-error','Failed to update password. Check your current password.');}
+}
+
+function showLhAlert(id,msg,type){
+  var el=document.getElementById(id);
+  if(el){el.textContent=msg;el.className='alert alert-'+(type||'error');el.style.display='block';}
 }
 
 

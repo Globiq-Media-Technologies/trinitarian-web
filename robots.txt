@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+Allow: /pastor
+Disallow: /api/
+
+Sitemap: https://trinitarian.app/sitemap.xml
