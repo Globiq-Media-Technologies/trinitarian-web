@@ -1034,7 +1034,7 @@ function lhFilterCat(cat,btn){
 async function lhShowPastors(){
   const el=document.getElementById('lh-sermons');
   el.style.gridTemplateColumns='1fr';
-  el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Loading pastors...</div>';
+  el.style.display='block';el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Loading pastors...</div>';
   try{
     const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
@@ -1064,14 +1064,15 @@ async function lhShowPastors(){
       card.appendChild(icon);card.appendChild(info);card.appendChild(btn);
       el.appendChild(card);
     });
-  }catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load pastors</div>';}
+  }catch(e){
+    el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load pastors</p>';}
 }
 
 function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){lhFollowing.splice(idx,1);btn.textContent='+ Follow';btn.style.color='#8fa3c0';btn.style.borderColor='rgba(212,175,55,0.2)';btn.style.background='transparent';}else{lhFollowing.push(id);btn.textContent='✓ Following';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.background='rgba(212,175,55,0.15)';}localStorage.setItem('lh_following',JSON.stringify(lhFollowing));try{fetch(API+'/api/users/'+id+'/follow',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
 
 function lhShowSaved(){
   const el=document.getElementById('lh-sermons');
-  el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
+  el.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;';
   const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   if(!saved.length){
@@ -1278,9 +1279,11 @@ function updateNotifCount(){
   }catch(e){}
 }
 
-async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load notifications</div>';}}
+async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){
+    el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}
 
-async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load messages</div>';}}
+async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){
+    el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load messages</p>';}}
 async function sendLhInboxMsg(){
   const msg=document.getElementById('lh-inbox-msg').value.trim();
   const subj=document.getElementById('lh-inbox-subject')?.value.trim()||'Support Request';
@@ -1333,7 +1336,8 @@ async function loadDmPastors(){
       card.appendChild(icon);card.appendChild(info);card.appendChild(arrow);
       el.appendChild(card);
     });
-  }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">Could not load pastors</div>';}
+  }catch(e){
+    el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load pastors</p>';}
 }
 
 function openDmConversation(pastorId,pastorName){dmCurrentPastor={id:pastorId,name:pastorName};document.getElementById('dm-pastors-list').parentElement.style.display='none';document.getElementById('dm-conversation').style.display='block';document.getElementById('dm-pastor-name').textContent=pastorName;renderDmMessages();}
@@ -1518,7 +1522,7 @@ function openPastorProfile(pastorId){
     el.innerHTML=html;
   })
   .catch(function(){
-    el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load profile</div>';
+    el.style.cssText='';el.style.cssText='display:block;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load profile</p>';
   });
 }
 
@@ -1568,9 +1572,9 @@ async function lhShowLive(){
       card.innerHTML+='<div style="display:flex;gap:16px;"><span style="color:#e05555;font-size:12px;">👁 '+(s.viewer_count||0)+' watching</span></div>';
       el.appendChild(card);
     });
-    el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
+    el.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;';
   }catch(e){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Could not load live streams</div>';
+    el.style.cssText='display:block;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load live streams</p>';
   }
 }
 
