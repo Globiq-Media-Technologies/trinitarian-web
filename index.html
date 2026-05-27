@@ -426,35 +426,25 @@
   <!-- Content area with bottom padding for nav -->
   <div style="padding-bottom:70px;">
 
-<!-- Search bar + filter -->
-  <div style="padding:16px 24px 12px;display:flex;align-items:center;gap:8px;">
+<!-- Search bar + filter tabs -->
+  <div style="padding:16px 24px 12px;display:flex;align-items:center;gap:6px;">
     <div style="position:relative;flex:1;min-width:0;">
-      <input type="text" id="lh-search" placeholder="🔍 Search sermons, pastors..."
+      <input type="text" id="lh-search" placeholder="🔍 Search..."
         oninput="lhSearch()"
-        style="width:100%;max-width:220px;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:9px 36px 9px 14px;color:#e8e8e8;font-size:13px;outline:none;"/>
+        style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:8px 30px 8px 12px;color:#e8e8e8;font-size:12px;outline:none;"/>
       <span id="lh-search-clear" onclick="document.getElementById('lh-search').value='';lhSearch();"
-        style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#8fa3c0;cursor:pointer;font-size:14px;">✕</span>
+        style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#8fa3c0;cursor:pointer;font-size:13px;">✕</span>
     </div>
-    <!-- Filter button -->
-    <div style="position:relative;flex-shrink:0;">
-      <button id="lh-filter-btn" onclick="toggleFilterMenu()" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:9px 18px;color:#D4AF37;cursor:pointer;font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px;">
-        <span>⚙</span><span id="lh-filter-label">All</span>
-      </button>
-      <!-- Dropdown menu -->
-      <div id="lh-filter-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:8px;z-index:100;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
-        <div style="color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:4px 8px 8px;">Type</div>
-        <button onclick="lhFilterSelect(this,'all','All')" class="lh-filter-option active" style="display:block;width:100%;text-align:left;background:rgba(212,175,55,0.1);border:none;border-radius:8px;padding:8px 12px;color:#D4AF37;cursor:pointer;font-size:13px;margin-bottom:2px;">✓ All</button>
-        <button onclick="lhFilterSelect(this,'video','🎬 Video')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">🎬 Video</button>
-        <button onclick="lhFilterSelect(this,'audio','🎧 Audio')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">🎧 Audio</button>
-        <button onclick="lhFilterSelect(this,'text','📄 Text')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">📄 Text</button>
-        <button onclick="lhFilterSelect(this,'article','📰 Article')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">📰 Article</button>
-        <div style="border-top:1px solid rgba(212,175,55,0.1);margin:6px 0;"></div>
-        <div style="color:#8fa3c0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:4px 8px 8px;">Library</div>
-        <button onclick="lhFilterSelect(this,'saved','🔖 Saved')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">🔖 Saved</button>
-        <button onclick="lhFilterSelect(this,'following','👥 Following')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">👥 Following</button>
-        <button onclick="lhFilterSelect(this,'pastors','✝ Pastors')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;margin-bottom:2px;">✝ Pastors</button>
-        <button onclick="lhFilterSelect(this,'live','🔴 Live')" class="lh-filter-option" style="display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:8px 12px;color:#8fa3c0;cursor:pointer;font-size:13px;">🔴 Live</button>
-      </div>
+    <div style="display:flex;gap:4px;flex-shrink:0;">
+      <button class="lh-tab active" onclick="lhTab(this,'all')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:11px;white-space:nowrap;">All</button>
+      <button class="lh-tab" onclick="lhTab(this,'video')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Video</button>
+      <button class="lh-tab" onclick="lhTab(this,'audio')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Audio</button>
+      <button class="lh-tab" onclick="lhTab(this,'text')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Text</button>
+      <button class="lh-tab" onclick="lhTab(this,'article')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Article</button>
+      <button class="lh-tab" onclick="lhTab(this,'saved')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Saved</button>
+      <button class="lh-tab" onclick="lhTab(this,'following')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Following</button>
+      <button class="lh-tab" onclick="lhTab(this,'pastors')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Pastors</button>
+      <button class="lh-tab" onclick="lhTab(this,'live')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Live</button>
     </div>
   </div>
 
@@ -1810,39 +1800,6 @@ function declineCookies(){
   const banner=document.getElementById('cookie-banner');
   if(banner)banner.style.display='none';
 }
-
-function toggleFilterMenu(){
-  var menu=document.getElementById('lh-filter-menu');
-  if(menu)menu.style.display=menu.style.display==='none'?'block':'none';
-}
-
-function lhFilterSelect(btn, tab, label){
-  // Update label
-  var lbl=document.getElementById('lh-filter-label');
-  if(lbl)lbl.textContent=label;
-  // Update active state
-  document.querySelectorAll('.lh-filter-option').forEach(function(b){
-    b.style.background='transparent';
-    b.style.color='#8fa3c0';
-    b.textContent=b.textContent.replace('✓ ','');
-  });
-  btn.style.background='rgba(212,175,55,0.1)';
-  btn.style.color='#D4AF37';
-  btn.textContent='✓ '+btn.textContent;
-  // Close menu
-  document.getElementById('lh-filter-menu').style.display='none';
-  // Apply filter - reuse lhTab logic
-  lhTab({classList:{add:function(){},remove:function(){},contains:function(){return false;}}},tab);
-}
-
-// Close filter menu when clicking outside
-document.addEventListener('click',function(e){
-  var menu=document.getElementById('lh-filter-menu');
-  var btn=document.getElementById('lh-filter-btn');
-  if(menu&&btn&&!menu.contains(e.target)&&!btn.contains(e.target)){
-    menu.style.display='none';
-  }
-});
 
 
 </script>
