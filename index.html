@@ -445,7 +445,13 @@
       <button class="lh-cat" onclick="lhSetCategory('Marriage')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Marriage</button>
       <button class="lh-cat" onclick="lhSetCategory('Leadership')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Leadership</button>
       <button class="lh-cat" onclick="lhSetCategory('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Bible Study</button>
-      <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prayer</button>
+      <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;margin:0 4px;">|</span>
+      <button class="lh-lang" onclick="lhSetLang('all')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;">🌍 All</button>
+      <button class="lh-lang" onclick="lhSetLang('en')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">EN</button>
+      <button class="lh-lang" onclick="lhSetLang('fr')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">FR</button>
+      <button class="lh-lang" onclick="lhSetLang('yo')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">YO</button>
+      <button class="lh-lang" onclick="lhSetLang('ig')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">IG</button>
+            <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prayer</button>
     </div>
   </div>
 
@@ -525,6 +531,7 @@
           <span style="color:#ccc;font-size:18px;line-height:30px;">|</span>
           <button id="rd-night-btn"     onclick="rdToggleNight()"     style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🌙 Night</button>
           <button                       onclick="rdHighlight()"       style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🖊 Highlight</button>
+          <button onclick="downloadTranscript()" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">⬇ Save</button>
           <button id="rd-bookmark-btn"  onclick="rdBookmark()"        style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🔖 Bookmark</button>
         </div>
         <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
@@ -1605,6 +1612,43 @@ function restoreReadingPosition(){
     const el=document.getElementById('rd-text');
     if(el)setTimeout(function(){el.scrollTop=pct*(el.scrollHeight||0);},300);
   }
+}
+
+async function likeComment(id,btn){
+  try{
+    const res=await fetch(API+'/api/sermons/comments/'+id+'/like',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}
+    });
+    const data=await res.json();
+    if(btn){
+      const count=parseInt(btn.textContent.replace(/[^0-9]/g,''))||0;
+      btn.textContent=(data.liked?'❤ ':'♡ ')+(data.liked?count+1:Math.max(0,count-1));
+      btn.style.color=data.liked?'#e05555':'#8fa3c0';
+    }
+  }catch(e){}
+}
+
+function lhSetLang(lang){
+  lhActiveLang=lang;
+  document.querySelectorAll('.lh-lang').forEach(function(b){
+    var active=b.textContent.trim()===(lang==='all'?'🌍 All':lang.toUpperCase());
+    b.style.background=active?'rgba(212,175,55,0.15)':'transparent';
+    b.style.color=active?'#D4AF37':'#8fa3c0';
+    b.style.borderColor=active?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';
+  });
+  lhRender();
+}
+
+function downloadTranscript(){
+  if(!currentSermon||!currentSermon.transcript)return;
+  const text=currentSermon.title+'\n\n'+currentSermon.transcript;
+  const blob=new Blob([text],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=(currentSermon.title||'sermon').replace(/[^a-z0-9]/gi,'_')+'.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 

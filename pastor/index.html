@@ -1307,6 +1307,7 @@ async function handleApply() {
         fd.append('years_in_ministry', parseInt(document.getElementById('apply-years')?.value) || '');
         fd.append('statement', statement);
         fd.append('phone', phone);
+        fd.append('congregation_size', document.getElementById('apply-congregation')?.value||'');
         fd.append('certificate', certFile);
         res = await fetch(API + '/api/pastors/apply', {
           method: 'POST',
@@ -1326,6 +1327,7 @@ async function handleApply() {
             ordination_body: (document.getElementById('apply-ordination')?.value || '').trim(),
             years_in_ministry: parseInt(document.getElementById('apply-years')?.value) || null,
             phone,
+            congregation_size: document.getElementById('apply-congregation')?.value||null,
             statement
           })
         });
@@ -1526,7 +1528,7 @@ async function loadCategories() {
   } catch(e) {}
 }
 
-async function handleUpload() {
+async function handleUpload(isDraft) {
   const title = document.getElementById('up-title').value.trim();
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
   hideAlert('upload-error');
@@ -1546,6 +1548,7 @@ async function handleUpload() {
   }, 500);
   try {
     const data = await api('/api/sermons', 'POST', {
+      is_draft: isDraft||false,
       title,
       description: document.getElementById('up-desc').value.trim(),
       transcript: document.getElementById('up-transcript').value.trim(),
@@ -2345,6 +2348,54 @@ async function loadPlatformStats(){
       if(el)el.textContent=parseInt(stats[id]).toLocaleString();
     });
   }catch(e){}
+}
+
+
+async function suspendUser(id, name, isSuspended){
+  const action=isSuspended?'reinstate':'suspend';
+  const reason=isSuspended?null:prompt('Reason for suspending '+name+' (optional):');
+  if(!isSuspended&&reason===null)return; // cancelled
+  try{
+    await api('/api/admin/users/'+id+'/suspend','PUT',{suspended:!isSuspended,reason:reason});
+    showToast((isSuspended?'User reinstated':'User suspended')+' successfully');
+    loadUsers();
+  }catch(e){alert('Failed to '+action+' user');}
+}
+
+
+async function submitAppeal(applicationId){
+  const reason=prompt('Please explain why you believe your application should be reconsidered:');
+  if(!reason||!reason.trim())return;
+  try{
+    await api('/api/admin/appeals','POST',{application_id:applicationId,reason:reason.trim()});
+    showToast('Appeal submitted. Our team will review it within 3 business days.');
+  }catch(e){alert('Failed to submit appeal: '+(e.message||'Please try again'));}
+}
+
+
+async function logoutAllDevices(){
+  if(!confirm('This will log you out of all devices. Continue?'))return;
+  try{
+    await api('/api/auth/logout-all','POST',{});
+    localStorage.removeItem('pastor_token');
+    localStorage.removeItem('trinitarian_token');
+    activeToken=null;currentUser=null;
+    goTo('login');
+    showAlert('login-error','You have been logged out of all devices.','success');
+  }catch(e){alert('Failed to logout all devices');}
+}
+
+
+async function exportMyData(){
+  try{
+    const data=await api('/api/users/export');
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='trinitarian_data_export.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }catch(e){alert('Failed to export data. Please try again.');}
 }
 
 
