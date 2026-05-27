@@ -428,16 +428,16 @@
 
 <!-- Search bar + filter -->
   <div style="padding:16px 24px 12px;display:flex;align-items:center;gap:8px;">
-    <div style="position:relative;flex:1;">
+    <div style="position:relative;flex:1;min-width:0;">
       <input type="text" id="lh-search" placeholder="🔍 Search sermons, pastors..."
         oninput="lhSearch()"
-        style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:9px 36px 9px 14px;color:#e8e8e8;font-size:13px;outline:none;"/>
+        style="width:100%;max-width:220px;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:9px 36px 9px 14px;color:#e8e8e8;font-size:13px;outline:none;"/>
       <span id="lh-search-clear" onclick="document.getElementById('lh-search').value='';lhSearch();"
         style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#8fa3c0;cursor:pointer;font-size:14px;">✕</span>
     </div>
     <!-- Filter button -->
     <div style="position:relative;flex-shrink:0;">
-      <button id="lh-filter-btn" onclick="toggleFilterMenu()" style="background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:9px 14px;color:#D4AF37;cursor:pointer;font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+      <button id="lh-filter-btn" onclick="toggleFilterMenu()" style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:9px 18px;color:#D4AF37;cursor:pointer;font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px;">
         <span>⚙</span><span id="lh-filter-label">All</span>
       </button>
       <!-- Dropdown menu -->
