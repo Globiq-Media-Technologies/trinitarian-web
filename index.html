@@ -448,7 +448,7 @@
   </div>
 
   <!-- Category filter -->
-  <div style="padding:0 24px;margin-bottom:16px;overflow-x:auto;">
+  <div style="padding:0 24px;margin-bottom:8px;overflow-x:auto;">
     <div style="display:flex;gap:8px;width:max-content;">
       <button class="lh-cat active" onclick="lhSetCategory('All')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;">All</button>
       <button class="lh-cat" onclick="lhSetCategory('Faith')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Faith</button>
@@ -459,16 +459,11 @@
       <button class="lh-cat" onclick="lhSetCategory('Marriage')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Marriage</button>
       <button class="lh-cat" onclick="lhSetCategory('Leadership')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Leadership</button>
       <button class="lh-cat" onclick="lhSetCategory('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Bible Study</button>
-      <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;margin:0 4px;">|</span>
-      <button class="lh-lang" onclick="lhSetLang('all')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;">🌍 All</button>
-      <button class="lh-lang" onclick="lhSetLang('en')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">EN</button>
-      <button class="lh-lang" onclick="lhSetLang('fr')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">FR</button>
-      <button class="lh-lang" onclick="lhSetLang('yo')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">YO</button>
-      <button class="lh-lang" onclick="lhSetLang('ig')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">IG</button>
-            <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prayer</button>
+      <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;">Prayer</button>
     </div>
   </div>
 
+  
   <!-- Sermons grid -->
   <div id="lh-sermons" style="padding:0 24px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
     <div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Loading sermons...</div>
@@ -1682,16 +1677,6 @@ async function likeComment(id,btn){
   }catch(e){}
 }
 
-function lhSetLang(lang){
-  lhActiveLang=lang;
-  document.querySelectorAll('.lh-lang').forEach(function(b){
-    var active=b.textContent.trim()===(lang==='all'?'🌍 All':lang.toUpperCase());
-    b.style.background=active?'rgba(212,175,55,0.15)':'transparent';
-    b.style.color=active?'#D4AF37':'#8fa3c0';
-    b.style.borderColor=active?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';
-  });
-  lhRender();
-}
 
 function downloadTranscript(){
   if(!currentSermon||!currentSermon.transcript)return;
