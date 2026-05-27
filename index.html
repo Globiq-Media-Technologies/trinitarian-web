@@ -905,7 +905,7 @@ function goTo(page){
   if(page==='terms'){window.location.href='https://trinitarian.app/terms';return;}
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
   if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro)ro.textContent=(u.role||'listener').toUpperCase();}}
@@ -1782,15 +1782,6 @@ window.addEventListener('popstate', function(e){
     }
   }
 });
-
-// Push state on goTo for listener pages
-var _origGoTo=goTo;
-function goTo(page){
-  _origGoTo(page);
-  if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){
-    history.pushState({page:page},'',window.location.pathname);
-  }
-}
 
 function copySermonLink(){
   if(!currentSermon)return;
