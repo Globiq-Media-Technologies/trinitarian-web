@@ -993,33 +993,28 @@
     <!-- CHANGE PASSWORD -->
     <div id="page-changepass" class="page">
       <div class="page-header">
-        <div style="margin-bottom:16px;"><span class="back-arrow" style="position:static;display:inline-flex;" onclick="showPage('settings')">&#8592; Settings</span></div>
         <h1 class="page-title">Change Password</h1>
+        <p class="page-sub">Update your account password</p>
       </div>
-      <div class="profile-card" style="max-width:420px;">
-        <div class="alert alert-error" id="cp-error"></div>
-        <div class="alert alert-success" id="cp-success"></div>
-        <div class="form-group">
-          <label class="form-label">Current Password</label>
-          <div style="position:relative;display:block;"><input type="password" class="form-input" id="cp-current" placeholder="Current password" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-current');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;line-height:1;">👁</span></div>
+      <div style="max-width:480px;">
+        <div id="cp-success" style="display:none;" class="alert alert-success"></div>
+        <div id="cp-error" style="display:none;" class="alert alert-error"></div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Current Password</label>
+          <input type="password" class="form-input" id="cp-current" placeholder="Enter current password"/>
         </div>
-        <div class="form-group">
-          <label class="form-label">New Password</label>
-          <div style="position:relative;display:block;"><input type="password" class="form-input" id="cp-new" placeholder="Min. 8 characters" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-new');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;line-height:1;">👁</span></div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">New Password</label>
+          <input type="password" class="form-input" id="cp-new" placeholder="Enter new password (min. 8 characters)"/>
         </div>
-        <div class="form-group">
-          <label class="form-label">Confirm New Password</label>
-          <div style="position:relative;display:block;"><input type="password" class="form-input" id="cp-confirm" placeholder="Re-enter new password" style="padding-right:44px;" /><span onclick="var i=document.getElementById('cp-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;user-select:none;line-height:1;">👁</span></div>
+        <div style="margin-bottom:24px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Confirm New Password</label>
+          <input type="password" class="form-input" id="cp-confirm" placeholder="Confirm new password"/>
         </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-gold" onclick="changePassword()" style="flex:1;">Update Password</button>
-          <button class="btn btn-ghost" onclick="showPage('profile')" style="flex:1;">Cancel</button>
-        </div>
+        <button onclick="handleChangePassword()" class="btn btn-gold" style="width:100%;padding:14px;">Update Password</button>
       </div>
     </div>
 
-
-    <!-- INBOX -->
     <div id="page-inbox" class="page">
       <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><h1 class="page-title">Inbox</h1><p class="page-sub">Notifications and support messages</p></div>
@@ -1531,6 +1526,20 @@ async function handleUpload() {
   const title = document.getElementById('up-title').value.trim();
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
   hideAlert('upload-error');
+  // Show progress
+  const btn = document.getElementById('upload-btn');
+  const wrap = document.getElementById('upload-progress-wrap');
+  const bar = document.getElementById('upload-progress-bar');
+  const pct = document.getElementById('upload-progress-pct');
+  if (btn) { btn.disabled = true; btn.textContent = 'Uploading...'; }
+  if (wrap) wrap.style.display = 'block';
+  // Simulate progress
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 15, 90);
+    if (bar) bar.style.width = progress + '%';
+    if (pct) pct.textContent = Math.round(progress) + '%';
+  }, 500);
   try {
     const data = await api('/api/sermons', 'POST', {
       title,
@@ -2170,6 +2179,25 @@ function exploreRender(){
       +'<span>'+(s.category||s.type||'').toUpperCase()+'</span></div>';
     el.appendChild(card);
   });
+}
+
+async function handleChangePassword() {
+  const current = document.getElementById('cp-current').value;
+  const newPwd = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  hideAlert('cp-error'); hideAlert('cp-success');
+  if (!current || !newPwd || !confirm) { showAlert('cp-error', 'Please fill in all fields.'); return; }
+  if (newPwd.length < 8) { showAlert('cp-error', 'New password must be at least 8 characters.'); return; }
+  if (newPwd !== confirm) { showAlert('cp-error', 'Passwords do not match.'); return; }
+  try {
+    await api('/api/auth/change-password', 'POST', { current_password: current, new_password: newPwd });
+    showAlert('cp-success', '✅ Password updated successfully!', 'success');
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+  } catch(e) {
+    showAlert('cp-error', e.message || 'Failed to update password. Check your current password.');
+  }
 }
 
 </script>
