@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trinitarian — A Global Library of Christian Teachings</title>
   <meta name="description" content="Stream sermons from verified, ordained pastors worldwide."/>
+  <meta property="og:title" content="Trinitarian — A Global Library of Christian Teachings"/>
+  <meta property="og:description" content="Watch, listen and read sermons from verified, ordained pastors across the globe."/>
+  <meta property="og:image" content="https://trinitarian.app/og-image.png"/>
+  <meta property="og:url" content="https://trinitarian.app"/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Trinitarian — A Global Library of Christian Teachings"/>
+  <meta name="twitter:description" content="Watch, listen and read sermons from verified, ordained pastors across the globe."/>
+  <meta name="twitter:image" content="https://trinitarian.app/og-image.png"/>
+  <link rel="icon" type="image/png" href="https://trinitarian.app/favicon.png"/>
+  <link rel="apple-touch-icon" href="https://trinitarian.app/favicon.png"/>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{background:#071528;color:#e8e8e8;font-family:Georgia,serif;min-height:100vh;}
@@ -100,6 +111,9 @@
     .feature-card p { color: #8fa3c0; font-size: 14px; line-height: 1.7; }
 
     </style>
+  <!-- Google Analytics - replace G-XXXXXXXXXX with your Measurement ID -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
 </head>
 <body>
 
@@ -484,6 +498,7 @@
       <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;">⚑ Report</button>
         <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">♡ Like</button>
         <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">🔗 Share</button>
+        <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">📋 Copy Link</button>
     </div>
     <!-- Transcript tabs -->
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
@@ -950,7 +965,9 @@ async function initListenerHome(){updateNotifCount();
 
 async function lhLoadSermons(){
   const el=document.getElementById('lh-sermons');if(!el)return;
-  el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;"><div style="font-size:32px;margin-bottom:12px;">⏳</div>Loading sermons...</div>';
+  el.innerHTML='<div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
+      +Array(6).fill('<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:16px;"><div style="background:rgba(212,175,55,0.08);border-radius:8px;height:36px;width:36px;margin-bottom:10px;"></div><div style="background:rgba(212,175,55,0.06);border-radius:4px;height:14px;margin-bottom:8px;"></div><div style="background:rgba(212,175,55,0.04);border-radius:4px;height:12px;width:70%;"></div></div>').join('')
+      +'</div>';
   try{
     const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),12000);
     const tkn=localStorage.getItem('trinitarian_token');
@@ -1088,7 +1105,7 @@ function openSermon(s){
   // Increment view count
   if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});}const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
   goTo('player');
-  document.getElementById('player-title').textContent=s.title;
+  document.getElementById('player-title').textContent=sanitizeInput(s.title||'');
   document.getElementById('player-title2').textContent=s.title;
   document.getElementById('player-pastor').textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
   document.getElementById('player-desc').textContent=s.description||'';
@@ -1742,6 +1759,47 @@ async function saveLhPassword(){
 function showLhAlert(id,msg,type){
   var el=document.getElementById(id);
   if(el){el.textContent=msg;el.className='alert alert-'+(type||'error');el.style.display='block';}
+}
+
+function sanitizeInput(str){
+  if(!str)return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#x27;');
+}
+
+// Handle browser back button for listener pages
+window.addEventListener('popstate', function(e){
+  if(e.state&&e.state.page){
+    var el=document.getElementById('page-'+e.state.page);
+    if(el){
+      document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');p.style.display='none';});
+      el.classList.add('active');el.style.display='block';
+    }
+  }
+});
+
+// Push state on goTo for listener pages
+var _origGoTo=goTo;
+function goTo(page){
+  _origGoTo(page);
+  if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){
+    history.pushState({page:page},'',window.location.pathname);
+  }
+}
+
+function copySermonLink(){
+  if(!currentSermon)return;
+  const url='https://trinitarian.app/?sermon='+currentSermon.id;
+  navigator.clipboard.writeText(url).then(function(){
+    const t=document.createElement('div');
+    t.textContent='✅ Link copied!';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2000);
+  }).catch(function(){prompt('Copy this link:','https://trinitarian.app/?sermon='+currentSermon.id);});
 }
 
 

@@ -1461,6 +1461,7 @@ function renderSermonList(sermons, containerId) {
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
 }
@@ -1602,6 +1603,7 @@ async function loadStreams() {
       <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
   } catch(e) { document.getElementById('my-streams').innerHTML = '<p style="color:var(--text-muted);padding:12px 0;">Failed to load streams</p>'; }
@@ -1655,6 +1657,7 @@ async function loadAnalytics(period, btn) {
         <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
     } else {
@@ -1686,6 +1689,7 @@ async function loadNotifications() {
       <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
   } catch(e) { document.getElementById('notifications-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load notifications</p>'; }
@@ -1758,6 +1762,7 @@ function renderApplications(applications) {
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
 }
@@ -1929,6 +1934,7 @@ async function loadSupportMessages() {
       <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
   } catch(e) {
@@ -1967,6 +1973,7 @@ async function loadInbox() {
       <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
   } catch(e) { document.getElementById('inbox-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load</p>'; }
@@ -2020,6 +2027,7 @@ function renderUsers(list) {
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('')}</div>`;
 }
@@ -2066,6 +2074,7 @@ function renderPastors(list) {
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('')}</div>`;
 }
@@ -2439,6 +2448,8 @@ async function resolveReport(id,action){
   }catch(e){showToast('Failed to resolve report','error');}
 }
 
+
+function sanitizeInput(str){if(!str)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 </script>
 
