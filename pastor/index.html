@@ -2001,7 +2001,7 @@ let allUsersCache = [];
 async function loadUsers() {
   try {
     const data = await api('/api/admin/users');
-    allUsersCache = data?.users || [];
+    allUsersCache = Array.isArray(data) ? data : (data?.users || []);
     renderUsers(allUsersCache);
   } catch(e) { document.getElementById('users-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;">Failed to load users</p>'; }
 }
