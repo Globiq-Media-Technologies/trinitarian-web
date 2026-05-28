@@ -974,7 +974,7 @@ async function lhLoadSermons(){
     const tkn=localStorage.getItem('trinitarian_token');
     const res=await fetch(API+'/api/sermons?limit=50',{signal:ctrl.signal,headers:tkn?{'Authorization':'Bearer '+tkn}:{'Accept':'application/json'}});
     clearTimeout(tid);if(!res.ok)throw new Error('HTTP '+res.status);
-    const data=await res.json();const raw=Array.isArray(data)?data:(data.sermons||data.data||[]);
+    const data=await res.json();console.log('SERMONS API response:',JSON.stringify(data).substring(0,200));const raw=Array.isArray(data)?data:(data.sermons||data.data||[]);console.log('SERMONS raw count:',raw.length);
     const seen=new Set();lhAllSermons=raw.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
     if(!lhAllSermons.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:12px;">🎧</div><p style="color:#8fa3c0;margin-bottom:16px;">No sermons yet. Check back soon!</p><button onclick="lhLoadSermons()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">↻ Refresh</button></div>';return;}
     lhRender();
@@ -984,7 +984,7 @@ async function lhLoadSermons(){
   }
 }
 
-function lhRender(){
+function lhRender(){console.log('lhRender called, sermons:',lhAllSermons.length);
   const q=document.getElementById('lh-search')?.value.toLowerCase()||'';
   let list=lhAllSermons;
   // Filter by category
