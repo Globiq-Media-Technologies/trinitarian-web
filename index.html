@@ -925,7 +925,9 @@ window.addEventListener('load',async()=>{
     return;
   }
   const hash=window.location.hash.replace('#','');
+  console.log('LOAD: hash='+hash);
   const token=localStorage.getItem('trinitarian_token');
+  console.log('LOAD: token='+(token?'EXISTS':'NONE'));
   if(token){
     try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor'].includes(role)){window.open('https://trinitarian.app/pastor','_blank');}else{goTo('listener-home');setTimeout(function(){if(!lhAllSermons.length)lhLoadSermons();},300);}return;}}catch(e){}
     const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
@@ -949,7 +951,7 @@ function applyTranslations(lang){
   const srch=document.getElementById('lh-search');if(srch)srch.placeholder='🔍 '+t.search;
 }
 
-async function initListenerHome(){updateNotifCount();
+async function initListenerHome(){console.log('initListenerHome called');updateNotifCount();
   applyTranslations(localStorage.getItem('lh_lang')||'en');
   const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';
   lhAllSermons=[];lhCurrentCat='';lhCurrentType='all';
@@ -962,7 +964,8 @@ async function initListenerHome(){updateNotifCount();
 }
 
 async function lhLoadSermons(){
-  const el=document.getElementById('lh-sermons');if(!el)return;
+  console.log('lhLoadSermons called');
+  const el=document.getElementById('lh-sermons');if(!el){console.log('lh-sermons element NOT FOUND');return;}
   el.innerHTML='<div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
       +Array(6).fill('<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:16px;"><div style="background:rgba(212,175,55,0.08);border-radius:8px;height:36px;width:36px;margin-bottom:10px;"></div><div style="background:rgba(212,175,55,0.06);border-radius:4px;height:14px;margin-bottom:8px;"></div><div style="background:rgba(212,175,55,0.04);border-radius:4px;height:12px;width:70%;"></div></div>').join('')
       +'</div>';
