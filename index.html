@@ -1837,46 +1837,21 @@ function declineCookies(){
 async function lhShowFollowing(){
   const el=document.getElementById('lh-sermons');
   if(!el)return;
-  el.style.cssText='display:block;';
-  el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;"><div style="font-size:32px;margin-bottom:12px;">⏳</div>Loading...</div>';
-  try{
-    const token=localStorage.getItem('trinitarian_token');
-    if(!token){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Sign in to see sermons from pastors you follow</div>';return;}
-    const res=await fetch(API+'/api/sermons?following=true',{headers:{'Authorization':'Bearer '+token}});
-    const data=await res.json();
-    const list=Array.isArray(data)?data:(data.sermons||[]);
-    if(!list.length){
-      el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">👥</div><p style="color:#8fa3c0;margin-bottom:8px;">You are not following anyone yet</p><p style="color:#666;font-size:13px;">Go to Pastors tab to find and follow pastors</p></div>';
-      return;
-    }
-    // Use lhAllSermons temporarily to render
-    const saved=lhAllSermons;
-    lhAllSermons=list;
-    lhRender();
-    lhAllSermons=saved;
-  }catch(e){
+  if(!lhFollowing.length){
     el.style.cssText='display:block;';
-    el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load following sermons</div>';
+    el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">👥</div><p style="color:#8fa3c0;margin-bottom:8px;">You are not following anyone yet</p><p style="color:#666;font-size:13px;">Go to Pastors tab to find and follow pastors</p></div>';
+    return;
   }
+  if(!lhAllSermons.length){await lhLoadSermons();}
+  const list=lhAllSermons.filter(function(s){return lhFollowing.includes(s.pastor_id||s.user_id);});
+  if(!list.length){
+    el.style.cssText='display:block;';
+    el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">📭</div><p style="color:#8fa3c0;">No sermons from followed pastors yet</p></div>';
+    return;
+  }
+  const backup=lhAllSermons;
+  lhAllSermons=list;
+  el.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;';
+  lhRender();
+  lhAllSermons=backup;
 }
-
-
-</script>
-
-<!-- Cookie Consent Banner -->
-<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d2142;border-top:1px solid rgba(212,175,55,0.3);padding:16px 20px;z-index:99998;display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
-  <div style="flex:1;min-width:200px;">
-    <p style="color:#e8e8e8;font-size:13px;line-height:1.6;margin:0;">
-      We use cookies to improve your experience. By using Trinitarian you agree to our
-      <span onclick="window.location.href='https://trinitarian.app/privacy'" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Privacy Policy</span>
-      and
-      <span onclick="window.location.href='https://trinitarian.app/terms'" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">Terms of Service</span>.
-    </p>
-  </div>
-  <div style="display:flex;gap:8px;flex-shrink:0;">
-    <button onclick="acceptCookies()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 20px;cursor:pointer;font-size:13px;font-weight:700;">Accept</button>
-    <button onclick="declineCookies()" style="background:transparent;color:#8fa3c0;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">Decline</button>
-  </div>
-</div>
-</body>
-</html>
