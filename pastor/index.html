@@ -1045,6 +1045,14 @@
         <h1 class="page-title">All Users</h1>
         <p class="page-sub">Manage platform users</p>
       </div>
+      <!-- Role filter tabs -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="users-role-tab active" onclick="filterUsersByRole('all',this)" style="padding:6px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:var(--gold);cursor:pointer;font-size:12px;">All</button>
+        <button class="users-role-tab" onclick="filterUsersByRole('listener',this)" style="padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Listeners</button>
+        <button class="users-role-tab" onclick="filterUsersByRole('pastor',this)" style="padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Pastors</button>
+        <button class="users-role-tab" onclick="filterUsersByRole('moderator',this)" style="padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Moderators</button>
+        <button class="users-role-tab" onclick="filterUsersByRole('admin',this)" style="padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Admins</button>
+      </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
         <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers();document.getElementById('users-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
         <span id="users-search-clear" onclick="document.getElementById('users-search').value='';filterUsers();document.getElementById('users-search-clear').style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
@@ -2503,6 +2511,20 @@ async function changeUserRole(id, name, currentRole){
       loadUsers();
     }catch(e){const err=inner.querySelector('#role-error');if(err){err.textContent=e.message||'Failed to update role';err.style.display='block';}}
   };
+}
+
+
+function filterUsersByRole(role, btn){
+  document.querySelectorAll('.users-role-tab').forEach(function(b){
+    b.style.background='transparent';
+    b.style.color='var(--text-muted)';
+    b.style.borderColor='var(--border)';
+  });
+  btn.style.background='rgba(212,175,55,0.15)';
+  btn.style.color='var(--gold)';
+  btn.style.borderColor='rgba(212,175,55,0.3)';
+  const filtered=role==='all'?allUsersCache:allUsersCache.filter(function(u){return u.role===role;});
+  renderUsers(filtered);
 }
 
 
