@@ -1843,7 +1843,13 @@ async function lhShowFollowing(){
     return;
   }
   if(!lhAllSermons.length){await lhLoadSermons();}
-  const list=lhAllSermons.filter(function(s){return lhFollowing.includes(s.pastor_id||s.user_id);});
+  // Convert all IDs to strings for comparison
+  const followingStr=lhFollowing.map(function(id){return String(id);});
+  const list=lhAllSermons.filter(function(s){
+    const pid=String(s.pastor_id||s.user_id||'');
+    return followingStr.includes(pid);
+  });
+  console.log('Following IDs:',lhFollowing,'Sermon pastor_ids:',lhAllSermons.slice(0,3).map(function(s){return s.pastor_id;}));
   if(!list.length){
     el.style.cssText='display:block;';
     el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">📭</div><p style="color:#8fa3c0;">No sermons from followed pastors yet</p></div>';
