@@ -936,7 +936,7 @@ window.addEventListener('load',async()=>{
 
 window.addEventListener('hashchange',()=>{const hash=window.location.hash.replace('#','');if(hash&&['listener'].includes(hash))goTo(hash);else if(!hash)goTo('home');});
 
-let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='';
+let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='',lhActiveCategory='All',lhActiveLang='all';
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
 let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
 
