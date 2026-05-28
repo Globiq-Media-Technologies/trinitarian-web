@@ -476,6 +476,13 @@
     <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
+  <!-- Tabs - visible right at top -->
+  <div style="display:flex;gap:6px;padding:10px 16px;background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);overflow-x:auto;scrollbar-width:none;">
+    <button onclick="playerShowTab('info',event)" class="ptab active" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:13px;white-space:nowrap;">Info</button>
+    <button onclick="playerShowTab('transcript',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Read</button>
+    <button onclick="playerShowTab('reading',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Reading Mode</button>
+    <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Comments</button>
+  </div>
   <div style="max-width:800px;margin:0 auto;padding:24px;">
     <!-- Video/Audio player -->
     <div style="text-align:right;margin-bottom:6px;"><span onclick="playerFullscreen()" style="color:#8fa3c0;font-size:11px;cursor:pointer;">⛶ Click for fullscreen</span></div>
