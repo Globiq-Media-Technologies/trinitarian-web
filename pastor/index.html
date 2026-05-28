@@ -1467,9 +1467,9 @@ function renderSermonList(sermons, containerId) {
       </div>
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;">
-      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      <button onclick="event.stopPropagation();openEditSermonById('${s.id}')" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();deleteSermonById('${s.id}')" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon=${s.id}').then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
     </div>
   `).join('');
 }
@@ -2525,6 +2525,20 @@ function filterUsersByRole(role, btn){
   btn.style.borderColor='rgba(212,175,55,0.3)';
   const filtered=role==='all'?allUsersCache:allUsersCache.filter(function(u){return u.role===role;});
   renderUsers(filtered);
+}
+
+
+function deleteSermonById(id){
+  const s=allSermonsCache?allSermonsCache.find(function(x){return String(x.id)===String(id);}):null;
+  deleteSermon(id, s?s.title:'this sermon');
+}
+
+function openEditSermonById(id){
+  const s=allSermonsCache?allSermonsCache.find(function(x){return String(x.id)===String(id);}):null;
+  if(s){openEditSermon(s);}else{
+    // Fetch sermon details
+    api('/api/sermons/'+id).then(function(data){openEditSermon(data.sermon||data);}).catch(function(){alert('Could not load sermon details');});
+  }
 }
 
 
