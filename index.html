@@ -476,13 +476,7 @@
     <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
-  <!-- Tabs - visible right at top -->
-  <div style="display:flex;gap:6px;padding:10px 16px;background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);overflow-x:auto;scrollbar-width:none;">
-    <button onclick="playerShowTab('info',event)" class="ptab active" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:13px;white-space:nowrap;">Info</button>
-    <button onclick="playerShowTab('transcript',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Read</button>
-    <button onclick="playerShowTab('reading',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Reading Mode</button>
-    <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;white-space:nowrap;">Comments</button>
-  </div>
+
   <div style="max-width:800px;margin:0 auto;padding:14px 16px;">
     <!-- Video/Audio player - compact -->
     <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;">
@@ -512,7 +506,7 @@
       <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;">💬 Comments</button>
     </div>
     <!-- Info tab -->
-    <div id="ptab-info" style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;">
+    <div id="ptab-info" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;">
       <h2 id="player-title2" style="color:#fff;font-size:18px;margin-bottom:8px;"></h2>
       <p id="player-pastor" style="color:#D4AF37;font-size:13px;margin-bottom:12px;"></p>
       <p id="player-desc" style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;"></p>
@@ -525,7 +519,8 @@
       <div id="lh-recommended" style="margin-top:20px;"></div>
     </div>
     <!-- Transcript tab -->
-    <div id="ptab-transcript" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
+    <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
+    <div id="ptab-transcript" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <span style="color:#D4AF37;font-size:11px;letter-spacing:1px;">FONT SIZE:</span>
         <button onclick="ptFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:6px;padding:4px 10px;cursor:pointer;">A-</button>
@@ -536,7 +531,8 @@
       <p id="pt-empty" style="color:#8fa3c0;text-align:center;padding:20px;">No transcript available for this sermon.</p>
     </div>
     <!-- Reading Mode tab -->
-    <div id="ptab-reading" style="display:none;">
+    <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
+    <div id="ptab-reading" style="display:block;">
       <div style="text-align:center;margin-bottom:10px;">
         <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
       </div>
@@ -559,7 +555,8 @@
     </div>
 
     <!-- Comments tab -->
-    <div id="ptab-comments" style="display:none;">
+    <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
+    <div id="ptab-comments" style="display:block;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
