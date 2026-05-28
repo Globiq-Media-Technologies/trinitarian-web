@@ -1046,7 +1046,7 @@
         <p class="page-sub">Manage platform users</p>
       </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
-        <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
+        <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers();document.getElementById('users-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
         <span id="users-search-clear" onclick="document.getElementById('users-search').value='';filterUsers();document.getElementById('users-search-clear').style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
       </div>
       <div id="users-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
@@ -1059,7 +1059,7 @@
         <p class="page-sub">All verified pastors on Trinitarian</p>
       </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
-        <input type="text" id="pastors-search" placeholder="🔍 Search pastors..." oninput="filterPastors()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
+        <input type="text" id="pastors-search" placeholder="🔍 Search pastors..." oninput="filterPastors();document.getElementById('pastors-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
         <span id="pastors-search-clear" onclick="document.getElementById('pastors-search').value='';filterPastors();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
       </div>
       <div id="pastors-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
