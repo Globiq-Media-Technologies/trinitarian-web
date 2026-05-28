@@ -1850,17 +1850,19 @@ async function lhShowFollowing(){
     const pid=String(s.pastor_id||s.user_id||'');
     return followingStr.includes(pid);
   });
-  console.log('Filtered list length:',list.length,'from',lhAllSermons.length,'sermons');
   if(!list.length){
     el.style.cssText='display:block;';
     el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">📭</div><p style="color:#8fa3c0;">No sermons from followed pastors yet</p></div>';
     return;
   }
   const backup=lhAllSermons;
+  const backupType=lhCurrentType;
   lhAllSermons=list;
+  lhCurrentType='all';
   el.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;';
   lhRender();
   lhAllSermons=backup;
+  lhCurrentType=backupType;
 }
 
 </script>
