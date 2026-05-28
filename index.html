@@ -1834,6 +1834,32 @@ function declineCookies(){
   if(banner)banner.style.display='none';
 }
 
+async function lhShowFollowing(){
+  const el=document.getElementById('lh-sermons');
+  if(!el)return;
+  el.style.cssText='display:block;';
+  el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;"><div style="font-size:32px;margin-bottom:12px;">⏳</div>Loading...</div>';
+  try{
+    const token=localStorage.getItem('trinitarian_token');
+    if(!token){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Sign in to see sermons from pastors you follow</div>';return;}
+    const res=await fetch(API+'/api/sermons?following=true',{headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    const list=Array.isArray(data)?data:(data.sermons||[]);
+    if(!list.length){
+      el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">👥</div><p style="color:#8fa3c0;margin-bottom:8px;">You are not following anyone yet</p><p style="color:#666;font-size:13px;">Go to Pastors tab to find and follow pastors</p></div>';
+      return;
+    }
+    // Use lhAllSermons temporarily to render
+    const saved=lhAllSermons;
+    lhAllSermons=list;
+    lhRender();
+    lhAllSermons=saved;
+  }catch(e){
+    el.style.cssText='display:block;';
+    el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Could not load following sermons</div>';
+  }
+}
+
 
 </script>
 
