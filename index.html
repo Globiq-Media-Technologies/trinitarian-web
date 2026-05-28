@@ -1020,7 +1020,11 @@ function lhTab(btn,type){
   lhCurrentType=type;
   if(type==='pastors'){lhShowPastors();return;}
   if(type==='saved'){lhShowSaved();return;}
-  document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();
+  if(type==='following'){lhShowFollowing();return;}
+  if(type==='live'){lhShowLive();return;}
+  const el=document.getElementById('lh-sermons');
+  if(el)el.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';
+  if(!lhAllSermons.length){lhLoadSermons();}else{lhRender();}
 }
 
 function lhFilterCat(cat,btn){
