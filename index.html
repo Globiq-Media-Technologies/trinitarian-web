@@ -494,7 +494,7 @@
       <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;">⚑ Report</button>
         <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">♡ Like</button>
         <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">🔗 Share</button>
-        <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">📋 Copy Link</button>
+        <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">📋 Copy</button>
     </div>
     <!-- Transcript tabs -->
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
@@ -1610,19 +1610,33 @@ async function joinLiveStream(streamId,title){
 
 async function toggleLike(){
   if(!currentSermon)return;
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token){
+    const t=document.createElement('div');
+    t.textContent='Sign in to like sermons';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2000);
+    return;
+  }
   const btn=document.getElementById('lh-like-btn');
   try{
     const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/like',{
       method:'POST',
-      headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}
+      headers:{'Authorization':'Bearer '+token}
     });
+    if(!res.ok)throw new Error('Failed');
     const data=await res.json();
     if(btn){
       btn.textContent=data.liked?'❤ Liked':'♡ Like';
       btn.style.color=data.liked?'#e05555':'#8fa3c0';
       btn.style.borderColor=data.liked?'rgba(224,85,85,0.4)':'rgba(212,175,55,0.2)';
     }
-  }catch(e){}
+  }catch(e){
+    const t=document.createElement('div');
+    t.textContent='Could not like sermon. Please try again.';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#e05555;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2000);
+  }
 }
 
 async function loadRecommended(){
