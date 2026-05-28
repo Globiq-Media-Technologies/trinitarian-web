@@ -975,7 +975,7 @@ async function lhLoadSermons(){
   try{
     const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),12000);
     const tkn=localStorage.getItem('trinitarian_token');
-    const res=await fetch(API+'/api/sermons?limit=50',{signal:ctrl.signal,headers:tkn?{'Authorization':'Bearer '+tkn}:{'Accept':'application/json'}});
+    const res=await fetch(API+'/api/sermons?limit=100',{signal:ctrl.signal,headers:tkn?{'Authorization':'Bearer '+tkn}:{'Accept':'application/json'}});
     clearTimeout(tid);if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();const raw=Array.isArray(data)?data:(data.sermons||data.data||[]);
     const seen=new Set();lhAllSermons=raw.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
@@ -1842,6 +1842,7 @@ async function lhShowFollowing(){
     el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">👥</div><p style="color:#8fa3c0;margin-bottom:8px;">You are not following anyone yet</p><p style="color:#666;font-size:13px;">Go to Pastors tab to find and follow pastors</p></div>';
     return;
   }
+  // Load sermons if not loaded
   if(!lhAllSermons.length){await lhLoadSermons();}
   // Convert all IDs to strings for comparison
   const followingStr=lhFollowing.map(function(id){return String(id);});
@@ -1849,7 +1850,7 @@ async function lhShowFollowing(){
     const pid=String(s.pastor_id||s.user_id||'');
     return followingStr.includes(pid);
   });
-  console.log('Following IDs:',lhFollowing,'Sermon pastor_ids:',lhAllSermons.slice(0,3).map(function(s){return s.pastor_id;}));
+  console.log('Filtered list length:',list.length,'from',lhAllSermons.length,'sermons');
   if(!list.length){
     el.style.cssText='display:block;';
     el.innerHTML='<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:16px;">📭</div><p style="color:#8fa3c0;">No sermons from followed pastors yet</p></div>';
