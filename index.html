@@ -1229,7 +1229,7 @@ function ptFontSize(dir){ptFontSz=Math.max(11,Math.min(22,ptFontSz+dir));documen
 function ptToggleNight(){ptIsNight=!ptIsNight;const el=document.getElementById('ptab-transcript');el.style.background=ptIsNight?'#fff':'#0d2142';document.getElementById('pt-text').style.color=ptIsNight?'#222':'#b0c4d8';document.getElementById('pt-night-btn').textContent=ptIsNight?'🌙 Night':'☀ Day';}
 
 async function playerSave(){if(!currentSermon)return;const idx=lhSaved.indexOf(currentSermon.id);if(idx>-1){lhSaved.splice(idx,1);}else{lhSaved.push(currentSermon.id);}localStorage.setItem('lh_saved',JSON.stringify(lhSaved));const saved=lhSaved.includes(currentSermon.id);const saveBtn=document.getElementById('btn-save');if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?'✅ Saved':'🔖 Save';}try{await fetch(API+'/api/sermons/'+currentSermon.id+'/save',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
-);}else{navigator.clipboard.writeText(window.location.href);alert('Link copied!');}}
+
 function playerDownload(){alert('Download will be available in v1.1');}
 
 async function playerReport(){
