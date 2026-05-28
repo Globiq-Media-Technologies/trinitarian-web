@@ -947,13 +947,89 @@ let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='',lhActiveCategory='All',l
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
 let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
 
-const LH_TRANS={en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...'},fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...'},ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...'},yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wa...'},ha:{home:'Gida',pastors:'Malamai',saved:'An Ajiye',inbox:'Saƙo',settings:'Saituna',search:'Nema...'},pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Pesquisar...'},es:{home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar...'},de:{home:'Start',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Suchen...'}};
+const LH_TRANS={
+  en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...',
+    all:'All',video:'Video',audio:'Audio',text:'Text',article:'Article',live:'Live',following:'Following',
+    sign_in:'Sign In / Register',pastor_login:'Pastor Login',
+    no_sermons:'No sermons found',loading:'Loading sermons...',
+    follow:'+ Follow',following_btn:'✓ Following',
+    like:'♡ Like',liked:'❤ Liked',share:'🔗 Share',copy:'📋 Copy',report:'⚑ Report',
+    info:'Info',read:'Read',reading:'Reading Mode',comments:'Comments',
+    notifications:'Notifications',mark_read:'Mark all read',
+    language:'Language',sign_out:'Sign Out',
+    categories:'Categories',filter:'Filter'},
+  fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...',
+    all:'Tout',video:'Vidéo',audio:'Audio',text:'Texte',article:'Article',live:'En Direct',following:'Abonnements',
+    sign_in:'Connexion / Inscription',pastor_login:'Espace Pasteur',
+    no_sermons:'Aucun sermon trouvé',loading:'Chargement...',
+    follow:'+ Suivre',following_btn:'✓ Abonné',
+    like:'♡ Aimer',liked:'❤ Aimé',share:'🔗 Partager',copy:'📋 Copier',report:'⚑ Signaler',
+    info:'Info',read:'Lire',reading:'Mode Lecture',comments:'Commentaires',
+    notifications:'Notifications',mark_read:'Tout marquer lu',
+    language:'Langue',sign_out:'Déconnexion',
+    categories:'Catégories',filter:'Filtrer'},
+  yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wá orin...',
+    all:'Gbogbo',video:'Fidio',audio:'Ohun',text:'Ọrọ',article:'Àpilẹ̀kọ',live:'Laaye',following:'Tẹle',
+    sign_in:'Wọlé / Forúkọsílẹ̀',pastor_login:'Wọlé Pásítọ̀',
+    no_sermons:'Ko si waasu',loading:'Ṣíṣe ìfisílẹ̀...',
+    follow:'+ Tẹle',following_btn:'✓ Tẹlemo',
+    like:'♡ Fẹran',liked:'❤ Fẹran',share:'🔗 Pin',copy:'📋 Daakọ',report:'⚑ Ìjábọ̀',
+    info:'Alaye',read:'Ka',reading:'Ipo Kíka',comments:'Àwọn ọ̀rọ̀',
+    notifications:'Ìwífún',mark_read:'Ṣe gbogbo wọn ka',
+    language:'Èdè',sign_out:'Jáde',
+    categories:'Àwọn ẹka',filter:'Àlẹmọ'},
+  ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...',
+    all:'Niile',video:'Vidiyo',audio:'Ụda',text:'Ederede',article:'Akụkọ',live:'Dị ndụ',following:'Soro',
+    sign_in:'Banye / Dezie aha',pastor_login:'Banye Onye Nchọọcha',
+    no_sermons:'Ọ dịghị nkuzi',loading:'Na-ebu...',
+    follow:'+ Soro',following_btn:'✓ Na-esoro',
+    like:'♡ Hụnanya',liked:'❤ Hụnanya',share:'🔗 Kesa',copy:'📋 Detuo',report:'⚑ Kọọ',
+    info:'Ozi',read:'Gụọ',reading:'Ụdị Ịgụ',comments:'Okwu ndị ọzọ',
+    notifications:'Ọkwa',mark_read:'Mee ha niile ka agụrụ',
+    language:'Asụsụ',sign_out:'Pụọ',
+    categories:'Ụdị',filter:'Họrọ'},
+  ha:{home:'Gida',pastors:'Malamai',saved:'Ajiye',inbox:'Saƙo',settings:'Saiti',search:'Nemi...',
+    all:'Duka',video:'Bidiyo',audio:'Sauti',text:'Rubutu',article:'Labari',live:'Kai tsaye',following:'Bi',
+    sign_in:'Shiga / Rajista',pastor_login:'Shiga Malami',
+    no_sermons:'Ba waazi ba',loading:'Ana ɗaukewa...',
+    follow:'+ Bi',following_btn:'✓ Ina bin',
+    like:'♡ So',liked:'❤ So',share:'🔗 Raba',copy:'📋 Kwafi',report:'⚑ Rahoto',
+    info:'Bayani',read:'Karanta',reading:'Yanayin Karatu',comments:'Sharhi',
+    notifications:'Sanarwa',mark_read:'Yiwa duka alama',
+    language:'Harshe',sign_out:'Fita',
+    categories:'Nau-i',filter:'Tace'},
+  pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Buscar...',
+    all:'Todos',video:'Vídeo',audio:'Áudio',text:'Texto',article:'Artigo',live:'Ao Vivo',following:'Seguindo',
+    sign_in:'Entrar / Registrar',pastor_login:'Acesso Pastor',
+    no_sermons:'Nenhum sermão encontrado',loading:'Carregando...',
+    follow:'+ Seguir',following_btn:'✓ Seguindo',
+    like:'♡ Curtir',liked:'❤ Curtido',share:'🔗 Compartilhar',copy:'📋 Copiar',report:'⚑ Denunciar',
+    info:'Info',read:'Ler',reading:'Modo Leitura',comments:'Comentários',
+    notifications:'Notificações',mark_read:'Marcar tudo lido',
+    language:'Idioma',sign_out:'Sair',
+    categories:'Categorias',filter:'Filtrar'}
+};
 
 function applyTranslations(lang){
-  const t=LH_TRANS[lang]||LH_TRANS.en;localStorage.setItem('lh_lang',lang);
+  const t=LH_TRANS[lang]||LH_TRANS.en;
+  localStorage.setItem('lh_lang',lang);
+  // Bottom nav
   const bnav=document.querySelector('.lh-bottom-nav');
-  if(bnav){const spans=bnav.querySelectorAll('.lh-bnav span:last-child');const keys=['home','pastors','saved','inbox','settings'];spans.forEach((s,i)=>{if(keys[i]&&t[keys[i]])s.textContent=t[keys[i]];});}
+  if(bnav){const spans=bnav.querySelectorAll('.lh-bnav span:last-child');const keys=['home','pastors','saved','inbox','settings'];spans.forEach(function(s,i){if(keys[i]&&t[keys[i]])s.textContent=t[keys[i]];});}
+  // Search placeholder
   const srch=document.getElementById('lh-search');if(srch)srch.placeholder='🔍 '+t.search;
+  // Tab buttons
+  const tabMap={all:t.all,video:t.video,audio:t.audio,text:t.text,article:t.article,live:t.live,saved:t.saved,following:t.following,pastors:t.pastors};
+  document.querySelectorAll('.lh-tab').forEach(function(btn){
+    const type=btn.getAttribute('onclick')?.match(/lhTab\(this,'([^']+)'\)/)?.[1];
+    if(type&&tabMap[type])btn.textContent=tabMap[type];
+  });
+  // Like/share buttons
+  const likeBtn=document.getElementById('lh-like-btn');
+  if(likeBtn&&likeBtn.textContent.includes('Like'))likeBtn.textContent=t.like;
+  // Apply language filter to sermons
+  lhActiveLang=lang==='en'?'all':lang;
+  if(lhAllSermons.length)lhRender();
 }
 
 async function initListenerHome(){updateNotifCount();
