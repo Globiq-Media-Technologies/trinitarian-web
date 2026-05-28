@@ -955,6 +955,9 @@ async function initListenerHome(){updateNotifCount();
   lhAllSermons=[];lhCurrentCat='';lhCurrentType='all';
   const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){const el=document.getElementById('lh-username');if(el)el.textContent=u.display_name||'';if(['admin','moderator'].includes(u.role)){const bar=document.getElementById('lh-admin-bar');if(bar)bar.style.display='block';}}
+  // Ensure page is visible before loading sermons
+  const lhPage=document.getElementById('page-listener-home');
+  if(lhPage){lhPage.style.display='block';lhPage.classList.add('active');}
   await lhLoadSermons();
 }
 
