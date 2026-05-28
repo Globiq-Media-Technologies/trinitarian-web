@@ -975,12 +975,16 @@ async function lhLoadSermons(){
     if(!lhAllSermons.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:12px;">🎧</div><p style="color:#8fa3c0;margin-bottom:16px;">No sermons yet. Check back soon!</p><button onclick="lhLoadSermons()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;">↻ Refresh</button></div>';return;}
     lhRender();
   }catch(e){
-    const msg=e.name==='AbortError'?'Connection timed out.':'Could not load sermons.';
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📡</div><p style="color:#8fa3c0;margin-bottom:16px;">'+msg+'</p><button onclick="lhLoadSermons()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;font-weight:700;">↻ Try Again</button></div>';
+    const msg=e.name==='AbortError'?'Connection timed out.':'Could not load sermons ('+e.message+')';
+    console.error('lhLoadSermons error:',e);
+    el.style.display='block';
+    el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📡</div><p style="color:#8fa3c0;margin-bottom:16px;">'+msg+'</p><button onclick="lhLoadSermons()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:10px 24px;cursor:pointer;font-size:13px;font-weight:700;">↻ Try Again</button></div>';
   }
 }
 
 function lhRender(){
+  const el2=document.getElementById('lh-sermons');
+  if(el2){el2.style.display='grid';el2.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';}
   const q=document.getElementById('lh-search')?.value.toLowerCase()||'';
   let list=lhAllSermons;
   // Filter by category
