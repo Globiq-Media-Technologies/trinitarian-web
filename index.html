@@ -933,7 +933,9 @@ window.addEventListener('load',async()=>{
   }
   const hash=window.location.hash.replace('#','');
   const token=localStorage.getItem('trinitarian_token');
-  if(token){
+  // Only auto-redirect if user was previously on a logged-in page
+  const wasLoggedIn=hash&&['listener','listener-home','player','settings','notifications'].includes(hash);
+  if(token&&wasLoggedIn){
     try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor'].includes(role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}}catch(e){}
     const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
     if(user){if(['admin','moderator','pastor'].includes(user?.role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}
