@@ -843,7 +843,43 @@
       </div>
     </div>
 
-    <div id="page-settings" class="page">
+    <div id="page-escalations" class="page">
+  <div class="page-header">
+    <h1 class="page-title">Escalate to Admin</h1>
+    <p class="page-sub">Report issues beyond your moderator privileges</p>
+  </div>
+  <div id="escalations-list-wrap" style="margin-bottom:28px;"></div>
+  <div class="card" style="max-width:600px;">
+    <h3 style="color:var(--white);font-size:15px;margin-bottom:16px;">New Escalation</h3>
+    <div class="alert alert-error" id="escalation-error"></div>
+    <div class="alert alert-success" id="escalation-success"></div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="esc-type" class="form-control">
+        <option value="user_conduct">User Conduct</option>
+        <option value="content_violation">Content Violation</option>
+        <option value="technical">Technical Issue</option>
+        <option value="policy">Policy Question</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Subject</label>
+      <input type="text" id="esc-subject" class="form-control" placeholder="Brief summary of the issue"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea id="esc-description" class="form-control" rows="5" placeholder="Describe the issue in detail. Include any relevant user IDs, sermon IDs or other references."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reference ID (optional)</label>
+      <input type="text" id="esc-reference" class="form-control" placeholder="User ID, Sermon ID, etc."/>
+    </div>
+    <button class="btn btn-gold" onclick="submitEscalation()">⬆ Submit Escalation</button>
+  </div>
+</div>
+
+<div id="page-settings" class="page">
       <div class="page-header">
         <h1 class="page-title">Settings</h1>
         <p class="page-sub">Manage your account preferences</p>
@@ -1025,8 +1061,10 @@
       <div style="display:flex;gap:8px;margin-bottom:16px;" id="inbox-tabs">
         <button onclick="showInboxTab('notifications',this)" class="btn btn-gold btn-sm" id="tab-notifications">Notifications</button>
         <button onclick="showInboxTab('support',this)" class="btn btn-ghost btn-sm" id="tab-support" style="display:none;">📨 Support Messages</button>
+        <button onclick="showInboxTab('admin-escalations',this)" class="btn btn-ghost btn-sm" id="tab-admin-escalations" style="display:none;">⬆ Escalations</button>
    
-        <button onclick="showInboxTab('flagged',this)" class="btn btn-ghost btn-sm" id="tab-flagged" style="display:none;">🚩 Flagged</button>   </div>
+        <button onclick="showInboxTab('flagged',this)" class="btn btn-ghost btn-sm" id="tab-flagged" style="display:none;">🚩 Flagged</button>
+        <button onclick="showInboxTab('escalations',this)" class="btn btn-ghost btn-sm" id="tab-escalations" style="display:none;">⬆ Escalate</button>   </div>
       <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <div id="inbox-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
       </div>
@@ -2540,6 +2578,123 @@ function openEditSermonById(id){
     // Fetch sermon details
     api('/api/sermons/'+id).then(function(data){openEditSermon(data.sermon||data);}).catch(function(){alert('Could not load sermon details');});
   }
+}
+
+
+async function loadEscalations(){
+  const wrap=document.getElementById('escalations-list-wrap');
+  if(!wrap)return;
+  try{
+    const data=await api('/api/admin/escalations');
+    const list=data.escalations||[];
+    if(!list.length){wrap.innerHTML='<p style="color:var(--text-muted);font-size:13px;">No previous escalations.</p>';return;}
+    wrap.innerHTML='<h3 style="color:var(--white);font-size:15px;margin-bottom:12px;">Previous Escalations</h3>'
+      +list.map(function(e){return `<div style="background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="color:var(--white);font-size:14px;font-weight:500;">${e.subject}</span>
+          <span style="padding:3px 10px;border-radius:10px;font-size:11px;background:${e.status==='resolved'?'rgba(64,201,106,0.15)':'rgba(212,175,55,0.15)'};color:${e.status==='resolved'?'#40c96a':'#D4AF37'};">${e.status}</span>
+        </div>
+        <p style="color:var(--text-muted);font-size:12px;margin:0 0 4px;">${e.type} · ${new Date(e.created_at).toLocaleDateString()}</p>
+        ${e.admin_response?`<p style="color:#b0c4d8;font-size:13px;margin:8px 0 0;padding:8px;background:rgba(212,175,55,0.05);border-radius:8px;border-left:3px solid #D4AF37;"><strong>Admin response:</strong> ${e.admin_response}</p>`:''}
+      </div>`;}).join('');
+  }catch(e){wrap.innerHTML='';}
+}
+
+async function submitEscalation(){
+  const subject=document.getElementById('esc-subject').value.trim();
+  const description=document.getElementById('esc-description').value.trim();
+  const type=document.getElementById('esc-type').value;
+  const reference=document.getElementById('esc-reference').value.trim();
+  if(!subject||!description){showAlert('escalation-error','Please fill in subject and description');return;}
+  try{
+    await api('/api/admin/escalate','POST',{subject,description,type,reference_id:reference||null});
+    showAlert('escalation-success','✅ Escalation submitted. The administrator has been notified.','success');
+    document.getElementById('esc-subject').value='';
+    document.getElementById('esc-description').value='';
+    document.getElementById('esc-reference').value='';
+    loadEscalations();
+  }catch(e){showAlert('escalation-error',e.message||'Failed to submit escalation');}
+}
+
+
+function showEscalationPanel(){
+  const content=document.getElementById('inbox-content');
+  if(!content)return;
+  content.innerHTML=`<div style="max-width:600px;">
+    <div id="escalations-list-wrap" style="margin-bottom:24px;"></div>
+    <div class="card">
+      <h3 style="color:var(--white);font-size:15px;margin-bottom:16px;">New Escalation</h3>
+      <div class="alert alert-error" id="escalation-error"></div>
+      <div class="alert alert-success" id="escalation-success"></div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select id="esc-type" class="form-control">
+          <option value="user_conduct">User Conduct</option>
+          <option value="content_violation">Content Violation</option>
+          <option value="technical">Technical Issue</option>
+          <option value="policy">Policy Question</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" id="esc-subject" class="form-control" placeholder="Brief summary of the issue"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="esc-description" class="form-control" rows="5" placeholder="Describe the issue in detail. Include any relevant user IDs, sermon IDs or other references."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference ID (optional)</label>
+        <input type="text" id="esc-reference" class="form-control" placeholder="User ID, Sermon ID, etc."/>
+      </div>
+      <button class="btn btn-gold" onclick="submitEscalation()">⬆ Submit Escalation</button>
+    </div>
+  </div>`;
+  loadEscalations();
+}
+
+
+async function loadAdminEscalations(){
+  const content=document.getElementById('inbox-content');
+  if(!content)return;
+  content.innerHTML='<div style="color:var(--text-muted);padding:20px;">Loading escalations...</div>';
+  try{
+    const data=await api('/api/admin/escalations');
+    const list=data.escalations||[];
+    if(!list.length){content.innerHTML='<p style="color:var(--text-muted);padding:20px;">No escalations yet.</p>';return;}
+    content.innerHTML='<div style="max-width:700px;">'+list.map(function(e){return `
+      <div style="background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <div>
+            <span style="color:var(--white);font-size:14px;font-weight:500;">${e.subject}</span>
+            <span style="color:var(--text-muted);font-size:12px;margin-left:10px;">${e.type}</span>
+          </div>
+          <span style="padding:3px 10px;border-radius:10px;font-size:11px;background:${e.status==='resolved'?'rgba(64,201,106,0.15)':'rgba(212,175,55,0.15)'};color:${e.status==='resolved'?'#40c96a':'#D4AF37'};">${e.status}</span>
+        </div>
+        <p style="color:var(--text-muted);font-size:12px;margin:0 0 8px;">From: ${e.moderator_name} · ${new Date(e.created_at).toLocaleDateString()}</p>
+        <p style="color:#b0c4d8;font-size:13px;margin:0 0 12px;">${e.description}</p>
+        ${e.reference_id?`<p style="color:var(--text-muted);font-size:12px;">Reference: ${e.reference_id}</p>`:''}
+        ${e.status==='pending'?`
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <textarea id="esc-response-${e.id}" class="form-control" rows="3" placeholder="Your response to the moderator..." style="margin-bottom:8px;"></textarea>
+          <div style="display:flex;gap:8px;">
+            <button onclick="respondToEscalation('${e.id}','resolved')" class="btn btn-gold btn-sm">✓ Resolve</button>
+            <button onclick="respondToEscalation('${e.id}','actioned')" class="btn btn-ghost btn-sm">⚡ Action Taken</button>
+          </div>
+        </div>`:`<p style="color:#b0c4d8;font-size:13px;margin-top:8px;padding:8px;background:rgba(212,175,55,0.05);border-radius:8px;border-left:3px solid #D4AF37;"><strong>Your response:</strong> ${e.admin_response||''}</p>`}
+      </div>`;}).join('')+'</div>';
+  }catch(e){content.innerHTML='<p style="color:var(--error);padding:20px;">Failed to load escalations</p>';}
+}
+
+async function respondToEscalation(id,status){
+  const response=document.getElementById('esc-response-'+id)?.value.trim();
+  if(!response){alert('Please enter a response');return;}
+  try{
+    await api('/api/admin/escalations/'+id,'PUT',{response,status});
+    showToast('Response sent to moderator');
+    loadAdminEscalations();
+  }catch(e){alert('Failed to respond');}
 }
 
 
