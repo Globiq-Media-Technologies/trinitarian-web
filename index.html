@@ -478,14 +478,36 @@
   </div>
 
   <div style="max-width:800px;margin:0 auto;padding:14px 16px;">
-    <!-- Video/Audio player - compact -->
-    <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;">
-      <div style="font-size:40px;flex-shrink:0;" id="player-icon">🎧</div>
-      <div style="flex:1;min-width:0;">
-        <div id="player-media-title" style="color:#fff;font-size:14px;font-weight:600;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
-        <div id="player-media-pastor" style="color:#D4AF37;font-size:12px;"></div>
+    <!-- HTML5 Media Player -->
+    <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+      <!-- Video player -->
+      <video id="lh-video-player" controls controlsList="nodownload" style="width:100%;max-height:280px;display:none;background:#000;"
+        onplay="document.getElementById('player-icon').textContent='▶';"
+        onpause="document.getElementById('player-icon').textContent='⏸';"
+        onended="document.getElementById('player-icon').textContent='🎬';">
+        Your browser does not support video playback.
+      </video>
+      <!-- Audio player -->
+      <div id="lh-audio-wrap" style="display:none;padding:16px 20px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div id="player-icon" style="font-size:36px;">🎧</div>
+          <div style="flex:1;min-width:0;">
+            <div id="player-media-title" style="color:#fff;font-size:14px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+            <div id="player-media-pastor" style="color:#D4AF37;font-size:12px;"></div>
+          </div>
+        </div>
+        <audio id="lh-audio-player" controls controlsList="nodownload" style="width:100%;height:40px;accent-color:#D4AF37;">
+          Your browser does not support audio playback.
+        </audio>
       </div>
-      <span onclick="playerFullscreen()" style="color:#8fa3c0;font-size:18px;cursor:pointer;flex-shrink:0;">⛶</span>
+      <!-- No media placeholder -->
+      <div id="lh-no-media" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
+        <div class="player-icon-el" style="font-size:36px;">📄</div>
+        <div style="flex:1;min-width:0;">
+          <div class="player-title-el" style="color:#fff;font-size:14px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+          <div class="player-pastor-el" style="color:#D4AF37;font-size:12px;"></div>
+        </div>
+      </div>
     </div>
     <!-- Actions -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
@@ -1215,7 +1237,31 @@ function openSermon(s){
   // Increment view count
   if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});}const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
   goTo('player');
-  document.getElementById('player-title').textContent=sanitizeInput(s.title||'');const pmt=document.getElementById('player-media-title');if(pmt)pmt.textContent=sanitizeInput(s.title||'');const pmp=document.getElementById('player-media-pastor');if(pmp)pmp.textContent=s.pastor_name||s.display_name||'';
+  document.getElementById('player-title').textContent=sanitizeInput(s.title||'');
+  // Set title/pastor in all possible elements
+  document.querySelectorAll('#player-media-title').forEach(function(el){el.textContent=sanitizeInput(s.title||'');});
+  document.querySelectorAll('#player-media-pastor').forEach(function(el){el.textContent=s.pastor_name||s.display_name||'';});
+  // Initialize media player
+  const videoEl=document.getElementById('lh-video-player');
+  const audioWrap=document.getElementById('lh-audio-wrap');
+  const audioEl=document.getElementById('lh-audio-player');
+  const noMedia=document.getElementById('lh-no-media');
+  const mediaUrl=s.media_url||null;
+  if(videoEl)videoEl.style.display='none';
+  if(audioWrap)audioWrap.style.display='none';
+  if(noMedia)noMedia.style.display='none';
+  if(mediaUrl&&(s.type==='video')){
+    if(videoEl){videoEl.src=mediaUrl;videoEl.style.display='block';}
+    document.querySelectorAll('#player-icon').forEach(function(el){el.textContent='🎬';});
+  } else if(mediaUrl&&(s.type==='audio')){
+    if(audioEl)audioEl.src=mediaUrl;
+    if(audioWrap)audioWrap.style.display='block';
+    document.querySelectorAll('#player-icon').forEach(function(el){el.textContent='🎧';});
+  } else {
+    if(noMedia)noMedia.style.display='flex';
+    const icon=s.type==='video'?'🎬':s.type==='audio'?'🎧':s.type==='article'?'📰':'📄';
+    document.querySelectorAll('#player-icon').forEach(function(el){el.textContent=icon;});
+  }
   document.getElementById('player-title2').textContent=s.title;
   document.getElementById('player-pastor').textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
   document.getElementById('player-desc').textContent=s.description||'';
