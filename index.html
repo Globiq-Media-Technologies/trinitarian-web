@@ -880,7 +880,10 @@ async function llRegister(){
   try{
     const res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({display_name:name,email:email.toLowerCase(),username:username.toLowerCase(),password:pass})});
     const data=await res.json();
-    if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));goTo('listener-home');}
+    if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
+    // Show email verification notice
+    goTo('listener-home');
+    setTimeout(function(){const notice=document.createElement('div');notice.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#0d2142;border:1px solid rgba(212,175,55,0.4);border-radius:12px;padding:14px 20px;font-size:13px;color:#D4AF37;z-index:9999;max-width:320px;text-align:center;';notice.innerHTML='📧 Please check your email to verify your account';document.body.appendChild(notice);setTimeout(function(){notice.remove();},6000);},500);}
     else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
   }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
 }
@@ -923,6 +926,22 @@ window.addEventListener('load',async()=>{
   const resetToken=urlParams.get('token');
   if(resetToken){goTo('reset');return;}
   if(window.location.pathname.includes('reset-password')){goTo('reset');return;}
+  // Handle email verification
+  const verifyToken=urlParams.get('verify');
+  if(verifyToken){
+    fetch(API+'/api/auth/verify-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:verifyToken})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.message){
+        goTo('listener');
+        setTimeout(function(){showMsg('ll-err','✅ Email verified! You can now sign in.',true);},300);
+      } else {
+        goTo('listener');
+        setTimeout(function(){showMsg('ll-err','Verification failed: '+(d.error||'Invalid link'));},300);
+      }
+    }).catch(function(){goTo('listener');});
+    return;
+  }
   // Handle sermon deep link from share
   const sermonParam=urlParams.get('sermon');
   if(sermonParam){
