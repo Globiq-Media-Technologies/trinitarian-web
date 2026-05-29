@@ -1360,7 +1360,7 @@ async function handleApply() {
     } else {
       showAlert('apply-error', data.error || 'Submission failed. Please ensure you are signed in.');
     }
-  } catch(e) { showAlert('apply-error', 'Submission failed. Please check your connection.'); }
+  } catch(e) { showAlert('apply-error', 'Submission failed: ' + e.message); }
 }
 
 async function deletePastorAccount(){
