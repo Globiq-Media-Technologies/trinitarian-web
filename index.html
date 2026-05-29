@@ -861,6 +861,37 @@
 
 
 const API='https://trinitarian-backend-production.up.railway.app';
+const VAPID_PUBLIC_KEY='BIIKJwa4T53dVpnHLi4qGizEUgAcL9VpLuu9LbKKFKQ1d3ASmiU1E1TdXOPU_COwcNGlmfBDDLGhUurWWYjb2RE';
+
+// ── Register Service Worker + Push ──
+async function registerPush(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
+  try{
+    const reg=await navigator.serviceWorker.register('/sw.js');
+    const token=localStorage.getItem('trinitarian_token');
+    if(!token)return;
+    // Check permission
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted')return;
+    // Subscribe
+    const sub=await reg.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    await fetch(API+'/api/users/push-subscribe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({subscription:sub.toJSON(),type:'web'})
+    });
+  }catch(e){console.log('Push registration:',e.message);}
+}
+
+function urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=window.atob(base64);
+  return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+}
 
 function llShow(panel){['login','register','forgot'].forEach(p=>{const el=document.getElementById('ll-'+p);if(el)el.style.display='none';});const show=document.getElementById('ll-'+panel);if(show)show.style.display='block';}
 
@@ -902,7 +933,7 @@ async function llRegister(){
   try{
     const res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({display_name:name,email:email.toLowerCase(),username:username.toLowerCase(),password:pass})});
     const data=await res.json();
-    if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
+    if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));setTimeout(registerPush,1000);
     // Show email verification notice
     goTo('listener-home');
     setTimeout(function(){const notice=document.createElement('div');notice.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#0d2142;border:1px solid rgba(212,175,55,0.4);border-radius:12px;padding:14px 20px;font-size:13px;color:#D4AF37;z-index:9999;max-width:320px;text-align:center;';notice.innerHTML='📧 Please check your email to verify your account';document.body.appendChild(notice);setTimeout(function(){notice.remove();},6000);},500);}
