@@ -1562,16 +1562,39 @@ async function handleUpload(isDraft) {
     if (pct) pct.textContent = Math.round(progress) + '%';
   }, 500);
   try {
-    const data = await api('/api/sermons', 'POST', {
-      is_draft: isDraft||false,
-      title,
-      description: document.getElementById('up-desc').value.trim(),
-      transcript: document.getElementById('up-transcript').value.trim(),
-      type: uploadType,
-      language: uploadLang,
-      category_id: document.getElementById('up-category').value || undefined,
-      scripture_reference: document.getElementById('up-scripture').value.trim()
-    });
+    const mediaFile = document.getElementById('file-input')?.files[0];
+    const thumbFile = document.getElementById('thumbnail-input')?.files[0];
+    let data;
+    if (mediaFile || thumbFile) {
+      // Use FormData for file uploads
+      const fd = new FormData();
+      fd.append('is_draft', isDraft||false);
+      fd.append('title', title);
+      fd.append('description', document.getElementById('up-desc').value.trim());
+      fd.append('transcript', document.getElementById('up-transcript').value.trim());
+      fd.append('type', uploadType);
+      fd.append('language', uploadLang);
+      const catId = document.getElementById('up-category').value;
+      if (catId) fd.append('category_id', catId);
+      fd.append('scripture_reference', document.getElementById('up-scripture').value.trim());
+      if (mediaFile) fd.append('media', mediaFile);
+      if (thumbFile) fd.append('thumbnail', thumbFile);
+      const headers = {};
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      const res = await fetch(API + '/api/sermons', { method: 'POST', headers, body: fd });
+      data = await res.json();
+    } else {
+      data = await api('/api/sermons', 'POST', {
+        is_draft: isDraft||false,
+        title,
+        description: document.getElementById('up-desc').value.trim(),
+        transcript: document.getElementById('up-transcript').value.trim(),
+        type: uploadType,
+        language: uploadLang,
+        category_id: document.getElementById('up-category').value || undefined,
+        scripture_reference: document.getElementById('up-scripture').value.trim()
+      });
+    }
     if (data.id) {
       showAlert('upload-success', '✝ Sermon published successfully!', 'success');
       document.getElementById('up-title').value = '';
@@ -1815,16 +1838,38 @@ async function loadProfile() {
 function uploadPhoto(input){
   const file=input.files[0];
   if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const avatar=document.getElementById('profile-avatar');
-    avatar.style.backgroundImage='url('+e.target.result+')';
-    avatar.style.backgroundSize='cover';
-    avatar.style.backgroundPosition='center';
-    avatar.textContent='';
-    localStorage.setItem('pastor_avatar',e.target.result);
-  };
-  reader.readAsDataURL(file);
+  // Validate file type and size
+  if(!file.type.startsWith('image/')){showToast('Please select an image file');return;}
+  if(file.size > 5*1024*1024){showToast('Image must be under 5MB');return;}
+  try{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        const avatar=document.getElementById('profile-avatar');
+        if(avatar){
+          avatar.style.backgroundImage='url('+e.target.result+')';
+          avatar.style.backgroundSize='cover';
+          avatar.style.backgroundPosition='center';
+          avatar.textContent='';
+          localStorage.setItem('pastor_avatar',e.target.result);
+        }
+        // Also upload to server
+        const fd=new FormData();
+        fd.append('avatar',file);
+        const headers={};
+        if(token) headers['Authorization']='Bearer '+token;
+        fetch(API+'/api/users/avatar',{method:'POST',headers,body:fd})
+          .then(r=>r.json())
+          .then(d=>{if(d.avatar_url)showToast('Profile photo updated');})
+          .catch(()=>{showToast('Photo saved locally');});
+      }catch(err){console.error('Avatar display error:',err);}
+    };
+    reader.onerror=function(){showToast('Could not read image file');};
+    reader.readAsDataURL(file);
+  }catch(err){
+    console.error('uploadPhoto error:',err);
+    showToast('Could not update photo');
+  }
 }
 
 async function saveProfile() {
