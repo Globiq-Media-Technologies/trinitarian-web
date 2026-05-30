@@ -661,7 +661,7 @@
             <p id="file-name" style="color:var(--gold);margin-top:8px;font-size:13px;"></p>
           </div>
           <input type="file" id="file-input" style="display:none;" accept="video/*,audio/*,.pdf,.doc,.docx" onchange="handleFileSelect(this)" />
-          <p style="color:var(--text-muted);font-size:11px;margin-top:6px;">⚠️ Large file upload will be available in v1.1. Currently metadata and transcripts only.</p>
+          
         </div>
 
         <button class="btn btn-gold" onclick="handleUpload()">Publish Sermon</button>
@@ -1090,7 +1090,18 @@ async function api(endpoint, method = 'GET', body = null) {
     headers,
     ...(body ? { body: JSON.stringify(body) } : {})
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) {
+      token = null; user = null;
+      localStorage.removeItem('pastor_token');
+      localStorage.removeItem('pastor_user');
+      showScreen('login');
+      throw new Error('Session expired. Please sign in again.');
+    }
+    throw new Error(data.error || 'Request failed (' + res.status + ')');
+  }
+  return data;
 }
 
 // ── Screen Management ──
