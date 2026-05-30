@@ -655,10 +655,19 @@
 
         <div class="form-group">
           <span class="section-label">Media File</span>
-          <div class="upload-area" onclick="document.getElementById('file-input').click()">
-            
+          <div class="upload-area" onclick="document.getElementById('file-input').click()" style="cursor:pointer;border:2px dashed rgba(212,175,55,0.3);border-radius:12px;padding:24px;text-align:center;">
+            <input type="file" id="file-input" accept="video/*,audio/*,.pdf" style="display:none;" onchange="updateFileLabel(this)"/>
+            <input type="file" id="thumbnail-input" accept="image/*" style="display:none;" onchange="updateThumbLabel(this)"/>
+            <div style="font-size:32px;margin-bottom:8px;">📁</div>
+            <p style="color:var(--text-muted);font-size:14px;margin:0 0 4px;" id="file-label">Click to select video, audio or PDF</p>
+            <p style="color:var(--text-muted);font-size:11px;margin:0;">MP4, MOV, MP3, WAV, M4A, PDF · Max 500MB</p>
+          </div>
+          <div style="margin-top:10px;">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('thumbnail-input').click()">🖼 Add Thumbnail (optional)</button>
+            <span id="thumb-label" style="color:var(--text-muted);font-size:12px;margin-left:8px;"></span>
+          </div>
 
-        <button class="btn btn-gold" onclick="handleUpload()">Publish Sermon</button>
+        <button class="btn btn-gold" onclick="handleUpload()" style="margin-top:16px;">Publish Sermon</button>
       </div>
     </div>
 
@@ -2688,6 +2697,21 @@ async function respondToEscalation(id,status){
     showToast('Response sent to moderator');
     loadAdminEscalations();
   }catch(e){alert('Failed to respond');}
+}
+
+
+function updateFileLabel(input){
+  const label=document.getElementById('file-label');
+  if(label&&input.files[0]){
+    const f=input.files[0];
+    const size=(f.size/1024/1024).toFixed(1);
+    label.textContent=f.name+' ('+size+' MB)';
+    label.style.color='var(--gold)';
+  }
+}
+function updateThumbLabel(input){
+  const label=document.getElementById('thumb-label');
+  if(label&&input.files[0])label.textContent=input.files[0].name;
 }
 
 
