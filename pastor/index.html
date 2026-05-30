@@ -773,6 +773,7 @@
             <div style="position:absolute;bottom:0;right:0;background:var(--gold);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;">📷</div>
           </div>
           <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)"/>
+          <button id="remove-photo-btn" onclick="removePhoto()" style="display:none;margin-top:6px;background:transparent;border:1px solid rgba(224,85,85,0.4);color:#e05555;border-radius:12px;padding:4px 12px;font-size:11px;cursor:pointer;">✕ Remove photo</button>
           <div>
             <div style="color:var(--white);font-size:18px;font-weight:600;margin-bottom:4px;" id="profile-name">Pastor</div>
             <div style="color:var(--text-muted);font-size:13px;margin-bottom:8px;" id="profile-email">email</div>
@@ -1391,7 +1392,7 @@ function initDashboard() {
   showScreen('dashboard');
   document.getElementById('sidebar-name').textContent = user?.display_name || 'Pastor';
   const savedAvatar=localStorage.getItem('pastor_avatar');
-  if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';}}
+  if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';const rb=document.getElementById('remove-photo-btn');if(rb)rb.style.display='block';}}
   document.getElementById('sidebar-church').textContent = user?.role?.toUpperCase() || 'PASTOR';
   document.getElementById('dash-role').textContent = (user?.role || 'pastor').toUpperCase();
   document.getElementById('overview-name').textContent = user?.display_name || 'Pastor';
@@ -1851,7 +1852,7 @@ function uploadPhoto(input){
           avatar.style.backgroundSize='cover';
           avatar.style.backgroundPosition='center';
           avatar.textContent='';
-          localStorage.setItem('pastor_avatar',e.target.result);
+          localStorage.setItem('pastor_avatar',e.target.result);const rb=document.getElementById('remove-photo-btn');if(rb)rb.style.display='block';
         }
         // Also upload to server
         const fd=new FormData();
@@ -2559,6 +2560,26 @@ async function changeUserRole(id, name, currentRole){
       loadUsers();
     }catch(e){const err=inner.querySelector('#role-error');if(err){err.textContent=e.message||'Failed to update role';err.style.display='block';}}
   };
+}
+
+
+function removePhoto(){
+  const avatar=document.getElementById('profile-avatar');
+  const btn=document.getElementById('remove-photo-btn');
+  if(avatar){
+    avatar.style.backgroundImage='';
+    avatar.style.backgroundSize='';
+    avatar.style.backgroundPosition='';
+    avatar.textContent=(user?.display_name||'P')[0].toUpperCase();
+  }
+  localStorage.removeItem('pastor_avatar');
+  if(btn)btn.style.display='none';
+  // Remove from server
+  const headers={'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  fetch(API+'/api/users/profile',{method:'PUT',headers,body:JSON.stringify({avatar_url:null})})
+    .then(()=>showToast('Profile photo removed'))
+    .catch(()=>{});
 }
 
 
