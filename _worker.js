@@ -25,6 +25,11 @@ export default {
       return env.ASSETS.fetch(new Request(new URL('/privacy/index.html', request.url), request));
     }
 
+    // DMCA Policy
+    if (path === '/dmca' || path === '/dmca/') {
+      return env.ASSETS.fetch(new Request(new URL('/dmca/index.html', url).toString()), request);
+    }
+
     // Terms of service
     if (path === '/terms' || path === '/terms/') {
       return env.ASSETS.fetch(new Request(new URL('/terms/index.html', request.url), request));
