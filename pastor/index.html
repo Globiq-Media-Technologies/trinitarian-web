@@ -2085,7 +2085,7 @@ function renderUsers(list) {
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
         <span class="status-badge ${u.role==='pastor'?'status-live':u.role==='admin'?'':'status-archived'}" style="${u.role==='moderator'?'background:rgba(100,150,255,0.1);border-color:rgba(100,150,255,0.4);color:#6496ff;':''}">${(u.role||'listener').toUpperCase()}</span>
-        ${u.role==='listener'||u.role==='pastor'?`<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="upgradeMod('${u.id}','${u.display_name}')">⬆ Mod</button>`:''}
+        ${isAdmin?`<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')" title="Change role">👤 Role</button>`:''}
       </div>
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;">
