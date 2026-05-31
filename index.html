@@ -944,7 +944,7 @@ async function llRegister(){
     const data=await res.json();
     if(data.token){localStorage.setItem('trinitarian_token',data.token);localStorage.setItem('trinitarian_user',JSON.stringify(data.user));setTimeout(registerPush,1000);
     // Show email verification notice
-    goTo('listener-home');
+    goTo('listener-home');setTimeout(checkVerificationBanner,800);
     setTimeout(function(){const notice=document.createElement('div');notice.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#0d2142;border:1px solid rgba(212,175,55,0.4);border-radius:12px;padding:14px 20px;font-size:13px;color:#D4AF37;z-index:9999;max-width:320px;text-align:center;';notice.innerHTML='📧 Please check your email to verify your account';document.body.appendChild(notice);setTimeout(function(){notice.remove();},6000);},500);}
     else{showMsg('ll-reg-err',data.error||(data.errors&&data.errors.map(e=>e.msg).join(', '))||'Registration failed');}
   }catch(e){showMsg('ll-reg-err','Connection failed. Please try again.');}
@@ -995,8 +995,12 @@ window.addEventListener('load',async()=>{
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.message){
-        goTo('listener');
-        setTimeout(function(){showMsg('ll-err','✅ Email verified! You can now sign in.',true);},300);
+        // Update stored user verified status
+        try{const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');u.email_verified=true;localStorage.setItem('trinitarian_user',JSON.stringify(u));}catch(e){}
+        const vb=document.getElementById('verify-banner');if(vb)vb.remove();
+        const token=localStorage.getItem('trinitarian_token');
+        if(token){goTo('listener-home');setTimeout(function(){const t=document.createElement('div');t.textContent='✅ Email verified! You now have full access.';t.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:99999;';document.body.appendChild(t);setTimeout(function(){t.remove();},4000);},500);}
+        else{goTo('listener');setTimeout(function(){showMsg('ll-err','✅ Email verified! You can now sign in.',true);},300);}
       } else {
         goTo('listener');
         setTimeout(function(){showMsg('ll-err','Verification failed: '+(d.error||'Invalid link'));},300);
@@ -2047,6 +2051,34 @@ async function lhShowFollowing(){
   lhAllSermons=backup;
   lhCurrentType=backupType;
 }
+
+function checkVerificationBanner(){
+  try{
+    const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');
+    if(!u.id)return;
+    if(u.role&&['admin','moderator','pastor'].includes(u.role))return;
+    if(u.email_verified)return;
+    if(document.getElementById('verify-banner'))return;
+    const banner=document.createElement('div');
+    banner.id='verify-banner';
+    banner.style.cssText='position:fixed;top:0;left:0;right:0;background:#0d2142;border-bottom:1px solid rgba(212,175,55,0.4);padding:10px 16px;z-index:9998;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:13px;color:#D4AF37;';
+    banner.innerHTML='📧 Please verify your email to comment, follow pastors and report content. <button onclick="resendVerification()" style="background:#D4AF37;color:#071528;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">Resend email</button> <button onclick="document.getElementById(\'verify-banner\').remove()" style="background:transparent;border:none;color:#8fa3c0;cursor:pointer;font-size:16px;">✕</button>';
+    document.body.appendChild(banner);
+  }catch(e){}
+}
+
+async function resendVerification(){
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token)return;
+  try{
+    const res=await fetch(API+'/api/auth/resend-verification',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}});
+    const data=await res.json();
+    const banner=document.getElementById('verify-banner');
+    if(banner)banner.innerHTML='✅ Verification email sent! Please check your inbox (and spam folder).';
+    setTimeout(function(){if(banner)banner.remove();},5000);
+  }catch(e){alert('Could not resend. Please try again.');}
+}
+
 
 </script>
 
