@@ -2011,12 +2011,7 @@ async function loadSupportMessages() {
         </div>
         ${!m.is_read ? '<div style="width:8px;height:8px;border-radius:4px;background:var(--gold);flex-shrink:0;margin-top:4px;"></div>' : ''}
       </div>
-      <div style="display:flex;gap:6px;margin-top:8px;">
-      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
-    </div>
-  `).join('');
+    `).join('');
   } catch(e) {
     el.innerHTML = '<div style="padding:20px;color:var(--text-muted);">Could not load support messages</div>';
   }
