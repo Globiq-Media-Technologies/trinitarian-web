@@ -916,6 +916,7 @@ async function llLogin(){
       let msg=data.error||(data.errors&&data.errors[0]&&data.errors[0].msg)||'Sign in failed.';
       if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('password')||msg.toLowerCase().includes('incorrect'))msg='Incorrect email or password. Please try again.';
       else if(msg.toLowerCase().includes('not found')||msg.toLowerCase().includes('no account'))msg='No account found with this email address.';
+      else if(msg.toLowerCase().includes('deleted'))msg='This account has been deleted. Please create a new account to continue.';
       else if(msg.toLowerCase().includes('suspended'))msg='Your account has been suspended. Please contact support.';
       else if(msg.toLowerCase().includes('verify'))msg='Please verify your email before signing in.';
       showMsg('ll-err',msg);
