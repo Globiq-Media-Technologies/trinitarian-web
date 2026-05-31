@@ -1434,16 +1434,17 @@ function initDashboard() {
   if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
   if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
   // Hide admin items unless admin/moderator
-  const isAdmin = ['admin', 'moderator'].includes(user?.role);
+  const isAdmin = user?.role === 'admin';
+  const isModerator = user?.role === 'moderator';
   ['admin-nav','users-nav','pastors-nav'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=isAdmin?'flex':'none';
   });
   const supportTab=document.getElementById('tab-support');
-  if(supportTab) supportTab.style.display=isAdmin?'block':'none';
+  if(supportTab) supportTab.style.display=(isAdmin||isModerator)?'block':'none';
   // Show escalations tab for admins, mod-escalate for moderators
   const escTab=document.getElementById('tab-escalations');
-  if(escTab) escTab.style.display=isAdmin?'block':'none';
+  if(escTab) escTab.style.display=isAdmin?'inline-flex':'none';
   const modEscTab=document.getElementById('tab-mod-escalate');
   if(modEscTab) modEscTab.style.display=(isModerator&&!isAdmin)?'block':'none';
   const reportsTab=document.getElementById('tab-reports');
