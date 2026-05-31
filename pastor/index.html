@@ -833,8 +833,7 @@
 
       <!-- Search -->
       <div style="margin-bottom:16px;position:relative;">
-        <input type="text" id="explore-search" oninput="searchExplore();document.getElementById('explore-search-clear').style.display=this.value?'block':'none';" placeholder="Search sermons..." class="form-input"
-          oninput="exploreFilter()" style="padding-left:40px;"/>
+        <input type="text" id="explore-search" oninput="searchExplore();exploreFilter();document.getElementById('explore-search-clear').style.display=this.value?'block':'none';" placeholder="Search sermons..." class="form-input" style="padding-left:40px;"/>
         <span id="explore-search-clear" onclick="document.getElementById('explore-search').value='';searchExplore();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
         <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;">🔍</span>
       </div>
