@@ -933,6 +933,10 @@ async function llRegister(){
   const pass=document.getElementById('ll-rpass').value;
   const confirm=document.getElementById('ll-rconfirm').value;
   if(!name||!email||!username||!pass){showMsg('ll-reg-err','Please fill in all fields');return;}
+  if(name.length<2){showMsg('ll-reg-err','Name must be at least 2 characters');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('ll-reg-err','Please enter a valid email address');return;}
+  if(username.length<3||username.length>30){showMsg('ll-reg-err','Username must be 3-30 characters');return;}
+  if(!/^[a-zA-Z0-9_]+$/.test(username)){showMsg('ll-reg-err','Username can only contain letters, numbers and underscores (no spaces or symbols)');return;}
   if(pass.length<8){showMsg('ll-reg-err','Password must be at least 8 characters');return;}
   if(pass!==confirm){showMsg('ll-reg-err','Passwords do not match');return;}
   try{
