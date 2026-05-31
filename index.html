@@ -1457,7 +1457,24 @@ async function playerReport(){
 
 function selectReason(btn,reason){document.querySelectorAll('.reason-btn').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.2)';});btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';selectedReason=reason;document.getElementById('report-selected').style.display='block';document.getElementById('report-reason-text').textContent=reason;}
 
-async function submitReport(){const detail=document.getElementById('report-detail').value.trim();if(!selectedReason&&!detail){alert('Please select a reason or provide details.');return;}const reason=selectedReason+(detail?' - '+detail:'');try{await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'},body:JSON.stringify({reason})});document.getElementById('report-modal-overlay')?.remove();const toast=document.createElement('div');toast.textContent='✓ Report submitted. Thank you.';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);selectedReason='';}catch(e){alert('Could not submit report. Please try again.');}}
+async function submitReport(){
+  const detail=document.getElementById('report-detail').value.trim();
+  if(!selectedReason&&!detail){alert('Please select a reason or provide details.');return;}
+  const reason=selectedReason+(detail?' - '+detail:'');
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token){alert('Please sign in to report content.');return;}
+  try{
+    const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({reason,description:detail})});
+    const data=await res.json();
+    if(!res.ok){
+      if(data.needs_verification){alert('Please verify your email before reporting content. Check the banner at the top of the page.');}
+      else{alert(data.error||'Could not submit report. Please try again.');}
+      return;
+    }
+    document.getElementById('report-modal-overlay')?.remove();
+    const toast=document.createElement('div');toast.textContent='✓ Report submitted. Thank you.';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);selectedReason='';
+  }catch(e){alert('Could not submit report. Please check your connection and try again.');}
+}
 
 function loadComments(sermonId){const list=document.getElementById('comments-list');const stored=comments[sermonId]||[];if(!stored.length){list.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No comments yet. Be the first!</p>';return;}list.innerHTML=stored.map(c=>'<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:10px;padding:14px;"><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">'+c.name+' · '+c.date+'</div><div style="color:#b0c4d8;font-size:14px;line-height:1.7;">'+c.text+'</div></div>').join('');}
 function postComment(){if(!currentSermon)return;const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');const text=document.getElementById('comment-input').value.trim();if(!text)return;if(!comments[currentSermon.id])comments[currentSermon.id]=[];comments[currentSermon.id].unshift({name:u.display_name||'Listener',date:new Date().toLocaleDateString('en-GB'),text});localStorage.setItem('lh_comments',JSON.stringify(comments));document.getElementById('comment-input').value='';loadComments(currentSermon.id);const toast=document.createElement('div');toast.textContent='✓ Comment posted';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);}
