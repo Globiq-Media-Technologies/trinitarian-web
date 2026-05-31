@@ -833,8 +833,9 @@
 
       <!-- Search -->
       <div style="margin-bottom:16px;position:relative;">
-        <input type="text" id="explore-search" placeholder="Search sermons..." class="form-input"
+        <input type="text" id="explore-search" oninput="searchExplore();document.getElementById('explore-search-clear').style.display=this.value?'block':'none';" placeholder="Search sermons..." class="form-input"
           oninput="exploreFilter()" style="padding-left:40px;"/>
+        <span id="explore-search-clear" onclick="document.getElementById('explore-search').value='';searchExplore();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
         <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;">🔍</span>
       </div>
 
@@ -1067,7 +1068,7 @@
       </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
         <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
-        <span onclick="document.getElementById('users-search').value='';filterUsers();" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
+        <span id="users-search-clear" onclick="document.getElementById('users-search').value='';filterUsers();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
       </div>
       <div id="users-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
@@ -1080,7 +1081,7 @@
       </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
         <input type="text" id="pastors-search" placeholder="🔍 Search pastors..." oninput="filterPastors()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;"/>
-        <span onclick="document.getElementById('pastors-search').value='';filterPastors();" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
+        <span id="pastors-search-clear" onclick="document.getElementById('pastors-search').value='';filterPastors();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
       </div>
       <div id="pastors-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
