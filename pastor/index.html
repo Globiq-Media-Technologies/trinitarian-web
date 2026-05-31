@@ -2549,37 +2549,38 @@ function closeRoleModal(){var m=document.querySelector('[id*=role],[style*=fixed
 
 async function changeUserRole(id, name, currentRole){
   const roles=['listener','pastor','moderator','admin'];
-  const current=roles.indexOf(currentRole);
-  const select=document.createElement('select');
-  select.style.cssText='padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:#fff;font-size:13px;';
-  roles.forEach(function(r){
-    const opt=document.createElement('option');
-    opt.value=r;opt.textContent=r.charAt(0).toUpperCase()+r.slice(1);
-    if(r===currentRole)opt.selected=true;
-    select.appendChild(opt);
-  });
+  // Build modal
   const modal=document.createElement('div');
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
-  modal.innerHTML='<div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:400px;">'
-    +'<h3 style="color:#fff;font-size:16px;margin-bottom:6px;">Change Role</h3>'
+  const inner=document.createElement('div');
+  inner.style.cssText='background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:400px;';
+  inner.innerHTML='<h3 style="color:#fff;font-size:16px;margin-bottom:6px;">Change Role</h3>'
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">'+name+'</p>'
-    +'<div id="role-select-wrap" style="margin-bottom:16px;"></div>'
-    +'<div id="role-error" style="display:none;" class="alert alert-error"></div>'
+    +'<select id="role-select-inner" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--navy3);color:#fff;font-size:14px;margin-bottom:16px;">'
+    +roles.map(function(r){return '<option value="'+r+'"'+(r===currentRole?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';}).join('')
+    +'</select>'
+    +'<div id="role-err-inner" style="display:none;color:#e05555;font-size:13px;margin-bottom:12px;"></div>'
     +'<div style="display:flex;gap:10px;">'
-    +'<button id="role-save-btn" class="btn btn-gold" style="flex:1;">Save</button>'
-    +'</div></div>';
+    +'<button id="role-save-inner" class="btn btn-gold" style="flex:1;">Save</button>'
+    +'<button id="role-cancel-inner" class="btn btn-ghost" style="flex:1;">Cancel</button>'
+    +'</div>';
+  modal.appendChild(inner);
   document.body.appendChild(modal);
-  inner.querySelector('#role-select-wrap').appendChild(select);
-  inner.querySelector('#role-cancel-btn').onclick=function(){modal.remove();};
-  inner.querySelector('#role-save-btn').onclick=async function(){
-    const newRole=select.value;
+  inner.querySelector('#role-cancel-inner').onclick=function(){modal.remove();};
+  modal.onclick=function(e){if(e.target===modal)modal.remove();};
+  inner.querySelector('#role-save-inner').onclick=async function(){
+    const newRole=inner.querySelector('#role-select-inner').value;
     if(newRole===currentRole){modal.remove();return;}
     try{
       await api('/api/admin/users/'+id+'/role','PUT',{role:newRole});
-      showToast('Role updated to '+newRole);
+      showToast(name+' is now '+newRole);
       modal.remove();
       loadUsers();
-    }catch(e){const err=inner.querySelector('#role-error');if(err){err.textContent=e.message||'Failed to update role';err.style.display='block';}}
+    }catch(e){
+      const err=inner.querySelector('#role-err-inner');
+      err.textContent=e.message||'Failed to update role';
+      err.style.display='block';
+    }
   };
 }
 
