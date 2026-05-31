@@ -914,11 +914,16 @@ async function llLogin(){
       else{goTo('listener-home');}
     }else{
       let msg=data.error||'Sign in failed.';
-      if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('password'))msg='Incorrect email or password. Please try again.';
-      if(msg.toLowerCase().includes('not found'))msg='No account found with this email address.';
+      if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('password')||msg.toLowerCase().includes('incorrect'))msg='Incorrect email or password. Please try again.';
+      else if(msg.toLowerCase().includes('not found')||msg.toLowerCase().includes('no account'))msg='No account found with this email address.';
+      else if(msg.toLowerCase().includes('suspended'))msg='Your account has been suspended. Please contact support.';
+      else if(msg.toLowerCase().includes('verify'))msg='Please verify your email before signing in.';
       showMsg('ll-err',msg);
     }
-  }catch(e){showMsg('ll-err','Connection failed. Please try again.');}
+  }catch(e){
+    if(e.message&&e.message.includes('fetch')){showMsg('ll-err','Connection failed. Please check your internet and try again.');}
+    else{showMsg('ll-err','Sign in failed. Please try again.');}
+  }
 }
 
 async function llRegister(){
