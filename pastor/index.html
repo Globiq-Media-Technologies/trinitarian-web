@@ -2713,14 +2713,17 @@ async function submitEscalation(){
   const type=document.getElementById('esc-type')?.value;
   const reference=document.getElementById('esc-reference')?.value.trim();
   if(!subject||!description){showAlert('escalation-error','Please fill in subject and description');return;}
+  const btn=event&&event.target?event.target:null;
+  if(btn){btn.disabled=true;btn.textContent='Submitting...';}
   try{
     await api('/api/admin/escalate','POST',{subject,description,type,reference_id:reference||null});
-    showAlert('escalation-success','✅ Escalation submitted. Admin has been notified.','success');
+    showToast('✅ Escalation submitted. Admin has been notified.');
     document.getElementById('esc-subject').value='';
     document.getElementById('esc-description').value='';
     if(document.getElementById('esc-reference'))document.getElementById('esc-reference').value='';
     loadEscalations();
-  }catch(e){showAlert('escalation-error',e.message||'Failed to submit escalation');}
+  }catch(e){showToast(e.message||'Failed to submit escalation','error');}
+  finally{if(btn){btn.disabled=false;btn.textContent='⬆ Submit Escalation';}}
 }
 
 
