@@ -1446,8 +1446,10 @@ function initDashboard() {
   if(escTab) escTab.style.display=isAdmin?'block':'none';
   const modEscTab=document.getElementById('tab-mod-escalate');
   if(modEscTab) modEscTab.style.display=(isModerator&&!isAdmin)?'block':'none';
+  const reportsTab=document.getElementById('tab-reports');
+  if(reportsTab) reportsTab.style.display=isAdmin||isModerator?'inline-flex':'none';
   const flaggedTab=document.getElementById('tab-flagged');
-  if(flaggedTab) flaggedTab.style.display=isAdmin?'block':'none';
+  if(flaggedTab) flaggedTab.style.display=isAdmin||isModerator?'inline-flex':'none';
   loadOverview();
 }
 
