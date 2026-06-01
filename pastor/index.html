@@ -649,7 +649,14 @@
 
         <div class="form-group">
           <span class="section-label">Transcript / Full Text (optional)</span>
-          <textarea class="form-input" id="up-transcript" placeholder="Paste the full sermon transcript here…" style="min-height:160px;"></textarea>
+          <div style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" id="transcribe-btn" onclick="toggleTranscription()" class="btn btn-ghost btn-sm">🎙 Start dictation</button>
+              <span id="transcribe-status" style="color:var(--text-muted);font-size:12px;"></span>
+            </div>
+            <p style="color:var(--text-muted);font-size:11px;margin:8px 0 0;line-height:1.5;">Free in-browser dictation: click Start, then play your sermon audio aloud or speak. Words appear below. Best with clear audio in a quiet room. Always review and correct the draft. (Works in Chrome and Edge.)</p>
+          </div>
+          <textarea class="form-input" id="up-transcript" placeholder="Paste the full sermon transcript here, or use dictation above…" style="min-height:160px;"></textarea>
         </div>
 
         <div class="form-group">
@@ -2783,6 +2790,66 @@ function showToast(msg, type){
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:'+(type==='error'?'#e05555':'#1a3a5c')+';color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:99999;border:1px solid '+(type==='error'?'rgba(224,85,85,0.5)':'rgba(212,175,55,0.3)')+';white-space:nowrap;';
   document.body.appendChild(t);
   setTimeout(function(){t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(function(){t.remove();},300);},2500);
+}
+
+
+let _recognition = null;
+let _transcribing = false;
+
+function toggleTranscription(){
+  const btn=document.getElementById('transcribe-btn');
+  const status=document.getElementById('transcribe-status');
+  // Check browser support
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    if(status)status.textContent='Dictation not supported in this browser. Please use Chrome or Edge.';
+    if(btn)btn.disabled=true;
+    return;
+  }
+  if(_transcribing){
+    // Stop
+    if(_recognition)_recognition.stop();
+    return;
+  }
+  // Start
+  _recognition = new SR();
+  _recognition.continuous = true;
+  _recognition.interimResults = true;
+  _recognition.lang = document.getElementById('up-lang')?.value==='fr'?'fr-FR':document.getElementById('up-lang')?.value==='pt'?'pt-PT':'en-US';
+  const textarea=document.getElementById('up-transcript');
+  let baseText = textarea.value ? textarea.value + ' ' : '';
+
+  _recognition.onstart=function(){
+    _transcribing=true;
+    if(btn)btn.textContent='⏹ Stop dictation';
+    if(btn)btn.style.color='#e05555';
+    if(status)status.textContent='🔴 Listening… speak or play audio';
+  };
+  _recognition.onresult=function(e){
+    let finalText='';
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal){finalText+=t+' ';}
+      else{interim+=t;}
+    }
+    if(finalText){baseText+=finalText;}
+    textarea.value=baseText+interim;
+    textarea.scrollTop=textarea.scrollHeight;
+  };
+  _recognition.onerror=function(e){
+    if(status)status.textContent='Dictation error: '+e.error+(e.error==='not-allowed'?' (please allow microphone access)':'');
+  };
+  _recognition.onend=function(){
+    _transcribing=false;
+    if(btn){btn.textContent='🎙 Start dictation';btn.style.color='';}
+    if(status)status.textContent='Dictation stopped. Review and edit the text above.';
+    // Keep whatever was captured
+    const textarea=document.getElementById('up-transcript');
+    if(textarea)textarea.value=textarea.value.trim();
+  };
+  try{_recognition.start();}
+  catch(e){if(status)status.textContent='Could not start dictation. Please try again.';}
 }
 
 
