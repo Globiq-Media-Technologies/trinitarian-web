@@ -623,7 +623,7 @@
     </div>
     <button onclick="saveLhProfile()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px;">Save Changes</button>
     <div style="border-top:1px solid rgba(212,175,55,0.1);padding-top:20px;margin-top:8px;">
-      <h3 style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Change Password</h3>
+      <h3 style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;" data-i18n="change_password">Change Password</h3>
       <input type="password" id="lh-old-pwd" placeholder="Current password" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;"/>
       <input type="password" id="lh-new-pwd" placeholder="New password (min. 8 chars)" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;"/>
       <input type="password" id="lh-confirm-pwd" placeholder="Confirm new password" style="width:100%;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;"/>
@@ -671,7 +671,7 @@
   <div style="max-width:560px;margin:0 auto;padding:24px 24px 80px;">
 
     <!-- Account -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Account</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="account">Account</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:12px;" onclick="goTo('lh-profile');loadLhProfile();">
         <div><div style="color:#e8e8e8;font-size:14px;">My Profile</div><div style="color:#8fa3c0;font-size:12px;">Update name, email and password</div></div>
         <span style="color:#D4AF37;font-size:20px;">›</span>
@@ -684,7 +684,7 @@
     </div>
 
     <!-- Font & Display - ALL TOGETHER -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Font &amp; Display</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="font_display">Font &amp; Display</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
       <div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Font Preview</div>
       <div id="lhfs-preview" style="background:#071528;border-radius:8px;padding:14px;color:#b0c4d8;font-size:15px;line-height:1.8;margin-bottom:16px;">"For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life." &#8212; John 3:16</div>
@@ -727,7 +727,7 @@
     </div>
 
     <!-- Notifications -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Notifications</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="notifications">Notifications</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
         <div><div style="color:#e8e8e8;font-size:14px;">New Sermons</div><div style="color:#8fa3c0;font-size:12px;">From pastors you follow</div></div>
@@ -743,7 +743,7 @@
       </div>
     </div>
     <!-- Language -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Language</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="language">Language</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
         <div onclick="lhSetLang('en',this)" class="lh-lang-btn" style="background:rgba(212,175,55,0.12);border:2px solid rgba(212,175,55,0.4);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;"><div style="color:#D4AF37;font-size:13px;font-weight:600;">English</div></div>
@@ -764,19 +764,19 @@
     </div>
 
     <!-- Ministry -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Ministry</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="ministry">Ministry</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div onclick="goTo('pastor')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;"><div><div style="color:#e8e8e8;font-size:14px;">Apply as Verified Pastor</div><div style="color:#8fa3c0;font-size:12px;">Share your sermons globally</div></div><span style="color:#D4AF37;">&#8250;</span></div>
     </div>
 
     <!-- Security -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Security</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="security">Security</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div onclick="showLhForgotPwd()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;"><span style="color:#e8e8e8;font-size:14px;">Change Password</span><span style="color:#8fa3c0;">&#8250;</span></div>
     </div>
 
     <!-- Legal -->
-    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Legal</div>
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="legal">Legal</div>
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;">
       <div onclick="window.open('https://trinitarian.app/privacy/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);"><span style="color:#b0c4d8;font-size:14px;">Privacy Policy</span><span style="color:#8fa3c0;">&#8250;</span></div>
       <div onclick="window.open('https://trinitarian.app/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;"><span style="color:#b0c4d8;font-size:14px;">Terms of Service</span><span style="color:#8fa3c0;">&#8250;</span></div>
@@ -1038,7 +1038,7 @@ let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
 let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
 
 const LH_TRANS={
-  en:{home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...',
+  en:{font_display:'Font & Display',account:'Account',legal:'Legal',security:'Security',change_password:'Change Password',recommended:'You Might Also Like',ministry:'Ministry',live_streams:'Live Streams',inbox_messages:'Inbox Messages',home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...',
     all:'All',video:'Video',audio:'Audio',text:'Text',article:'Article',live:'Live',following:'Following',
     sign_in:'Sign In / Register',pastor_login:'Pastor Login',
     no_sermons:'No sermons found',loading:'Loading sermons...',
@@ -1048,7 +1048,7 @@ const LH_TRANS={
     notifications:'Notifications',mark_read:'Mark all read',
     language:'Language',sign_out:'Sign Out',
     categories:'Categories',filter:'Filter'},
-  fr:{home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...',
+  fr:{font_display:'Police et affichage',account:'Compte',legal:'Mentions legales',security:'Securite',change_password:'Changer le mot de passe',recommended:'Vous aimerez aussi',ministry:'Ministere',live_streams:'Diffusions en direct',inbox_messages:'Messages recus',home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...',
     all:'Tout',video:'Vidéo',audio:'Audio',text:'Texte',article:'Article',live:'En Direct',following:'Abonnements',
     sign_in:'Connexion / Inscription',pastor_login:'Espace Pasteur',
     no_sermons:'Aucun sermon trouvé',loading:'Chargement...',
@@ -1058,7 +1058,7 @@ const LH_TRANS={
     notifications:'Notifications',mark_read:'Tout marquer lu',
     language:'Langue',sign_out:'Déconnexion',
     categories:'Catégories',filter:'Filtrer'},
-  yo:{home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wá orin...',
+  yo:{font_display:'Fonti ati Ifihan',account:'Akaunti',legal:'Ofin',security:'Aabo',change_password:'Yi oro asina pada',recommended:'O Le Feran Wonyi',ministry:'Ijosin',live_streams:'Igbohunsafefe Taara',inbox_messages:'Awon Iranse',home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wá orin...',
     all:'Gbogbo',video:'Fidio',audio:'Ohun',text:'Ọrọ',article:'Àpilẹ̀kọ',live:'Laaye',following:'Tẹle',
     sign_in:'Wọlé / Forúkọsílẹ̀',pastor_login:'Wọlé Pásítọ̀',
     no_sermons:'Ko si waasu',loading:'Ṣíṣe ìfisílẹ̀...',
@@ -1068,7 +1068,7 @@ const LH_TRANS={
     notifications:'Ìwífún',mark_read:'Ṣe gbogbo wọn ka',
     language:'Èdè',sign_out:'Jáde',
     categories:'Àwọn ẹka',filter:'Àlẹmọ'},
-  ig:{home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...',
+  ig:{font_display:'Mkpuruedemede na Ngosi',account:'Akaunti',legal:'Iwu',security:'Nchekwa',change_password:'Gbanwee okwuntughe',recommended:'I Nwere Ike Ihu Nanya',ministry:'Ozi',live_streams:'Mgbasa Ozi Ndu',inbox_messages:'Ozi',home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...',
     all:'Niile',video:'Vidiyo',audio:'Ụda',text:'Ederede',article:'Akụkọ',live:'Dị ndụ',following:'Soro',
     sign_in:'Banye / Dezie aha',pastor_login:'Banye Onye Nchọọcha',
     no_sermons:'Ọ dịghị nkuzi',loading:'Na-ebu...',
@@ -1078,7 +1078,7 @@ const LH_TRANS={
     notifications:'Ọkwa',mark_read:'Mee ha niile ka agụrụ',
     language:'Asụsụ',sign_out:'Pụọ',
     categories:'Ụdị',filter:'Họrọ'},
-  ha:{home:'Gida',pastors:'Malamai',saved:'Ajiye',inbox:'Saƙo',settings:'Saiti',search:'Nemi...',
+  ha:{font_display:'Rubutu da Nuni',account:'Asusu',legal:'Doka',security:'Tsaro',change_password:'Canza kalmar sirri',recommended:'Watakila Za Ka So',ministry:'Hidima',live_streams:'Yada Kai Tsaye',inbox_messages:'Sakonni',home:'Gida',pastors:'Malamai',saved:'Ajiye',inbox:'Saƙo',settings:'Saiti',search:'Nemi...',
     all:'Duka',video:'Bidiyo',audio:'Sauti',text:'Rubutu',article:'Labari',live:'Kai tsaye',following:'Bi',
     sign_in:'Shiga / Rajista',pastor_login:'Shiga Malami',
     no_sermons:'Ba waazi ba',loading:'Ana ɗaukewa...',
@@ -1088,7 +1088,7 @@ const LH_TRANS={
     notifications:'Sanarwa',mark_read:'Yiwa duka alama',
     language:'Harshe',sign_out:'Fita',
     categories:'Nau-i',filter:'Tace'},
-  pt:{home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Buscar...',
+  pt:{font_display:'Fonte e Exibicao',account:'Conta',legal:'Juridico',security:'Seguranca',change_password:'Alterar Senha',recommended:'Voce Tambem Pode Gostar',ministry:'Ministerio',live_streams:'Transmissoes ao Vivo',inbox_messages:'Mensagens',home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Buscar...',
     all:'Todos',video:'Vídeo',audio:'Áudio',text:'Texto',article:'Artigo',live:'Ao Vivo',following:'Seguindo',
     sign_in:'Entrar / Registrar',pastor_login:'Acesso Pastor',
     no_sermons:'Nenhum sermão encontrado',loading:'Carregando...',
@@ -1099,7 +1099,7 @@ const LH_TRANS={
     language:'Idioma',sign_out:'Sair',
     categories:'Categorias',filter:'Filtrar'}
 ,
-  tw:{home:'Fie',pastors:'Asɔfo',saved:'Wɔakora so',inbox:'Nkrasɛm',settings:'Nhyehyɛe',search:'Hwehwɛ asɛnka...',
+  tw:{font_display:'Nkyerewde ne Nhweso',account:'Akawnt',legal:'Mmara',security:'Bammo',change_password:'Sesa wo ahintasem',recommended:'Ebia Wobepe',ministry:'Osom',live_streams:'Tee Nkrato',inbox_messages:'Nkrasem',home:'Fie',pastors:'Asɔfo',saved:'Wɔakora so',inbox:'Nkrasɛm',settings:'Nhyehyɛe',search:'Hwehwɛ asɛnka...',
     all:'Ne nyinaa',video:'Video',audio:'Nnyigyei',text:'Nkyerɛwee',article:'Asɛm',live:'Tee',following:'Wodi akyi',
     sign_in:'Bra mu / Kyerɛw wo din',pastor_login:'Ɔsɔfo Kɔ mu',
     no_sermons:'Asɛnka biara nni hɔ',loading:'Reload asɛnka...',
@@ -1107,7 +1107,7 @@ const LH_TRANS={
     like:'♡ Pɛ',liked:'❤ Wopɛ',share:'🔗 Kyɛ',copy:'📋 Kɔpi',report:'⚑ Bɔ amaneɛ',
     info:'Nsɛm',read:'Kenkan',reading:'Rekenkan',comments:'Nsɛm',notifications:'Nkrasɛm',mark_read:'Hyɛ sɛ wɔakenkan',
     language:'Kasa',sign_out:'Pue',categories:'Akuw',filter:'Yi'},
-  zu:{home:'Ikhaya',pastors:'Abefundisi',saved:'Okulondoloziwe',inbox:'Imilayezo',settings:'Izilungiselelo',search:'Sesha izintshumayelo...',
+  zu:{font_display:'Ifonti Nokubonisa',account:'I-akhawunti',legal:'Ezomthetho',security:'Ezokuphepha',change_password:'Shintsha Iphasiwedi',recommended:'Ungase Uthande',ministry:'Inkonzo',live_streams:'Ukusakaza Bukhoma',inbox_messages:'Imilayezo',home:'Ikhaya',pastors:'Abefundisi',saved:'Okulondoloziwe',inbox:'Imilayezo',settings:'Izilungiselelo',search:'Sesha izintshumayelo...',
     all:'Konke',video:'Ividiyo',audio:'Umsindo',text:'Umbhalo',article:'Indatshana',live:'Bukhoma',following:'Ulandelayo',
     sign_in:'Ngena / Bhalisa',pastor_login:'Umfundisi Ngena',
     no_sermons:'Azikho izintshumayelo',loading:'Iyalayisha...',
@@ -1115,7 +1115,7 @@ const LH_TRANS={
     like:'♡ Thanda',liked:'❤ Uthandile',share:'🔗 Yabelana',copy:'📋 Kopisha',report:'⚑ Bika',
     info:'Ulwazi',read:'Funda',reading:'Iyafunda',comments:'Amazwana',notifications:'Izaziso',mark_read:'Maka njengokufundiwe',
     language:'Ulimi',sign_out:'Phuma',categories:'Izigaba',filter:'Hlunga'},
-  ar:{home:'الرئيسية',pastors:'القساوسة',saved:'المحفوظات',inbox:'الرسائل',settings:'الإعدادات',search:'ابحث عن العظات...',
+  ar:{font_display:'الخط والعرض',account:'الحساب',legal:'قانوني',security:'الأمان',change_password:'تغيير كلمة المرور',recommended:'قد يعجبك أيضا',ministry:'الخدمة',live_streams:'البث المباشر',inbox_messages:'الرسائل',home:'الرئيسية',pastors:'القساوسة',saved:'المحفوظات',inbox:'الرسائل',settings:'الإعدادات',search:'ابحث عن العظات...',
     all:'الكل',video:'فيديو',audio:'صوت',text:'نص',article:'مقالة',live:'مباشر',following:'المتابَعون',
     sign_in:'تسجيل الدخول / التسجيل',pastor_login:'دخول القس',
     no_sermons:'لا توجد عظات',loading:'جارٍ التحميل...',
@@ -1123,7 +1123,7 @@ const LH_TRANS={
     like:'♡ إعجاب',liked:'❤ أعجبت',share:'🔗 مشاركة',copy:'📋 نسخ',report:'⚑ إبلاغ',
     info:'معلومات',read:'اقرأ',reading:'قراءة',comments:'تعليقات',notifications:'إشعارات',mark_read:'وضع علامة مقروء',
     language:'اللغة',sign_out:'تسجيل الخروج',categories:'الفئات',filter:'تصفية'},
-  zh:{home:'主页',pastors:'牧师',saved:'已保存',inbox:'消息',settings:'设置',search:'搜索讲道...',
+  zh:{font_display:'字体与显示',account:'账户',legal:'法律',security:'安全',change_password:'更改密码',recommended:'您可能也喜欢',ministry:'事工',live_streams:'直播',inbox_messages:'消息',home:'主页',pastors:'牧师',saved:'已保存',inbox:'消息',settings:'设置',search:'搜索讲道...',
     all:'全部',video:'视频',audio:'音频',text:'文本',article:'文章',live:'直播',following:'关注中',
     sign_in:'登录 / 注册',pastor_login:'牧师登录',
     no_sermons:'未找到讲道',loading:'正在加载...',
@@ -1131,7 +1131,7 @@ const LH_TRANS={
     like:'♡ 点赞',liked:'❤ 已赞',share:'🔗 分享',copy:'📋 复制',report:'⚑ 举报',
     info:'信息',read:'阅读',reading:'阅读中',comments:'评论',notifications:'通知',mark_read:'标记为已读',
     language:'语言',sign_out:'退出',categories:'分类',filter:'筛选'},
-  hi:{home:'होम',pastors:'पादरी',saved:'सहेजा गया',inbox:'संदेश',settings:'सेटिंग्स',search:'उपदेश खोजें...',
+  hi:{font_display:'फ़ॉन्ट और प्रदर्शन',account:'खाता',legal:'कानूनी',security:'सुरक्षा',change_password:'पासवर्ड बदलें',recommended:'आपको यह भी पसंद आ सकता है',ministry:'सेवकाई',live_streams:'लाइव स्ट्रीम',inbox_messages:'संदेश',home:'होम',pastors:'पादरी',saved:'सहेजा गया',inbox:'संदेश',settings:'सेटिंग्स',search:'उपदेश खोजें...',
     all:'सभी',video:'वीडियो',audio:'ऑडियो',text:'पाठ',article:'लेख',live:'लाइव',following:'फॉलो किए गए',
     sign_in:'साइन इन / रजिस्टर',pastor_login:'पादरी लॉगिन',
     no_sermons:'कोई उपदेश नहीं मिला',loading:'लोड हो रहा है...',
@@ -1139,7 +1139,7 @@ const LH_TRANS={
     like:'♡ पसंद',liked:'❤ पसंद किया',share:'🔗 साझा करें',copy:'📋 कॉपी',report:'⚑ रिपोर्ट',
     info:'जानकारी',read:'पढ़ें',reading:'पढ़ रहे हैं',comments:'टिप्पणियाँ',notifications:'सूचनाएँ',mark_read:'पढ़ा हुआ चिह्नित करें',
     language:'भाषा',sign_out:'साइन आउट',categories:'श्रेणियाँ',filter:'फ़िल्टर'},
-  es:{home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar sermones...',
+  es:{font_display:'Fuente y Pantalla',account:'Cuenta',legal:'Legal',security:'Seguridad',change_password:'Cambiar Contrasena',recommended:'Tambien Te Puede Gustar',ministry:'Ministerio',live_streams:'Transmisiones en Vivo',inbox_messages:'Mensajes',home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar sermones...',
     all:'Todos',video:'Vídeo',audio:'Audio',text:'Texto',article:'Artículo',live:'En vivo',following:'Siguiendo',
     sign_in:'Iniciar sesión / Registrarse',pastor_login:'Acceso Pastor',
     no_sermons:'No se encontraron sermones',loading:'Cargando sermones...',
@@ -1147,7 +1147,7 @@ const LH_TRANS={
     like:'♡ Me gusta',liked:'❤ Te gusta',share:'🔗 Compartir',copy:'📋 Copiar',report:'⚑ Reportar',
     info:'Información',read:'Leer',reading:'Leyendo',comments:'Comentarios',notifications:'Notificaciones',mark_read:'Marcar como leído',
     language:'Idioma',sign_out:'Cerrar sesión',categories:'Categorías',filter:'Filtrar'},
-  de:{home:'Startseite',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Predigten suchen...',
+  de:{font_display:'Schrift & Anzeige',account:'Konto',legal:'Rechtliches',security:'Sicherheit',change_password:'Passwort andern',recommended:'Das konnte dir auch gefallen',ministry:'Dienst',live_streams:'Live-Ubertragungen',inbox_messages:'Nachrichten',home:'Startseite',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Predigten suchen...',
     all:'Alle',video:'Video',audio:'Audio',text:'Text',article:'Artikel',live:'Live',following:'Folge ich',
     sign_in:'Anmelden / Registrieren',pastor_login:'Pastor-Login',
     no_sermons:'Keine Predigten gefunden',loading:'Predigten werden geladen...',
@@ -1155,7 +1155,7 @@ const LH_TRANS={
     like:'♡ Gefällt mir',liked:'❤ Gefällt',share:'🔗 Teilen',copy:'📋 Kopieren',report:'⚑ Melden',
     info:'Info',read:'Lesen',reading:'Lese',comments:'Kommentare',notifications:'Benachrichtigungen',mark_read:'Als gelesen markieren',
     language:'Sprache',sign_out:'Abmelden',categories:'Kategorien',filter:'Filtern'},
-  it:{home:'Home',pastors:'Pastori',saved:'Salvati',inbox:'Messaggi',settings:'Impostazioni',search:'Cerca sermoni...',
+  it:{font_display:'Carattere e Visualizzazione',account:'Account',legal:'Note legali',security:'Sicurezza',change_password:'Cambia Password',recommended:'Potrebbe Piacerti Anche',ministry:'Ministero',live_streams:'Dirette',inbox_messages:'Messaggi',home:'Home',pastors:'Pastori',saved:'Salvati',inbox:'Messaggi',settings:'Impostazioni',search:'Cerca sermoni...',
     all:'Tutti',video:'Video',audio:'Audio',text:'Testo',article:'Articolo',live:'In diretta',following:'Seguiti',
     sign_in:'Accedi / Registrati',pastor_login:'Accesso Pastore',
     no_sermons:'Nessun sermone trovato',loading:'Caricamento sermoni...',
@@ -1950,7 +1950,7 @@ async function loadRecommended(){
     const list=(data?.sermons||data||[]).filter(function(s){return s.id!==currentSermon.id;}).slice(0,3);
     if(!list.length){el.style.display='none';return;}
     const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-    el.innerHTML='<h4 style="color:#D4AF37;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">You Might Also Like</h4>'
+    el.innerHTML='<h4 style="color:#D4AF37;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;" data-i18n="recommended">You Might Also Like</h4>'
       +'<div style="display:flex;flex-direction:column;gap:8px;">'
       +list.map(function(s){
         return '<div onclick="openSermonById('+s.id+')" style="display:flex;gap:12px;align-items:center;background:#0d2142;border-radius:10px;padding:10px;cursor:pointer;">'
