@@ -992,6 +992,8 @@ window.addEventListener('load',async()=>{
   // Handle email verification
   const verifyToken=urlParams.get('verify');
   if(verifyToken){
+    // Remove verify param from URL so reload/prefetch doesn't re-trigger
+    try{window.history.replaceState({},document.title,window.location.pathname);}catch(e){}
     fetch(API+'/api/auth/verify-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:verifyToken})})
     .then(function(r){return r.json();})
     .then(function(d){
