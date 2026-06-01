@@ -857,6 +857,134 @@
 
 
 <script>
+const LH_TRANS={
+  en:{loading:'Loading...',loading_sermons:'Loading sermons...',loading_pastors:'Loading pastors...',loading_notifs:'Loading notifications...',loading_msgs:'Loading messages...',no_saved:''+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved+'',no_pastors:''+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_pastors+'',no_notifs:''+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_notifs+'',no_following:'You are not following any pastors yet',p_save:'🔖 Save',p_saved:'🔖 Saved',p_fullscreen:'⛶ Fullscreen',p_download:'⬇ Download',reading_mode:'✨ Reading Mode',no_transcript:'No transcript available for this sermon.',no_comments:'No comments yet. Be the first!',write_comment:'Write a comment...',post_comment:'Post',about_sermon:'About this sermon',scripture_ref:'Scripture Reference',welcome_back:'Welcome Back',create_account:'Create Account',email_label:'Email',password_label:'Password',forgot_pwd:'Forgot password?',full_name:'Full Name',display_name:'Display Name',username_label:'Username',confirm_pwd:'Confirm Password',sign_in_btn:'Sign In',register_btn:'Register',c_all:'All',c_faith:'Faith',c_salvation:'Salvation',c_healing:'Healing',c_prosperity:'Prosperity',c_prophecy:'Prophecy',c_marriage:'Marriage',c_leadership:'Leadership',c_bible:'Bible Study',c_prayer:'Prayer',font_display:'Font & Display',account:'Account',legal:'Legal',security:'Security',change_password:'Change Password',recommended:'You Might Also Like',ministry:'Ministry',live_streams:'Live Streams',inbox_messages:'Inbox Messages',home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...',
+    all:'All',video:'Video',audio:'Audio',text:'Text',article:'Article',live:'Live',following:'Following',
+    sign_in:'Sign In / Register',pastor_login:'Pastor Login',
+    no_sermons:''+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'',loading:'Loading sermons...',
+    follow:'+ Follow',following_btn:'✓ Following',
+    like:'♡ Like',liked:'❤ Liked',share:'🔗 Share',copy:'📋 Copy',report:'⚑ Report',
+    info:'Info',read:'📖 Read',reading:'Reading Mode',comments:'💬 Comments',
+    notifications:'Notifications',mark_read:'Mark all read',
+    language:'Language',sign_out:'Sign Out',
+    categories:'Categories',filter:'Filter'},
+  fr:{loading:'Chargement...',loading_sermons:'Chargement des sermons...',loading_pastors:'Chargement des pasteurs...',loading_notifs:'Chargement des notifications...',loading_msgs:'Chargement des messages...',no_saved:'Aucun sermon enregistre',no_pastors:'Aucun pasteur verifie',no_notifs:'Aucune notification',no_following:'Vous ne suivez aucun pasteur',p_save:'🔖 Enregistrer',p_saved:'🔖 Enregistre',p_fullscreen:'⛶ Plein ecran',p_download:'⬇ Telecharger',reading_mode:'✨ Mode lecture',no_transcript:'Aucune transcription disponible pour ce sermon.',no_comments:'Aucun commentaire. Soyez le premier!',write_comment:'Ecrire un commentaire...',post_comment:'Publier',about_sermon:'A propos de ce sermon',scripture_ref:'Reference biblique',welcome_back:'Bon retour',create_account:'Creer un compte',email_label:'E-mail',password_label:'Mot de passe',forgot_pwd:'Mot de passe oublie?',full_name:'Nom complet',display_name:'Nom affiche',username_label:'Nom dutilisateur',confirm_pwd:'Confirmer le mot de passe',sign_in_btn:'Se connecter',register_btn:'Sinscrire',c_all:'Tous',c_faith:'Foi',c_salvation:'Salut',c_healing:'Guerison',c_prosperity:'Prosperite',c_prophecy:'Prophetie',c_marriage:'Mariage',c_leadership:'Leadership',c_bible:'Etude biblique',c_prayer:'Priere',font_display:'Police et affichage',account:'Compte',legal:'Mentions legales',security:'Securite',change_password:'Changer le mot de passe',recommended:'Vous aimerez aussi',ministry:'Ministere',live_streams:'Diffusions en direct',inbox_messages:'Messages recus',home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...',
+    all:'Tout',video:'Vidéo',audio:'Audio',text:'Texte',article:'Article',live:'En Direct',following:'Abonnements',
+    sign_in:'Connexion / Inscription',pastor_login:'Espace Pasteur',
+    no_sermons:'Aucun sermon trouvé',loading:'Chargement...',
+    follow:'+ Suivre',following_btn:'✓ Abonné',
+    like:'♡ Aimer',liked:'❤ Aimé',share:'🔗 Partager',copy:'📋 Copier',report:'⚑ Signaler',
+    info:'Info',read:'📖 Lire',reading:'Mode Lecture',comments:'💬 Commentaires',
+    notifications:'Notifications',mark_read:'Tout marquer lu',
+    language:'Langue',sign_out:'Déconnexion',
+    categories:'Catégories',filter:'Filtrer'},
+  yo:{loading:'N gbe...',loading_sermons:'N gbe iwaasu...',loading_pastors:'N gbe awon woli...',loading_notifs:'N gbe ifitonileti...',loading_msgs:'N gbe iranse...',no_saved:'Ko si iwaasu ti o fipamo',no_pastors:'Ko si woli ti a fidi mule',no_notifs:'Ko si ifitonileti',no_following:'O o tele woli kankan',p_save:'🔖 Fipamo',p_saved:'🔖 Ti fipamo',p_fullscreen:'⛶ Iboju kikun',p_download:'⬇ Gbasile',reading_mode:'✨ Ipo kika',no_transcript:'Ko si akosile fun iwaasu yi.',no_comments:'Ko si oro kankan. Je akoko!',write_comment:'Ko oro kan...',post_comment:'Fi ranse',about_sermon:'Nipa iwaasu yi',scripture_ref:'Itokasi iwe mimo',welcome_back:'Kaabo Pada',create_account:'Sii Akaunti',email_label:'Imeeli',password_label:'Oro asina',forgot_pwd:'Gbagbe oro asina?',full_name:'Oruko kikun',display_name:'Oruko ifihan',username_label:'Oruko olumulo',confirm_pwd:'Jeri oro asina',sign_in_btn:'Wole',register_btn:'Forukosile',c_all:'Gbogbo',c_faith:'Igbagbo',c_salvation:'Igbala',c_healing:'Iwosan',c_prosperity:'Aseyori',c_prophecy:'Asotele',c_marriage:'Igbeyawo',c_leadership:'Idari',c_bible:'Eko Bibeli',c_prayer:'Adura',font_display:'Fonti ati Ifihan',account:'Akaunti',legal:'Ofin',security:'Aabo',change_password:'Yi oro asina pada',recommended:'O Le Feran Wonyi',ministry:'Ijosin',live_streams:'Igbohunsafefe Taara',inbox_messages:'Awon Iranse',home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wá orin...',
+    all:'Gbogbo',video:'Fidio',audio:'Ohun',text:'Ọrọ',article:'Àpilẹ̀kọ',live:'Laaye',following:'Tẹle',
+    sign_in:'Wọlé / Forúkọsílẹ̀',pastor_login:'Wọlé Pásítọ̀',
+    no_sermons:'Ko si waasu',loading:'Ṣíṣe ìfisílẹ̀...',
+    follow:'+ Tẹle',following_btn:'✓ Tẹlemo',
+    like:'♡ Fẹran',liked:'❤ Fẹran',share:'🔗 Pin',copy:'📋 Daakọ',report:'⚑ Ìjábọ̀',
+    info:'Alaye',read:'📖 Ka',reading:'Ipo Kíka',comments:'💬 Àwọn ọ̀rọ̀',
+    notifications:'Ìwífún',mark_read:'Ṣe gbogbo wọn ka',
+    language:'Èdè',sign_out:'Jáde',
+    categories:'Àwọn ẹka',filter:'Àlẹmọ'},
+  ig:{loading:'Na ebu...',loading_sermons:'Na ebu ozizi...',loading_pastors:'Na ebu ndi ukochukwu...',loading_notifs:'Na ebu ozi...',loading_msgs:'Na ebu ozi...',no_saved:'Enweghi ozizi echekwara',no_pastors:'Enweghi ukochukwu akwadoro',no_notifs:'Enweghi ozi',no_following:'I naghi eso ukochukwu obula',p_save:'🔖 Chekwaa',p_saved:'🔖 Echekwala',p_fullscreen:'⛶ Ihuenyo zuru',p_download:'⬇ Budata',reading_mode:'✨ Ogo ogugu',no_transcript:'Enweghi ihe edeturu maka ozizi a.',no_comments:'Enweghi okwu. Buru onye mbu!',write_comment:'Dee okwu...',post_comment:'Bipata',about_sermon:'Banyere ozizi a',scripture_ref:'Ntughari akwukwo nso',welcome_back:'Nnoo Ozo',create_account:'Mepee Akaunti',email_label:'Ozi-e',password_label:'Okwuntughe',forgot_pwd:'Chefuru okwuntughe?',full_name:'Aha zuru ezu',display_name:'Aha ngosi',username_label:'Aha njirimara',confirm_pwd:'Kwado okwuntughe',sign_in_btn:'Banye',register_btn:'Debanye aha',c_all:'Niile',c_faith:'Okwukwe',c_salvation:'Nzoputa',c_healing:'Ogwugwo',c_prosperity:'Oganihu',c_prophecy:'Amuma',c_marriage:'Alumdi',c_leadership:'Onye ndu',c_bible:'Omumu Akwukwo Nso',c_prayer:'Ekpere',font_display:'Mkpuruedemede na Ngosi',account:'Akaunti',legal:'Iwu',security:'Nchekwa',change_password:'Gbanwee okwuntughe',recommended:'I Nwere Ike Ihu Nanya',ministry:'Ozi',live_streams:'Mgbasa Ozi Ndu',inbox_messages:'Ozi',home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...',
+    all:'Niile',video:'Vidiyo',audio:'Ụda',text:'Ederede',article:'Akụkọ',live:'Dị ndụ',following:'Soro',
+    sign_in:'Banye / Dezie aha',pastor_login:'Banye Onye Nchọọcha',
+    no_sermons:'Ọ dịghị nkuzi',loading:'Na-ebu...',
+    follow:'+ Soro',following_btn:'✓ Na-esoro',
+    like:'♡ Hụnanya',liked:'❤ Hụnanya',share:'🔗 Kesa',copy:'📋 Detuo',report:'⚑ Kọọ',
+    info:'Ozi',read:'📖 Gụọ',reading:'Ụdị Ịgụ',comments:'💬 Okwu ndị ọzọ',
+    notifications:'Ọkwa',mark_read:'Mee ha niile ka agụrụ',
+    language:'Asụsụ',sign_out:'Pụọ',
+    categories:'Ụdị',filter:'Họrọ'},
+  ha:{loading:'Ana lodi...',loading_sermons:'Ana lodi wa azi...',loading_pastors:'Ana lodi fastoci...',loading_notifs:'Ana lodi sanarwa...',loading_msgs:'Ana lodi sakonni...',no_saved:'Babu wa azin da aka ajiye',no_pastors:'Babu fastocin da aka tabbatar',no_notifs:'Babu sanarwa',no_following:'Ba ka bin wani fasto',p_save:'🔖 Ajiye',p_saved:'🔖 An ajiye',p_fullscreen:'⛶ Cikakken allo',p_download:'⬇ Sauke',reading_mode:'✨ Yanayin karatu',no_transcript:'Babu rubutu ga wannan wa azi.',no_comments:'Babu sharhi. Ka zama na farko!',write_comment:'Rubuta sharhi...',post_comment:'Aika',about_sermon:'Game da wannan wa azi',scripture_ref:'Nassi',welcome_back:'Barka da Dawowa',create_account:'Bude Asusu',email_label:'Imel',password_label:'Kalmar sirri',forgot_pwd:'Ka manta kalmar sirri?',full_name:'Cikakken suna',display_name:'Sunan nuni',username_label:'Sunan mai amfani',confirm_pwd:'Tabbatar da kalmar sirri',sign_in_btn:'Shiga',register_btn:'Yi rajista',c_all:'Duka',c_faith:'Imani',c_salvation:'Ceto',c_healing:'Warkarwa',c_prosperity:'Wadata',c_prophecy:'Annabci',c_marriage:'Aure',c_leadership:'Jagoranci',c_bible:'Nazarin Littafi',c_prayer:'Addua',font_display:'Rubutu da Nuni',account:'Asusu',legal:'Doka',security:'Tsaro',change_password:'Canza kalmar sirri',recommended:'Watakila Za Ka So',ministry:'Hidima',live_streams:'Yada Kai Tsaye',inbox_messages:'Sakonni',home:'Gida',pastors:'Malamai',saved:'Ajiye',inbox:'Saƙo',settings:'Saiti',search:'Nemi...',
+    all:'Duka',video:'Bidiyo',audio:'Sauti',text:'Rubutu',article:'Labari',live:'Kai tsaye',following:'Bi',
+    sign_in:'Shiga / Rajista',pastor_login:'Shiga Malami',
+    no_sermons:'Ba waazi ba',loading:'Ana ɗaukewa...',
+    follow:'+ Bi',following_btn:'✓ Ina bin',
+    like:'♡ So',liked:'❤ So',share:'🔗 Raba',copy:'📋 Kwafi',report:'⚑ Rahoto',
+    info:'Bayani',read:'📖 Karanta',reading:'Yanayin Karatu',comments:'💬 Sharhi',
+    notifications:'Sanarwa',mark_read:'Yiwa duka alama',
+    language:'Harshe',sign_out:'Fita',
+    categories:'Nau-i',filter:'Tace'},
+  pt:{loading:'Carregando...',loading_sermons:'Carregando sermoes...',loading_pastors:'Carregando pastores...',loading_notifs:'Carregando notificacoes...',loading_msgs:'Carregando mensagens...',no_saved:'Nenhum sermao salvo',no_pastors:'Nenhum pastor verificado',no_notifs:'Nenhuma notificacao',no_following:'Voce nao segue nenhum pastor',p_save:'🔖 Salvar',p_saved:'🔖 Salvo',p_fullscreen:'⛶ Tela cheia',p_download:'⬇ Baixar',reading_mode:'✨ Modo de leitura',no_transcript:'Nenhuma transcricao disponivel para este sermao.',no_comments:'Sem comentarios. Seja o primeiro!',write_comment:'Escreva um comentario...',post_comment:'Publicar',about_sermon:'Sobre este sermao',scripture_ref:'Referencia biblica',welcome_back:'Bem-vindo de volta',create_account:'Criar Conta',email_label:'E-mail',password_label:'Senha',forgot_pwd:'Esqueceu a senha?',full_name:'Nome completo',display_name:'Nome de exibicao',username_label:'Nome de usuario',confirm_pwd:'Confirmar senha',sign_in_btn:'Entrar',register_btn:'Registrar',c_all:'Todos',c_faith:'Fe',c_salvation:'Salvacao',c_healing:'Cura',c_prosperity:'Prosperidade',c_prophecy:'Profecia',c_marriage:'Casamento',c_leadership:'Lideranca',c_bible:'Estudo Biblico',c_prayer:'Oracao',font_display:'Fonte e Exibicao',account:'Conta',legal:'Juridico',security:'Seguranca',change_password:'Alterar Senha',recommended:'Voce Tambem Pode Gostar',ministry:'Ministerio',live_streams:'Transmissoes ao Vivo',inbox_messages:'Mensagens',home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Buscar...',
+    all:'Todos',video:'Vídeo',audio:'Áudio',text:'Texto',article:'Artigo',live:'Ao Vivo',following:'Seguindo',
+    sign_in:'Entrar / Registrar',pastor_login:'Acesso Pastor',
+    no_sermons:'Nenhum sermão encontrado',loading:'Carregando...',
+    follow:'+ Seguir',following_btn:'✓ Seguindo',
+    like:'♡ Curtir',liked:'❤ Curtido',share:'🔗 Compartilhar',copy:'📋 Copiar',report:'⚑ Denunciar',
+    info:'Info',read:'📖 Ler',reading:'Modo Leitura',comments:'💬 Comentários',
+    notifications:'Notificações',mark_read:'Marcar tudo lido',
+    language:'Idioma',sign_out:'Sair',
+    categories:'Categorias',filter:'Filtrar'}
+,
+  tw:{loading:'Reload...',loading_sermons:'Reload asenka...',loading_pastors:'Reload asofo...',loading_notifs:'Reload nkrasem...',loading_msgs:'Reload nkrasem...',no_saved:'Asenka biara nni ho',no_pastors:'Osofo biara nni ho',no_notifs:'Nkrasem biara nni ho',no_following:'Wonni osofo biara akyi',p_save:'🔖 Kora so',p_saved:'🔖 Wɔakora so',p_fullscreen:'⛶ Screen kɛse',p_download:'⬇ Twe',reading_mode:'✨ Akenkan kwan',no_transcript:'Nkyerewee biara nni ho ma asenka yi.',no_comments:'Nsem biara nni ho. Yε deε edi kan!',write_comment:'Kyerew asεm...',post_comment:'Fa kɔ',about_sermon:'Fa asenka yi ho',scripture_ref:'Twerεsεm',welcome_back:'Akwaaba Bio',create_account:'Bue Akawnt',email_label:'Email',password_label:'Ahintasem',forgot_pwd:'Wo werefi ahintasem?',full_name:'Din nyinaa',display_name:'Din a wokyere',username_label:'Dinto',confirm_pwd:'Si ahintasem so dua',sign_in_btn:'Hyen mu',register_btn:'Kyerew din',c_all:'Ne nyinaa',c_faith:'Gyidi',c_salvation:'Nkwagye',c_healing:'Ayaresa',c_prosperity:'Nkosuo',c_prophecy:'Nkomhye',c_marriage:'Aware',c_leadership:'Akannie',c_bible:'Bible Adesua',c_prayer:'Mpaebo',font_display:'Nkyerewde ne Nhweso',account:'Akawnt',legal:'Mmara',security:'Bammo',change_password:'Sesa wo ahintasem',recommended:'Ebia Wobepe',ministry:'Osom',live_streams:'Tee Nkrato',inbox_messages:'Nkrasem',home:'Fie',pastors:'Asɔfo',saved:'Wɔakora so',inbox:'Nkrasɛm',settings:'Nhyehyɛe',search:'Hwehwɛ asɛnka...',
+    all:'Ne nyinaa',video:'Video',audio:'Nnyigyei',text:'Nkyerɛwee',article:'Asɛm',live:'Tee',following:'Wodi akyi',
+    sign_in:'Bra mu / Kyerɛw wo din',pastor_login:'Ɔsɔfo Kɔ mu',
+    no_sermons:'Asɛnka biara nni hɔ',loading:'Reload asɛnka...',
+    follow:'+ Di akyi',following_btn:'✓ Wodi akyi',
+    like:'♡ Pɛ',liked:'❤ Wopɛ',share:'🔗 Kyɛ',copy:'📋 Kɔpi',report:'⚑ Bɔ amaneɛ',
+    info:'Nsɛm',read:'📖 Kenkan',reading:'Rekenkan',comments:'💬 Nsɛm',notifications:'Nkrasɛm',mark_read:'Hyɛ sɛ wɔakenkan',
+    language:'Kasa',sign_out:'Pue',categories:'Akuw',filter:'Yi'},
+  zu:{loading:'Iyalayisha...',loading_sermons:'Ilayisha izintshumayelo...',loading_pastors:'Ilayisha abefundisi...',loading_notifs:'Ilayisha izaziso...',loading_msgs:'Ilayisha imilayezo...',no_saved:'Azikho izintshumayelo ezilondoloziwe',no_pastors:'Abekho abefundisi abaqinisekisiwe',no_notifs:'Azikho izaziso',no_following:'Awulandeli abefundisi',p_save:'🔖 Londoloza',p_saved:'🔖 Kulondoloziwe',p_fullscreen:'⛶ Isikrini esigcwele',p_download:'⬇ Landa',reading_mode:'✨ Imodi yokufunda',no_transcript:'Awukho umbhalo otholakalayo wale ntshumayelo.',no_comments:'Awekho amazwana. Yiba ngowokuqala!',write_comment:'Bhala umbono...',post_comment:'Thumela',about_sermon:'Mayelana nale ntshumayelo',scripture_ref:'Indinyana yebhayibheli',welcome_back:'Wamukelekile Futhi',create_account:'Dala I-akhawunti',email_label:'I-imeyili',password_label:'Iphasiwedi',forgot_pwd:'Ukhohlwe iphasiwedi?',full_name:'Igama eliphelele',display_name:'Igama lokubonisa',username_label:'Igama lomsebenzisi',confirm_pwd:'Qinisekisa iphasiwedi',sign_in_btn:'Ngena',register_btn:'Bhalisa',c_all:'Konke',c_faith:'Ukholo',c_salvation:'Insindiso',c_healing:'Ukuphulukiswa',c_prosperity:'Inhlanhla',c_prophecy:'Isiprofetho',c_marriage:'Umshado',c_leadership:'Ubuholi',c_bible:'Isifundo SeBhayibheli',c_prayer:'Umthandazo',font_display:'Ifonti Nokubonisa',account:'I-akhawunti',legal:'Ezomthetho',security:'Ezokuphepha',change_password:'Shintsha Iphasiwedi',recommended:'Ungase Uthande',ministry:'Inkonzo',live_streams:'Ukusakaza Bukhoma',inbox_messages:'Imilayezo',home:'Ikhaya',pastors:'Abefundisi',saved:'Okulondoloziwe',inbox:'Imilayezo',settings:'Izilungiselelo',search:'Sesha izintshumayelo...',
+    all:'Konke',video:'Ividiyo',audio:'Umsindo',text:'Umbhalo',article:'Indatshana',live:'Bukhoma',following:'Ulandelayo',
+    sign_in:'Ngena / Bhalisa',pastor_login:'Umfundisi Ngena',
+    no_sermons:'Azikho izintshumayelo',loading:'Iyalayisha...',
+    follow:'+ Landela',following_btn:'✓ Uyalandela',
+    like:'♡ Thanda',liked:'❤ Uthandile',share:'🔗 Yabelana',copy:'📋 Kopisha',report:'⚑ Bika',
+    info:'Ulwazi',read:'📖 Funda',reading:'Iyafunda',comments:'💬 Amazwana',notifications:'Izaziso',mark_read:'Maka njengokufundiwe',
+    language:'Ulimi',sign_out:'Phuma',categories:'Izigaba',filter:'Hlunga'},
+  ar:{loading:'جار التحميل...',loading_sermons:'جار تحميل العظات...',loading_pastors:'جار تحميل القساوسة...',loading_notifs:'جار تحميل الإشعارات...',loading_msgs:'جار تحميل الرسائل...',no_saved:'لا توجد عظات محفوظة',no_pastors:'لا يوجد قساوسة موثقون',no_notifs:'لا توجد إشعارات',no_following:'أنت لا تتابع أي قس',p_save:'🔖 حفظ',p_saved:'🔖 محفوظ',p_fullscreen:'⛶ ملء الشاشة',p_download:'⬇ تنزيل',reading_mode:'✨ وضع القراءة',no_transcript:'لا يوجد نص لهذه العظة.',no_comments:'لا توجد تعليقات. كن الأول!',write_comment:'اكتب تعليقا...',post_comment:'نشر',about_sermon:'حول هذه العظة',scripture_ref:'مرجع كتابي',welcome_back:'مرحبا بعودتك',create_account:'إنشاء حساب',email_label:'البريد الإلكتروني',password_label:'كلمة المرور',forgot_pwd:'نسيت كلمة المرور؟',full_name:'الاسم الكامل',display_name:'الاسم المعروض',username_label:'اسم المستخدم',confirm_pwd:'تأكيد كلمة المرور',sign_in_btn:'تسجيل الدخول',register_btn:'تسجيل',c_all:'الكل',c_faith:'الإيمان',c_salvation:'الخلاص',c_healing:'الشفاء',c_prosperity:'الازدهار',c_prophecy:'النبوة',c_marriage:'الزواج',c_leadership:'القيادة',c_bible:'دراسة الكتاب',c_prayer:'الصلاة',font_display:'الخط والعرض',account:'الحساب',legal:'قانوني',security:'الأمان',change_password:'تغيير كلمة المرور',recommended:'قد يعجبك أيضا',ministry:'الخدمة',live_streams:'البث المباشر',inbox_messages:'الرسائل',home:'الرئيسية',pastors:'القساوسة',saved:'المحفوظات',inbox:'الرسائل',settings:'الإعدادات',search:'ابحث عن العظات...',
+    all:'الكل',video:'فيديو',audio:'صوت',text:'نص',article:'مقالة',live:'مباشر',following:'المتابَعون',
+    sign_in:'تسجيل الدخول / التسجيل',pastor_login:'دخول القس',
+    no_sermons:'لا توجد عظات',loading:'جارٍ التحميل...',
+    follow:'+ متابعة',following_btn:'✓ تتابع',
+    like:'♡ إعجاب',liked:'❤ أعجبت',share:'🔗 مشاركة',copy:'📋 نسخ',report:'⚑ إبلاغ',
+    info:'معلومات',read:'📖 اقرأ',reading:'قراءة',comments:'💬 تعليقات',notifications:'إشعارات',mark_read:'وضع علامة مقروء',
+    language:'اللغة',sign_out:'تسجيل الخروج',categories:'الفئات',filter:'تصفية'},
+  zh:{loading:'加载中...',loading_sermons:'正在加载讲道...',loading_pastors:'正在加载牧师...',loading_notifs:'正在加载通知...',loading_msgs:'正在加载消息...',no_saved:'暂无保存的讲道',no_pastors:'暂无认证牧师',no_notifs:'暂无通知',no_following:'您还没有关注任何牧师',p_save:'🔖 保存',p_saved:'🔖 已保存',p_fullscreen:'⛶ 全屏',p_download:'⬇ 下载',reading_mode:'✨ 阅读模式',no_transcript:'此讲道暂无文字记录。',no_comments:'暂无评论。来做第一个吧！',write_comment:'写评论...',post_comment:'发布',about_sermon:'关于本讲道',scripture_ref:'经文出处',welcome_back:'欢迎回来',create_account:'创建账户',email_label:'电子邮件',password_label:'密码',forgot_pwd:'忘记密码？',full_name:'全名',display_name:'显示名称',username_label:'用户名',confirm_pwd:'确认密码',sign_in_btn:'登录',register_btn:'注册',c_all:'全部',c_faith:'信心',c_salvation:'救恩',c_healing:'医治',c_prosperity:'兴盛',c_prophecy:'预言',c_marriage:'婚姻',c_leadership:'领导',c_bible:'查经',c_prayer:'祷告',font_display:'字体与显示',account:'账户',legal:'法律',security:'安全',change_password:'更改密码',recommended:'您可能也喜欢',ministry:'事工',live_streams:'直播',inbox_messages:'消息',home:'主页',pastors:'牧师',saved:'已保存',inbox:'消息',settings:'设置',search:'搜索讲道...',
+    all:'全部',video:'视频',audio:'音频',text:'文本',article:'文章',live:'直播',following:'关注中',
+    sign_in:'登录 / 注册',pastor_login:'牧师登录',
+    no_sermons:'未找到讲道',loading:'正在加载...',
+    follow:'+ 关注',following_btn:'✓ 已关注',
+    like:'♡ 点赞',liked:'❤ 已赞',share:'🔗 分享',copy:'📋 复制',report:'⚑ 举报',
+    info:'信息',read:'📖 阅读',reading:'阅读中',comments:'💬 评论',notifications:'通知',mark_read:'标记为已读',
+    language:'语言',sign_out:'退出',categories:'分类',filter:'筛选'},
+  hi:{loading:'लोड हो रहा है...',loading_sermons:'उपदेश लोड हो रहे हैं...',loading_pastors:'पादरी लोड हो रहे हैं...',loading_notifs:'सूचनाएं लोड हो रही हैं...',loading_msgs:'संदेश लोड हो रहे हैं...',no_saved:'अभी तक कोई सहेजा गया उपदेश नहीं',no_pastors:'अभी तक कोई सत्यापित पादरी नहीं',no_notifs:'अभी तक कोई सूचना नहीं',no_following:'आप किसी पादरी को फॉलो नहीं कर रहे',p_save:'🔖 सहेजें',p_saved:'🔖 सहेजा गया',p_fullscreen:'⛶ पूर्ण स्क्रीन',p_download:'⬇ डाउनलोड',reading_mode:'✨ पठन मोड',no_transcript:'इस उपदेश के लिए कोई प्रतिलेख उपलब्ध नहीं है।',no_comments:'अभी तक कोई टिप्पणी नहीं। पहले बनें!',write_comment:'टिप्पणी लिखें...',post_comment:'पोस्ट करें',about_sermon:'इस उपदेश के बारे में',scripture_ref:'शास्त्र संदर्भ',welcome_back:'वापसी पर स्वागत है',create_account:'खाता बनाएं',email_label:'ईमेल',password_label:'पासवर्ड',forgot_pwd:'पासवर्ड भूल गए?',full_name:'पूरा नाम',display_name:'प्रदर्शित नाम',username_label:'उपयोगकर्ता नाम',confirm_pwd:'पासवर्ड की पुष्टि करें',sign_in_btn:'साइन इन',register_btn:'रजिस्टर',c_all:'सभी',c_faith:'विश्वास',c_salvation:'उद्धार',c_healing:'चंगाई',c_prosperity:'समृद्धि',c_prophecy:'भविष्यवाणी',c_marriage:'विवाह',c_leadership:'नेतृत्व',c_bible:'बाइबल अध्ययन',c_prayer:'प्रार्थना',font_display:'फ़ॉन्ट और प्रदर्शन',account:'खाता',legal:'कानूनी',security:'सुरक्षा',change_password:'पासवर्ड बदलें',recommended:'आपको यह भी पसंद आ सकता है',ministry:'सेवकाई',live_streams:'लाइव स्ट्रीम',inbox_messages:'संदेश',home:'होम',pastors:'पादरी',saved:'सहेजा गया',inbox:'संदेश',settings:'सेटिंग्स',search:'उपदेश खोजें...',
+    all:'सभी',video:'वीडियो',audio:'ऑडियो',text:'पाठ',article:'लेख',live:'लाइव',following:'फॉलो किए गए',
+    sign_in:'साइन इन / रजिस्टर',pastor_login:'पादरी लॉगिन',
+    no_sermons:'कोई उपदेश नहीं मिला',loading:'लोड हो रहा है...',
+    follow:'+ फॉलो करें',following_btn:'✓ फॉलो किया',
+    like:'♡ पसंद',liked:'❤ पसंद किया',share:'🔗 साझा करें',copy:'📋 कॉपी',report:'⚑ रिपोर्ट',
+    info:'जानकारी',read:'📖 पढ़ें',reading:'पढ़ रहे हैं',comments:'💬 टिप्पणियाँ',notifications:'सूचनाएँ',mark_read:'पढ़ा हुआ चिह्नित करें',
+    language:'भाषा',sign_out:'साइन आउट',categories:'श्रेणियाँ',filter:'फ़िल्टर'},
+  es:{loading:'Cargando...',loading_sermons:'Cargando sermones...',loading_pastors:'Cargando pastores...',loading_notifs:'Cargando notificaciones...',loading_msgs:'Cargando mensajes...',no_saved:'No hay sermones guardados',no_pastors:'No hay pastores verificados',no_notifs:'No hay notificaciones',no_following:'No sigues a ningun pastor',p_save:'🔖 Guardar',p_saved:'🔖 Guardado',p_fullscreen:'⛶ Pantalla completa',p_download:'⬇ Descargar',reading_mode:'✨ Modo lectura',no_transcript:'No hay transcripcion disponible para este sermon.',no_comments:'Sin comentarios. Se el primero!',write_comment:'Escribe un comentario...',post_comment:'Publicar',about_sermon:'Acerca de este sermon',scripture_ref:'Referencia biblica',welcome_back:'Bienvenido de nuevo',create_account:'Crear Cuenta',email_label:'Correo',password_label:'Contrasena',forgot_pwd:'Olvidaste la contrasena?',full_name:'Nombre completo',display_name:'Nombre visible',username_label:'Nombre de usuario',confirm_pwd:'Confirmar contrasena',sign_in_btn:'Iniciar sesion',register_btn:'Registrarse',c_all:'Todos',c_faith:'Fe',c_salvation:'Salvacion',c_healing:'Sanidad',c_prosperity:'Prosperidad',c_prophecy:'Profecia',c_marriage:'Matrimonio',c_leadership:'Liderazgo',c_bible:'Estudio Biblico',c_prayer:'Oracion',font_display:'Fuente y Pantalla',account:'Cuenta',legal:'Legal',security:'Seguridad',change_password:'Cambiar Contrasena',recommended:'Tambien Te Puede Gustar',ministry:'Ministerio',live_streams:'Transmisiones en Vivo',inbox_messages:'Mensajes',home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar sermones...',
+    all:'Todos',video:'Vídeo',audio:'Audio',text:'Texto',article:'Artículo',live:'En vivo',following:'Siguiendo',
+    sign_in:'Iniciar sesión / Registrarse',pastor_login:'Acceso Pastor',
+    no_sermons:'No se encontraron sermones',loading:'Cargando sermones...',
+    follow:'+ Seguir',following_btn:'✓ Siguiendo',
+    like:'♡ Me gusta',liked:'❤ Te gusta',share:'🔗 Compartir',copy:'📋 Copiar',report:'⚑ Reportar',
+    info:'Información',read:'📖 Leer',reading:'Leyendo',comments:'💬 Comentarios',notifications:'Notificaciones',mark_read:'Marcar como leído',
+    language:'Idioma',sign_out:'Cerrar sesión',categories:'Categorías',filter:'Filtrar'},
+  de:{loading:'Wird geladen...',loading_sermons:'Predigten werden geladen...',loading_pastors:'Pastoren werden geladen...',loading_notifs:'Benachrichtigungen werden geladen...',loading_msgs:'Nachrichten werden geladen...',no_saved:'Keine gespeicherten Predigten',no_pastors:'Keine verifizierten Pastoren',no_notifs:'Keine Benachrichtigungen',no_following:'Du folgst keinen Pastoren',p_save:'🔖 Speichern',p_saved:'🔖 Gespeichert',p_fullscreen:'⛶ Vollbild',p_download:'⬇ Herunterladen',reading_mode:'✨ Lesemodus',no_transcript:'Fur diese Predigt ist kein Transkript verfugbar.',no_comments:'Noch keine Kommentare. Sei der Erste!',write_comment:'Kommentar schreiben...',post_comment:'Senden',about_sermon:'Uber diese Predigt',scripture_ref:'Bibelstelle',welcome_back:'Willkommen zuruck',create_account:'Konto erstellen',email_label:'E-Mail',password_label:'Passwort',forgot_pwd:'Passwort vergessen?',full_name:'Vollstandiger Name',display_name:'Anzeigename',username_label:'Benutzername',confirm_pwd:'Passwort bestatigen',sign_in_btn:'Anmelden',register_btn:'Registrieren',c_all:'Alle',c_faith:'Glaube',c_salvation:'Erlosung',c_healing:'Heilung',c_prosperity:'Wohlstand',c_prophecy:'Prophetie',c_marriage:'Ehe',c_leadership:'Fuhrung',c_bible:'Bibelstudium',c_prayer:'Gebet',font_display:'Schrift & Anzeige',account:'Konto',legal:'Rechtliches',security:'Sicherheit',change_password:'Passwort andern',recommended:'Das konnte dir auch gefallen',ministry:'Dienst',live_streams:'Live-Ubertragungen',inbox_messages:'Nachrichten',home:'Startseite',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Predigten suchen...',
+    all:'Alle',video:'Video',audio:'Audio',text:'Text',article:'Artikel',live:'Live',following:'Folge ich',
+    sign_in:'Anmelden / Registrieren',pastor_login:'Pastor-Login',
+    no_sermons:'Keine Predigten gefunden',loading:'Predigten werden geladen...',
+    follow:'+ Folgen',following_btn:'✓ Folge ich',
+    like:'♡ Gefällt mir',liked:'❤ Gefällt',share:'🔗 Teilen',copy:'📋 Kopieren',report:'⚑ Melden',
+    info:'Info',read:'📖 Lesen',reading:'Lese',comments:'💬 Kommentare',notifications:'Benachrichtigungen',mark_read:'Als gelesen markieren',
+    language:'Sprache',sign_out:'Abmelden',categories:'Kategorien',filter:'Filtern'},
+  it:{loading:'Caricamento...',loading_sermons:'Caricamento sermoni...',loading_pastors:'Caricamento pastori...',loading_notifs:'Caricamento notifiche...',loading_msgs:'Caricamento messaggi...',no_saved:'Nessun sermone salvato',no_pastors:'Nessun pastore verificato',no_notifs:'Nessuna notifica',no_following:'Non segui alcun pastore',p_save:'🔖 Salva',p_saved:'🔖 Salvato',p_fullscreen:'⛶ Schermo intero',p_download:'⬇ Scarica',reading_mode:'✨ Modalita lettura',no_transcript:'Nessuna trascrizione disponibile per questo sermone.',no_comments:'Nessun commento. Sii il primo!',write_comment:'Scrivi un commento...',post_comment:'Pubblica',about_sermon:'Informazioni su questo sermone',scripture_ref:'Riferimento biblico',welcome_back:'Bentornato',create_account:'Crea Account',email_label:'E-mail',password_label:'Password',forgot_pwd:'Password dimenticata?',full_name:'Nome completo',display_name:'Nome visualizzato',username_label:'Nome utente',confirm_pwd:'Conferma password',sign_in_btn:'Accedi',register_btn:'Registrati',c_all:'Tutti',c_faith:'Fede',c_salvation:'Salvezza',c_healing:'Guarigione',c_prosperity:'Prosperita',c_prophecy:'Profezia',c_marriage:'Matrimonio',c_leadership:'Leadership',c_bible:'Studio Biblico',c_prayer:'Preghiera',font_display:'Carattere e Visualizzazione',account:'Account',legal:'Note legali',security:'Sicurezza',change_password:'Cambia Password',recommended:'Potrebbe Piacerti Anche',ministry:'Ministero',live_streams:'Dirette',inbox_messages:'Messaggi',home:'Home',pastors:'Pastori',saved:'Salvati',inbox:'Messaggi',settings:'Impostazioni',search:'Cerca sermoni...',
+    all:'Tutti',video:'Video',audio:'Audio',text:'Testo',article:'Articolo',live:'In diretta',following:'Seguiti',
+    sign_in:'Accedi / Registrati',pastor_login:'Accesso Pastore',
+    no_sermons:'Nessun sermone trovato',loading:'Caricamento sermoni...',
+    follow:'+ Segui',following_btn:'✓ Segui',
+    like:'♡ Mi piace',liked:'❤ Piaciuto',share:'🔗 Condividi',copy:'📋 Copia',report:'⚑ Segnala',
+    info:'Info',read:'📖 Leggi',reading:'Lettura',comments:'💬 Commenti',notifications:'Notifiche',mark_read:'Segna come letto',
+    language:'Lingua',sign_out:'Esci',categories:'Categorie',filter:'Filtra'}
+};
+
 
 
 
@@ -1037,133 +1165,7 @@ let lhAllSermons=[],lhCurrentType='all',lhCurrentCat='',lhActiveCategory='All',l
 let lhSaved=JSON.parse(localStorage.getItem('lh_saved')||'[]');
 let lhFollowing=JSON.parse(localStorage.getItem('lh_following')||'[]');
 
-const LH_TRANS={
-  en:{p_save:'🔖 Save',p_saved:'🔖 Saved',p_fullscreen:'⛶ Fullscreen',p_download:'⬇ Download',reading_mode:'✨ Reading Mode',no_transcript:'No transcript available for this sermon.',no_comments:'No comments yet. Be the first!',write_comment:'Write a comment...',post_comment:'Post',about_sermon:'About this sermon',scripture_ref:'Scripture Reference',welcome_back:'Welcome Back',create_account:'Create Account',email_label:'Email',password_label:'Password',forgot_pwd:'Forgot password?',full_name:'Full Name',display_name:'Display Name',username_label:'Username',confirm_pwd:'Confirm Password',sign_in_btn:'Sign In',register_btn:'Register',c_all:'All',c_faith:'Faith',c_salvation:'Salvation',c_healing:'Healing',c_prosperity:'Prosperity',c_prophecy:'Prophecy',c_marriage:'Marriage',c_leadership:'Leadership',c_bible:'Bible Study',c_prayer:'Prayer',font_display:'Font & Display',account:'Account',legal:'Legal',security:'Security',change_password:'Change Password',recommended:'You Might Also Like',ministry:'Ministry',live_streams:'Live Streams',inbox_messages:'Inbox Messages',home:'Home',pastors:'Pastors',saved:'Saved',inbox:'Messages',settings:'Settings',search:'Search sermons...',
-    all:'All',video:'Video',audio:'Audio',text:'Text',article:'Article',live:'Live',following:'Following',
-    sign_in:'Sign In / Register',pastor_login:'Pastor Login',
-    no_sermons:'No sermons found',loading:'Loading sermons...',
-    follow:'+ Follow',following_btn:'✓ Following',
-    like:'♡ Like',liked:'❤ Liked',share:'🔗 Share',copy:'📋 Copy',report:'⚑ Report',
-    info:'Info',read:'📖 Read',reading:'Reading Mode',comments:'💬 Comments',
-    notifications:'Notifications',mark_read:'Mark all read',
-    language:'Language',sign_out:'Sign Out',
-    categories:'Categories',filter:'Filter'},
-  fr:{p_save:'🔖 Enregistrer',p_saved:'🔖 Enregistre',p_fullscreen:'⛶ Plein ecran',p_download:'⬇ Telecharger',reading_mode:'✨ Mode lecture',no_transcript:'Aucune transcription disponible pour ce sermon.',no_comments:'Aucun commentaire. Soyez le premier!',write_comment:'Ecrire un commentaire...',post_comment:'Publier',about_sermon:'A propos de ce sermon',scripture_ref:'Reference biblique',welcome_back:'Bon retour',create_account:'Creer un compte',email_label:'E-mail',password_label:'Mot de passe',forgot_pwd:'Mot de passe oublie?',full_name:'Nom complet',display_name:'Nom affiche',username_label:'Nom dutilisateur',confirm_pwd:'Confirmer le mot de passe',sign_in_btn:'Se connecter',register_btn:'Sinscrire',c_all:'Tous',c_faith:'Foi',c_salvation:'Salut',c_healing:'Guerison',c_prosperity:'Prosperite',c_prophecy:'Prophetie',c_marriage:'Mariage',c_leadership:'Leadership',c_bible:'Etude biblique',c_prayer:'Priere',font_display:'Police et affichage',account:'Compte',legal:'Mentions legales',security:'Securite',change_password:'Changer le mot de passe',recommended:'Vous aimerez aussi',ministry:'Ministere',live_streams:'Diffusions en direct',inbox_messages:'Messages recus',home:'Accueil',pastors:'Pasteurs',saved:'Sauvegardés',inbox:'Messages',settings:'Paramètres',search:'Rechercher...',
-    all:'Tout',video:'Vidéo',audio:'Audio',text:'Texte',article:'Article',live:'En Direct',following:'Abonnements',
-    sign_in:'Connexion / Inscription',pastor_login:'Espace Pasteur',
-    no_sermons:'Aucun sermon trouvé',loading:'Chargement...',
-    follow:'+ Suivre',following_btn:'✓ Abonné',
-    like:'♡ Aimer',liked:'❤ Aimé',share:'🔗 Partager',copy:'📋 Copier',report:'⚑ Signaler',
-    info:'Info',read:'📖 Lire',reading:'Mode Lecture',comments:'💬 Commentaires',
-    notifications:'Notifications',mark_read:'Tout marquer lu',
-    language:'Langue',sign_out:'Déconnexion',
-    categories:'Catégories',filter:'Filtrer'},
-  yo:{p_save:'🔖 Fipamo',p_saved:'🔖 Ti fipamo',p_fullscreen:'⛶ Iboju kikun',p_download:'⬇ Gbasile',reading_mode:'✨ Ipo kika',no_transcript:'Ko si akosile fun iwaasu yi.',no_comments:'Ko si oro kankan. Je akoko!',write_comment:'Ko oro kan...',post_comment:'Fi ranse',about_sermon:'Nipa iwaasu yi',scripture_ref:'Itokasi iwe mimo',welcome_back:'Kaabo Pada',create_account:'Sii Akaunti',email_label:'Imeeli',password_label:'Oro asina',forgot_pwd:'Gbagbe oro asina?',full_name:'Oruko kikun',display_name:'Oruko ifihan',username_label:'Oruko olumulo',confirm_pwd:'Jeri oro asina',sign_in_btn:'Wole',register_btn:'Forukosile',c_all:'Gbogbo',c_faith:'Igbagbo',c_salvation:'Igbala',c_healing:'Iwosan',c_prosperity:'Aseyori',c_prophecy:'Asotele',c_marriage:'Igbeyawo',c_leadership:'Idari',c_bible:'Eko Bibeli',c_prayer:'Adura',font_display:'Fonti ati Ifihan',account:'Akaunti',legal:'Ofin',security:'Aabo',change_password:'Yi oro asina pada',recommended:'O Le Feran Wonyi',ministry:'Ijosin',live_streams:'Igbohunsafefe Taara',inbox_messages:'Awon Iranse',home:'Ile',pastors:'Pásítọ̀',saved:'Fipamọ́',inbox:'Ifiranṣẹ',settings:'Ètò',search:'Wá orin...',
-    all:'Gbogbo',video:'Fidio',audio:'Ohun',text:'Ọrọ',article:'Àpilẹ̀kọ',live:'Laaye',following:'Tẹle',
-    sign_in:'Wọlé / Forúkọsílẹ̀',pastor_login:'Wọlé Pásítọ̀',
-    no_sermons:'Ko si waasu',loading:'Ṣíṣe ìfisílẹ̀...',
-    follow:'+ Tẹle',following_btn:'✓ Tẹlemo',
-    like:'♡ Fẹran',liked:'❤ Fẹran',share:'🔗 Pin',copy:'📋 Daakọ',report:'⚑ Ìjábọ̀',
-    info:'Alaye',read:'📖 Ka',reading:'Ipo Kíka',comments:'💬 Àwọn ọ̀rọ̀',
-    notifications:'Ìwífún',mark_read:'Ṣe gbogbo wọn ka',
-    language:'Èdè',sign_out:'Jáde',
-    categories:'Àwọn ẹka',filter:'Àlẹmọ'},
-  ig:{p_save:'🔖 Chekwaa',p_saved:'🔖 Echekwala',p_fullscreen:'⛶ Ihuenyo zuru',p_download:'⬇ Budata',reading_mode:'✨ Ogo ogugu',no_transcript:'Enweghi ihe edeturu maka ozizi a.',no_comments:'Enweghi okwu. Buru onye mbu!',write_comment:'Dee okwu...',post_comment:'Bipata',about_sermon:'Banyere ozizi a',scripture_ref:'Ntughari akwukwo nso',welcome_back:'Nnoo Ozo',create_account:'Mepee Akaunti',email_label:'Ozi-e',password_label:'Okwuntughe',forgot_pwd:'Chefuru okwuntughe?',full_name:'Aha zuru ezu',display_name:'Aha ngosi',username_label:'Aha njirimara',confirm_pwd:'Kwado okwuntughe',sign_in_btn:'Banye',register_btn:'Debanye aha',c_all:'Niile',c_faith:'Okwukwe',c_salvation:'Nzoputa',c_healing:'Ogwugwo',c_prosperity:'Oganihu',c_prophecy:'Amuma',c_marriage:'Alumdi',c_leadership:'Onye ndu',c_bible:'Omumu Akwukwo Nso',c_prayer:'Ekpere',font_display:'Mkpuruedemede na Ngosi',account:'Akaunti',legal:'Iwu',security:'Nchekwa',change_password:'Gbanwee okwuntughe',recommended:'I Nwere Ike Ihu Nanya',ministry:'Ozi',live_streams:'Mgbasa Ozi Ndu',inbox_messages:'Ozi',home:'Ulo',pastors:'Ndị Ozi',saved:'Echekwara',inbox:'Ozi',settings:'Ntọala',search:'Chọọ...',
-    all:'Niile',video:'Vidiyo',audio:'Ụda',text:'Ederede',article:'Akụkọ',live:'Dị ndụ',following:'Soro',
-    sign_in:'Banye / Dezie aha',pastor_login:'Banye Onye Nchọọcha',
-    no_sermons:'Ọ dịghị nkuzi',loading:'Na-ebu...',
-    follow:'+ Soro',following_btn:'✓ Na-esoro',
-    like:'♡ Hụnanya',liked:'❤ Hụnanya',share:'🔗 Kesa',copy:'📋 Detuo',report:'⚑ Kọọ',
-    info:'Ozi',read:'📖 Gụọ',reading:'Ụdị Ịgụ',comments:'💬 Okwu ndị ọzọ',
-    notifications:'Ọkwa',mark_read:'Mee ha niile ka agụrụ',
-    language:'Asụsụ',sign_out:'Pụọ',
-    categories:'Ụdị',filter:'Họrọ'},
-  ha:{p_save:'🔖 Ajiye',p_saved:'🔖 An ajiye',p_fullscreen:'⛶ Cikakken allo',p_download:'⬇ Sauke',reading_mode:'✨ Yanayin karatu',no_transcript:'Babu rubutu ga wannan wa azi.',no_comments:'Babu sharhi. Ka zama na farko!',write_comment:'Rubuta sharhi...',post_comment:'Aika',about_sermon:'Game da wannan wa azi',scripture_ref:'Nassi',welcome_back:'Barka da Dawowa',create_account:'Bude Asusu',email_label:'Imel',password_label:'Kalmar sirri',forgot_pwd:'Ka manta kalmar sirri?',full_name:'Cikakken suna',display_name:'Sunan nuni',username_label:'Sunan mai amfani',confirm_pwd:'Tabbatar da kalmar sirri',sign_in_btn:'Shiga',register_btn:'Yi rajista',c_all:'Duka',c_faith:'Imani',c_salvation:'Ceto',c_healing:'Warkarwa',c_prosperity:'Wadata',c_prophecy:'Annabci',c_marriage:'Aure',c_leadership:'Jagoranci',c_bible:'Nazarin Littafi',c_prayer:'Addua',font_display:'Rubutu da Nuni',account:'Asusu',legal:'Doka',security:'Tsaro',change_password:'Canza kalmar sirri',recommended:'Watakila Za Ka So',ministry:'Hidima',live_streams:'Yada Kai Tsaye',inbox_messages:'Sakonni',home:'Gida',pastors:'Malamai',saved:'Ajiye',inbox:'Saƙo',settings:'Saiti',search:'Nemi...',
-    all:'Duka',video:'Bidiyo',audio:'Sauti',text:'Rubutu',article:'Labari',live:'Kai tsaye',following:'Bi',
-    sign_in:'Shiga / Rajista',pastor_login:'Shiga Malami',
-    no_sermons:'Ba waazi ba',loading:'Ana ɗaukewa...',
-    follow:'+ Bi',following_btn:'✓ Ina bin',
-    like:'♡ So',liked:'❤ So',share:'🔗 Raba',copy:'📋 Kwafi',report:'⚑ Rahoto',
-    info:'Bayani',read:'📖 Karanta',reading:'Yanayin Karatu',comments:'💬 Sharhi',
-    notifications:'Sanarwa',mark_read:'Yiwa duka alama',
-    language:'Harshe',sign_out:'Fita',
-    categories:'Nau-i',filter:'Tace'},
-  pt:{p_save:'🔖 Salvar',p_saved:'🔖 Salvo',p_fullscreen:'⛶ Tela cheia',p_download:'⬇ Baixar',reading_mode:'✨ Modo de leitura',no_transcript:'Nenhuma transcricao disponivel para este sermao.',no_comments:'Sem comentarios. Seja o primeiro!',write_comment:'Escreva um comentario...',post_comment:'Publicar',about_sermon:'Sobre este sermao',scripture_ref:'Referencia biblica',welcome_back:'Bem-vindo de volta',create_account:'Criar Conta',email_label:'E-mail',password_label:'Senha',forgot_pwd:'Esqueceu a senha?',full_name:'Nome completo',display_name:'Nome de exibicao',username_label:'Nome de usuario',confirm_pwd:'Confirmar senha',sign_in_btn:'Entrar',register_btn:'Registrar',c_all:'Todos',c_faith:'Fe',c_salvation:'Salvacao',c_healing:'Cura',c_prosperity:'Prosperidade',c_prophecy:'Profecia',c_marriage:'Casamento',c_leadership:'Lideranca',c_bible:'Estudo Biblico',c_prayer:'Oracao',font_display:'Fonte e Exibicao',account:'Conta',legal:'Juridico',security:'Seguranca',change_password:'Alterar Senha',recommended:'Voce Tambem Pode Gostar',ministry:'Ministerio',live_streams:'Transmissoes ao Vivo',inbox_messages:'Mensagens',home:'Início',pastors:'Pastores',saved:'Salvos',inbox:'Mensagens',settings:'Configurações',search:'Buscar...',
-    all:'Todos',video:'Vídeo',audio:'Áudio',text:'Texto',article:'Artigo',live:'Ao Vivo',following:'Seguindo',
-    sign_in:'Entrar / Registrar',pastor_login:'Acesso Pastor',
-    no_sermons:'Nenhum sermão encontrado',loading:'Carregando...',
-    follow:'+ Seguir',following_btn:'✓ Seguindo',
-    like:'♡ Curtir',liked:'❤ Curtido',share:'🔗 Compartilhar',copy:'📋 Copiar',report:'⚑ Denunciar',
-    info:'Info',read:'📖 Ler',reading:'Modo Leitura',comments:'💬 Comentários',
-    notifications:'Notificações',mark_read:'Marcar tudo lido',
-    language:'Idioma',sign_out:'Sair',
-    categories:'Categorias',filter:'Filtrar'}
-,
-  tw:{p_save:'🔖 Kora so',p_saved:'🔖 Wɔakora so',p_fullscreen:'⛶ Screen kɛse',p_download:'⬇ Twe',reading_mode:'✨ Akenkan kwan',no_transcript:'Nkyerewee biara nni ho ma asenka yi.',no_comments:'Nsem biara nni ho. Yε deε edi kan!',write_comment:'Kyerew asεm...',post_comment:'Fa kɔ',about_sermon:'Fa asenka yi ho',scripture_ref:'Twerεsεm',welcome_back:'Akwaaba Bio',create_account:'Bue Akawnt',email_label:'Email',password_label:'Ahintasem',forgot_pwd:'Wo werefi ahintasem?',full_name:'Din nyinaa',display_name:'Din a wokyere',username_label:'Dinto',confirm_pwd:'Si ahintasem so dua',sign_in_btn:'Hyen mu',register_btn:'Kyerew din',c_all:'Ne nyinaa',c_faith:'Gyidi',c_salvation:'Nkwagye',c_healing:'Ayaresa',c_prosperity:'Nkosuo',c_prophecy:'Nkomhye',c_marriage:'Aware',c_leadership:'Akannie',c_bible:'Bible Adesua',c_prayer:'Mpaebo',font_display:'Nkyerewde ne Nhweso',account:'Akawnt',legal:'Mmara',security:'Bammo',change_password:'Sesa wo ahintasem',recommended:'Ebia Wobepe',ministry:'Osom',live_streams:'Tee Nkrato',inbox_messages:'Nkrasem',home:'Fie',pastors:'Asɔfo',saved:'Wɔakora so',inbox:'Nkrasɛm',settings:'Nhyehyɛe',search:'Hwehwɛ asɛnka...',
-    all:'Ne nyinaa',video:'Video',audio:'Nnyigyei',text:'Nkyerɛwee',article:'Asɛm',live:'Tee',following:'Wodi akyi',
-    sign_in:'Bra mu / Kyerɛw wo din',pastor_login:'Ɔsɔfo Kɔ mu',
-    no_sermons:'Asɛnka biara nni hɔ',loading:'Reload asɛnka...',
-    follow:'+ Di akyi',following_btn:'✓ Wodi akyi',
-    like:'♡ Pɛ',liked:'❤ Wopɛ',share:'🔗 Kyɛ',copy:'📋 Kɔpi',report:'⚑ Bɔ amaneɛ',
-    info:'Nsɛm',read:'📖 Kenkan',reading:'Rekenkan',comments:'💬 Nsɛm',notifications:'Nkrasɛm',mark_read:'Hyɛ sɛ wɔakenkan',
-    language:'Kasa',sign_out:'Pue',categories:'Akuw',filter:'Yi'},
-  zu:{p_save:'🔖 Londoloza',p_saved:'🔖 Kulondoloziwe',p_fullscreen:'⛶ Isikrini esigcwele',p_download:'⬇ Landa',reading_mode:'✨ Imodi yokufunda',no_transcript:'Awukho umbhalo otholakalayo wale ntshumayelo.',no_comments:'Awekho amazwana. Yiba ngowokuqala!',write_comment:'Bhala umbono...',post_comment:'Thumela',about_sermon:'Mayelana nale ntshumayelo',scripture_ref:'Indinyana yebhayibheli',welcome_back:'Wamukelekile Futhi',create_account:'Dala I-akhawunti',email_label:'I-imeyili',password_label:'Iphasiwedi',forgot_pwd:'Ukhohlwe iphasiwedi?',full_name:'Igama eliphelele',display_name:'Igama lokubonisa',username_label:'Igama lomsebenzisi',confirm_pwd:'Qinisekisa iphasiwedi',sign_in_btn:'Ngena',register_btn:'Bhalisa',c_all:'Konke',c_faith:'Ukholo',c_salvation:'Insindiso',c_healing:'Ukuphulukiswa',c_prosperity:'Inhlanhla',c_prophecy:'Isiprofetho',c_marriage:'Umshado',c_leadership:'Ubuholi',c_bible:'Isifundo SeBhayibheli',c_prayer:'Umthandazo',font_display:'Ifonti Nokubonisa',account:'I-akhawunti',legal:'Ezomthetho',security:'Ezokuphepha',change_password:'Shintsha Iphasiwedi',recommended:'Ungase Uthande',ministry:'Inkonzo',live_streams:'Ukusakaza Bukhoma',inbox_messages:'Imilayezo',home:'Ikhaya',pastors:'Abefundisi',saved:'Okulondoloziwe',inbox:'Imilayezo',settings:'Izilungiselelo',search:'Sesha izintshumayelo...',
-    all:'Konke',video:'Ividiyo',audio:'Umsindo',text:'Umbhalo',article:'Indatshana',live:'Bukhoma',following:'Ulandelayo',
-    sign_in:'Ngena / Bhalisa',pastor_login:'Umfundisi Ngena',
-    no_sermons:'Azikho izintshumayelo',loading:'Iyalayisha...',
-    follow:'+ Landela',following_btn:'✓ Uyalandela',
-    like:'♡ Thanda',liked:'❤ Uthandile',share:'🔗 Yabelana',copy:'📋 Kopisha',report:'⚑ Bika',
-    info:'Ulwazi',read:'📖 Funda',reading:'Iyafunda',comments:'💬 Amazwana',notifications:'Izaziso',mark_read:'Maka njengokufundiwe',
-    language:'Ulimi',sign_out:'Phuma',categories:'Izigaba',filter:'Hlunga'},
-  ar:{p_save:'🔖 حفظ',p_saved:'🔖 محفوظ',p_fullscreen:'⛶ ملء الشاشة',p_download:'⬇ تنزيل',reading_mode:'✨ وضع القراءة',no_transcript:'لا يوجد نص لهذه العظة.',no_comments:'لا توجد تعليقات. كن الأول!',write_comment:'اكتب تعليقا...',post_comment:'نشر',about_sermon:'حول هذه العظة',scripture_ref:'مرجع كتابي',welcome_back:'مرحبا بعودتك',create_account:'إنشاء حساب',email_label:'البريد الإلكتروني',password_label:'كلمة المرور',forgot_pwd:'نسيت كلمة المرور؟',full_name:'الاسم الكامل',display_name:'الاسم المعروض',username_label:'اسم المستخدم',confirm_pwd:'تأكيد كلمة المرور',sign_in_btn:'تسجيل الدخول',register_btn:'تسجيل',c_all:'الكل',c_faith:'الإيمان',c_salvation:'الخلاص',c_healing:'الشفاء',c_prosperity:'الازدهار',c_prophecy:'النبوة',c_marriage:'الزواج',c_leadership:'القيادة',c_bible:'دراسة الكتاب',c_prayer:'الصلاة',font_display:'الخط والعرض',account:'الحساب',legal:'قانوني',security:'الأمان',change_password:'تغيير كلمة المرور',recommended:'قد يعجبك أيضا',ministry:'الخدمة',live_streams:'البث المباشر',inbox_messages:'الرسائل',home:'الرئيسية',pastors:'القساوسة',saved:'المحفوظات',inbox:'الرسائل',settings:'الإعدادات',search:'ابحث عن العظات...',
-    all:'الكل',video:'فيديو',audio:'صوت',text:'نص',article:'مقالة',live:'مباشر',following:'المتابَعون',
-    sign_in:'تسجيل الدخول / التسجيل',pastor_login:'دخول القس',
-    no_sermons:'لا توجد عظات',loading:'جارٍ التحميل...',
-    follow:'+ متابعة',following_btn:'✓ تتابع',
-    like:'♡ إعجاب',liked:'❤ أعجبت',share:'🔗 مشاركة',copy:'📋 نسخ',report:'⚑ إبلاغ',
-    info:'معلومات',read:'📖 اقرأ',reading:'قراءة',comments:'💬 تعليقات',notifications:'إشعارات',mark_read:'وضع علامة مقروء',
-    language:'اللغة',sign_out:'تسجيل الخروج',categories:'الفئات',filter:'تصفية'},
-  zh:{p_save:'🔖 保存',p_saved:'🔖 已保存',p_fullscreen:'⛶ 全屏',p_download:'⬇ 下载',reading_mode:'✨ 阅读模式',no_transcript:'此讲道暂无文字记录。',no_comments:'暂无评论。来做第一个吧！',write_comment:'写评论...',post_comment:'发布',about_sermon:'关于本讲道',scripture_ref:'经文出处',welcome_back:'欢迎回来',create_account:'创建账户',email_label:'电子邮件',password_label:'密码',forgot_pwd:'忘记密码？',full_name:'全名',display_name:'显示名称',username_label:'用户名',confirm_pwd:'确认密码',sign_in_btn:'登录',register_btn:'注册',c_all:'全部',c_faith:'信心',c_salvation:'救恩',c_healing:'医治',c_prosperity:'兴盛',c_prophecy:'预言',c_marriage:'婚姻',c_leadership:'领导',c_bible:'查经',c_prayer:'祷告',font_display:'字体与显示',account:'账户',legal:'法律',security:'安全',change_password:'更改密码',recommended:'您可能也喜欢',ministry:'事工',live_streams:'直播',inbox_messages:'消息',home:'主页',pastors:'牧师',saved:'已保存',inbox:'消息',settings:'设置',search:'搜索讲道...',
-    all:'全部',video:'视频',audio:'音频',text:'文本',article:'文章',live:'直播',following:'关注中',
-    sign_in:'登录 / 注册',pastor_login:'牧师登录',
-    no_sermons:'未找到讲道',loading:'正在加载...',
-    follow:'+ 关注',following_btn:'✓ 已关注',
-    like:'♡ 点赞',liked:'❤ 已赞',share:'🔗 分享',copy:'📋 复制',report:'⚑ 举报',
-    info:'信息',read:'📖 阅读',reading:'阅读中',comments:'💬 评论',notifications:'通知',mark_read:'标记为已读',
-    language:'语言',sign_out:'退出',categories:'分类',filter:'筛选'},
-  hi:{p_save:'🔖 सहेजें',p_saved:'🔖 सहेजा गया',p_fullscreen:'⛶ पूर्ण स्क्रीन',p_download:'⬇ डाउनलोड',reading_mode:'✨ पठन मोड',no_transcript:'इस उपदेश के लिए कोई प्रतिलेख उपलब्ध नहीं है।',no_comments:'अभी तक कोई टिप्पणी नहीं। पहले बनें!',write_comment:'टिप्पणी लिखें...',post_comment:'पोस्ट करें',about_sermon:'इस उपदेश के बारे में',scripture_ref:'शास्त्र संदर्भ',welcome_back:'वापसी पर स्वागत है',create_account:'खाता बनाएं',email_label:'ईमेल',password_label:'पासवर्ड',forgot_pwd:'पासवर्ड भूल गए?',full_name:'पूरा नाम',display_name:'प्रदर्शित नाम',username_label:'उपयोगकर्ता नाम',confirm_pwd:'पासवर्ड की पुष्टि करें',sign_in_btn:'साइन इन',register_btn:'रजिस्टर',c_all:'सभी',c_faith:'विश्वास',c_salvation:'उद्धार',c_healing:'चंगाई',c_prosperity:'समृद्धि',c_prophecy:'भविष्यवाणी',c_marriage:'विवाह',c_leadership:'नेतृत्व',c_bible:'बाइबल अध्ययन',c_prayer:'प्रार्थना',font_display:'फ़ॉन्ट और प्रदर्शन',account:'खाता',legal:'कानूनी',security:'सुरक्षा',change_password:'पासवर्ड बदलें',recommended:'आपको यह भी पसंद आ सकता है',ministry:'सेवकाई',live_streams:'लाइव स्ट्रीम',inbox_messages:'संदेश',home:'होम',pastors:'पादरी',saved:'सहेजा गया',inbox:'संदेश',settings:'सेटिंग्स',search:'उपदेश खोजें...',
-    all:'सभी',video:'वीडियो',audio:'ऑडियो',text:'पाठ',article:'लेख',live:'लाइव',following:'फॉलो किए गए',
-    sign_in:'साइन इन / रजिस्टर',pastor_login:'पादरी लॉगिन',
-    no_sermons:'कोई उपदेश नहीं मिला',loading:'लोड हो रहा है...',
-    follow:'+ फॉलो करें',following_btn:'✓ फॉलो किया',
-    like:'♡ पसंद',liked:'❤ पसंद किया',share:'🔗 साझा करें',copy:'📋 कॉपी',report:'⚑ रिपोर्ट',
-    info:'जानकारी',read:'📖 पढ़ें',reading:'पढ़ रहे हैं',comments:'💬 टिप्पणियाँ',notifications:'सूचनाएँ',mark_read:'पढ़ा हुआ चिह्नित करें',
-    language:'भाषा',sign_out:'साइन आउट',categories:'श्रेणियाँ',filter:'फ़िल्टर'},
-  es:{p_save:'🔖 Guardar',p_saved:'🔖 Guardado',p_fullscreen:'⛶ Pantalla completa',p_download:'⬇ Descargar',reading_mode:'✨ Modo lectura',no_transcript:'No hay transcripcion disponible para este sermon.',no_comments:'Sin comentarios. Se el primero!',write_comment:'Escribe un comentario...',post_comment:'Publicar',about_sermon:'Acerca de este sermon',scripture_ref:'Referencia biblica',welcome_back:'Bienvenido de nuevo',create_account:'Crear Cuenta',email_label:'Correo',password_label:'Contrasena',forgot_pwd:'Olvidaste la contrasena?',full_name:'Nombre completo',display_name:'Nombre visible',username_label:'Nombre de usuario',confirm_pwd:'Confirmar contrasena',sign_in_btn:'Iniciar sesion',register_btn:'Registrarse',c_all:'Todos',c_faith:'Fe',c_salvation:'Salvacion',c_healing:'Sanidad',c_prosperity:'Prosperidad',c_prophecy:'Profecia',c_marriage:'Matrimonio',c_leadership:'Liderazgo',c_bible:'Estudio Biblico',c_prayer:'Oracion',font_display:'Fuente y Pantalla',account:'Cuenta',legal:'Legal',security:'Seguridad',change_password:'Cambiar Contrasena',recommended:'Tambien Te Puede Gustar',ministry:'Ministerio',live_streams:'Transmisiones en Vivo',inbox_messages:'Mensajes',home:'Inicio',pastors:'Pastores',saved:'Guardados',inbox:'Mensajes',settings:'Ajustes',search:'Buscar sermones...',
-    all:'Todos',video:'Vídeo',audio:'Audio',text:'Texto',article:'Artículo',live:'En vivo',following:'Siguiendo',
-    sign_in:'Iniciar sesión / Registrarse',pastor_login:'Acceso Pastor',
-    no_sermons:'No se encontraron sermones',loading:'Cargando sermones...',
-    follow:'+ Seguir',following_btn:'✓ Siguiendo',
-    like:'♡ Me gusta',liked:'❤ Te gusta',share:'🔗 Compartir',copy:'📋 Copiar',report:'⚑ Reportar',
-    info:'Información',read:'📖 Leer',reading:'Leyendo',comments:'💬 Comentarios',notifications:'Notificaciones',mark_read:'Marcar como leído',
-    language:'Idioma',sign_out:'Cerrar sesión',categories:'Categorías',filter:'Filtrar'},
-  de:{p_save:'🔖 Speichern',p_saved:'🔖 Gespeichert',p_fullscreen:'⛶ Vollbild',p_download:'⬇ Herunterladen',reading_mode:'✨ Lesemodus',no_transcript:'Fur diese Predigt ist kein Transkript verfugbar.',no_comments:'Noch keine Kommentare. Sei der Erste!',write_comment:'Kommentar schreiben...',post_comment:'Senden',about_sermon:'Uber diese Predigt',scripture_ref:'Bibelstelle',welcome_back:'Willkommen zuruck',create_account:'Konto erstellen',email_label:'E-Mail',password_label:'Passwort',forgot_pwd:'Passwort vergessen?',full_name:'Vollstandiger Name',display_name:'Anzeigename',username_label:'Benutzername',confirm_pwd:'Passwort bestatigen',sign_in_btn:'Anmelden',register_btn:'Registrieren',c_all:'Alle',c_faith:'Glaube',c_salvation:'Erlosung',c_healing:'Heilung',c_prosperity:'Wohlstand',c_prophecy:'Prophetie',c_marriage:'Ehe',c_leadership:'Fuhrung',c_bible:'Bibelstudium',c_prayer:'Gebet',font_display:'Schrift & Anzeige',account:'Konto',legal:'Rechtliches',security:'Sicherheit',change_password:'Passwort andern',recommended:'Das konnte dir auch gefallen',ministry:'Dienst',live_streams:'Live-Ubertragungen',inbox_messages:'Nachrichten',home:'Startseite',pastors:'Pastoren',saved:'Gespeichert',inbox:'Nachrichten',settings:'Einstellungen',search:'Predigten suchen...',
-    all:'Alle',video:'Video',audio:'Audio',text:'Text',article:'Artikel',live:'Live',following:'Folge ich',
-    sign_in:'Anmelden / Registrieren',pastor_login:'Pastor-Login',
-    no_sermons:'Keine Predigten gefunden',loading:'Predigten werden geladen...',
-    follow:'+ Folgen',following_btn:'✓ Folge ich',
-    like:'♡ Gefällt mir',liked:'❤ Gefällt',share:'🔗 Teilen',copy:'📋 Kopieren',report:'⚑ Melden',
-    info:'Info',read:'📖 Lesen',reading:'Lese',comments:'💬 Kommentare',notifications:'Benachrichtigungen',mark_read:'Als gelesen markieren',
-    language:'Sprache',sign_out:'Abmelden',categories:'Kategorien',filter:'Filtern'},
-  it:{p_save:'🔖 Salva',p_saved:'🔖 Salvato',p_fullscreen:'⛶ Schermo intero',p_download:'⬇ Scarica',reading_mode:'✨ Modalita lettura',no_transcript:'Nessuna trascrizione disponibile per questo sermone.',no_comments:'Nessun commento. Sii il primo!',write_comment:'Scrivi un commento...',post_comment:'Pubblica',about_sermon:'Informazioni su questo sermone',scripture_ref:'Riferimento biblico',welcome_back:'Bentornato',create_account:'Crea Account',email_label:'E-mail',password_label:'Password',forgot_pwd:'Password dimenticata?',full_name:'Nome completo',display_name:'Nome visualizzato',username_label:'Nome utente',confirm_pwd:'Conferma password',sign_in_btn:'Accedi',register_btn:'Registrati',c_all:'Tutti',c_faith:'Fede',c_salvation:'Salvezza',c_healing:'Guarigione',c_prosperity:'Prosperita',c_prophecy:'Profezia',c_marriage:'Matrimonio',c_leadership:'Leadership',c_bible:'Studio Biblico',c_prayer:'Preghiera',font_display:'Carattere e Visualizzazione',account:'Account',legal:'Note legali',security:'Sicurezza',change_password:'Cambia Password',recommended:'Potrebbe Piacerti Anche',ministry:'Ministero',live_streams:'Dirette',inbox_messages:'Messaggi',home:'Home',pastors:'Pastori',saved:'Salvati',inbox:'Messaggi',settings:'Impostazioni',search:'Cerca sermoni...',
-    all:'Tutti',video:'Video',audio:'Audio',text:'Testo',article:'Articolo',live:'In diretta',following:'Seguiti',
-    sign_in:'Accedi / Registrati',pastor_login:'Accesso Pastore',
-    no_sermons:'Nessun sermone trovato',loading:'Caricamento sermoni...',
-    follow:'+ Segui',following_btn:'✓ Segui',
-    like:'♡ Mi piace',liked:'❤ Piaciuto',share:'🔗 Condividi',copy:'📋 Copia',report:'⚑ Segnala',
-    info:'Info',read:'📖 Leggi',reading:'Lettura',comments:'💬 Commenti',notifications:'Notifiche',mark_read:'Segna come letto',
-    language:'Lingua',sign_out:'Esci',categories:'Categorie',filter:'Filtra'}
-};
+
 
 function applyTranslations(lang){
   lhCurrentLang=lang;
@@ -1250,7 +1252,7 @@ function lhRender(){
   if(lhCurrentCat){const synonyms={'faith':['faith','believe','trust','confidence'],'salvation':['salvation','saved','born again','redemption','grace','repent'],'healing':['healing','heal','miracle','restoration'],'prosperity':['prosperity','prosper','blessing','abundance','wealth'],'prophecy':['prophecy','prophetic','vision','revelation'],'marriage':['marriage','family','husband','wife','relationship'],'leadership':['leadership','leader','pastor','ministry','church'],'bible':['bible','scripture','word','study','verse','gospel'],'prayer':['prayer','pray','intercession','fasting']};const words=synonyms[lhCurrentCat]||[lhCurrentCat];list=list.filter(s=>{const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase();return words.some(w=>text.includes(w));});}
   if(q)list=list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')).toLowerCase().includes(q));
   const el=document.getElementById('lh-sermons');
-  if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">No sermons found</p></div>';return;}
+  if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
@@ -1299,7 +1301,7 @@ async function lhShowPastors(){
     const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
     const pastors=Array.isArray(data)?data:(data?.pastors||[]);
-    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">No verified pastors yet</div>';return;}
+    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_pastors+'</div>';return;}
     el.innerHTML='';
     pastors.forEach(function(p){
       const following=lhFollowing.includes(p.id||p.user_id);
@@ -1336,7 +1338,7 @@ function lhShowSaved(){
   const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   if(!saved.length){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">No saved sermons yet</p></div>';
+    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved+'</p></div>';
     return;
   }
   el.innerHTML='';
@@ -1580,7 +1582,7 @@ function updateNotifCount(){
   }catch(e){}
 }
 
-async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">No notifications yet</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){
+async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_notifs+'</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}
 
 async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){
@@ -1617,7 +1619,7 @@ async function loadDmPastors(){
     const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
     const pastors=Array.isArray(data)?data:(data?.pastors||[]);
-    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">No verified pastors yet</div>';return;}
+    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_pastors+'</div>';return;}
     el.innerHTML='';
     pastors.forEach(function(p){
       const card=document.createElement('div');
