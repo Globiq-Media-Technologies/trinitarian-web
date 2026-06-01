@@ -1166,6 +1166,16 @@ const LH_TRANS={
 };
 
 function applyTranslations(lang){
+  // Process all elements tagged with data-i18n
+  const tt=LH_TRANS[lang]||LH_TRANS.en;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const key=el.getAttribute('data-i18n');
+    if(tt[key]){el.textContent=tt[key];}
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+    const key=el.getAttribute('data-i18n-ph');
+    if(tt[key]){el.placeholder=tt[key];}
+  });
   // RTL for Arabic
   try{document.documentElement.dir=(lang==='ar')?'rtl':'ltr';}catch(e){}
   try{localStorage.setItem('trinitarian_lang',lang);}catch(e){}
