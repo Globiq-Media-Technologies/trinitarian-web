@@ -1150,6 +1150,17 @@ function pdApplyTranslations(lang){
   try{document.documentElement.dir=(lang==='ar')?'rtl':'ltr';}catch(e){}
   const sel=document.getElementById('pd-lang-select');
   if(sel)sel.value=lang;
+  // Sync settings language buttons
+  document.querySelectorAll('.lang-setting-btn').forEach(function(b){
+    const btnLang=b.getAttribute('onclick');
+    if(btnLang&&btnLang.includes("'"+lang+"'")){
+      b.style.background='var(--gold-light)';b.style.borderColor='var(--gold-border)';
+      try{b.querySelector('div:last-child').style.color='var(--gold)';}catch(e){}
+    } else {
+      b.style.background='var(--navy2)';b.style.borderColor='var(--border)';
+      try{b.querySelector('div:last-child').style.color='var(--text-muted)';}catch(e){}
+    }
+  });
 }
 
 
@@ -2269,7 +2280,8 @@ function setLang(lang, el) {
   });
   el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';
   el.querySelector('div:last-child').style.color='var(--gold)';
-  localStorage.setItem('pastor_lang', lang);
+  // Sync with sidebar selector and apply translations
+  pdApplyTranslations(lang);
 }
 
 // ── Notification Preferences ──
