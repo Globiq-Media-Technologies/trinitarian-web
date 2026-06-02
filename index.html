@@ -1119,7 +1119,7 @@ function goTo(page){
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
-  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro){const tt=LH_TRANS[lhCurrentLang]||LH_TRANS.en;ro.textContent=tt.listener_role||(u.role||'listener').toUpperCase();}}applyTranslations(lhCurrentLang);}
+  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro){const tt=LH_TRANS[lhCurrentLang]||LH_TRANS.en;ro.textContent=tt.listener_role||(u.role||'listener').toUpperCase();}}setTimeout(function(){applyTranslations(lhCurrentLang);},50);}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
   window.location.hash=page==='home'?'':page;
