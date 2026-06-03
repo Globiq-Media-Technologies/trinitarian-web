@@ -1199,7 +1199,7 @@ function applyTranslations(lang){
   try{document.documentElement.dir=(lang==='ar')?'rtl':'ltr';}catch(e){}
   try{localStorage.setItem('trinitarian_lang',lang);}catch(e){}
   const t=LH_TRANS[lang]||LH_TRANS.en;
-  localStorage.setItem('lh_lang',lang);
+  localStorage.setItem('trinitarian_lang',lang);
   // Bottom nav
   const bnav=document.querySelector('.lh-bottom-nav');
   if(bnav){const spans=bnav.querySelectorAll('.lh-bnav span:last-child');const keys=['home','pastors','saved','inbox','settings'];spans.forEach(function(s,i){if(keys[i]&&t[keys[i]])s.textContent=t[keys[i]];});}
@@ -1231,7 +1231,10 @@ function applyTranslations(lang){
 }
 
 async function initListenerHome(){updateNotifCount();
-  applyTranslations(localStorage.getItem('lh_lang')||'en');
+  const _initLang=localStorage.getItem('trinitarian_lang')||'en';
+  applyTranslations(_initLang);
+  const _ldrop=document.getElementById('landing-lang-select');
+  if(_ldrop)_ldrop.value=_initLang;
   const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';
   const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
   if(u){const el=document.getElementById('lh-username');if(el)el.textContent=u.display_name||'';if(['admin','moderator'].includes(u.role)){const bar=document.getElementById('lh-admin-bar');if(bar)bar.style.display='block';}}
