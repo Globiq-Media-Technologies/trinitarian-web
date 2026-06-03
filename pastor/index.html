@@ -1233,12 +1233,12 @@ function showPage(name) {
     if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
     if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
     if(document.getElementById('set-denom')) document.getElementById('set-denom').textContent = user?.denomination || localStorage.getItem('pastor_denom') || '—';
-    if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
+    if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;document.getElementById('set-role').textContent=user?.role==='admin'?(_tt.admin_label||'ADMIN'):(_tt.pastor_label||'PASTOR');}
     loadFontSettings();
     loadNotifPrefs();
   }
 
-  setTimeout(function(){pdApplyTranslations(pdCurrentLang);},50);}
+  setTimeout(function(){pdApplyTranslations(pdCurrentLang);},200);}
 
 function showAlert(id, msg, type = 'error', isHtml = false) {
   const el = document.getElementById(id);
@@ -1506,7 +1506,7 @@ function initDashboard() {
   // Populate settings
   if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
   if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
-  if(document.getElementById('set-role')) document.getElementById('set-role').textContent = (user?.role||'listener').toUpperCase();
+  if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;document.getElementById('set-role').textContent=user?.role==='admin'?(_tt.admin_label||'ADMIN'):(_tt.pastor_label||'PASTOR');}
   // Hide admin items unless admin/moderator
   const isAdmin = user?.role === 'admin';
   const isModerator = user?.role === 'moderator';
