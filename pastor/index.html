@@ -709,7 +709,7 @@
           <p style="color:var(--gold);font-size:13px;font-weight:600;">Trinitarian · Globiq Media Technologies</p>
         </div>
       </div>
-    </div>/div>
+    </div>
 
     <!-- ANALYTICS -->
     <div id="page-analytics" class="page">
@@ -2893,6 +2893,1112 @@ function toggleTranscription(){
 
 
 </script>
+
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d2142;border-top:1px solid rgba(212,175,55,0.3);padding:16px 20px;z-index:99998;flex-wrap:wrap;align-items:center;gap:12px;">
+  <div style="flex:1;min-width:200px;">
+    <p style="color:#e8e8e8;font-size:13px;line-height:1.6;margin:0;">
+      We use cookies to improve your experience. By using Trinitarian you agree to our
+      <a href="https://trinitarian.app/privacy" style="color:#D4AF37;" data-i18n="privacy_policy">Privacy Policy</a>
+      and <a href="https://trinitarian.app/terms" style="color:#D4AF37;" data-i18n="terms_of_service">Terms of Service</a>.
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button onclick="acceptCookies()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 20px;cursor:pointer;font-size:13px;font-weight:700;">Accept</button>
+    <button onclick="declineCookies()" style="background:transparent;color:#8fa3c0;border:1px solid rgba(212,175,55,0.2);border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;">Decline</button>
+  </div>
+</div>
+</body>
+</html></div>html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trinitarian — Pastor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #071528;
+      --navy2: #0d2142;
+      --navy3: #0a1c36;
+      --gold: #D4AF37;
+      --gold-dim: #a8892a;
+      --gold-light: rgba(212,175,55,0.12);
+      --gold-border: rgba(212,175,55,0.3);
+      --white: #ffffff;
+      --text: #e8e8e8;
+      --text-sec: #b0c4d8;
+      --text-muted: #8fa3c0;
+      --border: rgba(212,175,55,0.15);
+      --error: #e05555;
+      --success: #40c96a;
+      --warning: #f0a500;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--navy); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+
+
+    .back-arrow { position:fixed; top:20px; left:20px; display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.4); color:#D4AF37; padding:8px 16px; border-radius:20px; cursor:pointer; font-size:13px; text-decoration:none; z-index:1000; box-shadow:0 2px 12px rgba(0,0,0,0.3); }
+    .back-arrow:hover { background:rgba(212,175,55,0.2); }
+    /* ── AUTH SCREENS ── */
+    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 60%); position:relative; }
+    .auth-box { width:100%; max-width:420px; background:var(--navy2); border:1px solid var(--gold-border); border-radius:20px; padding:40px 36px; }
+    .auth-logo { text-align:center; margin-bottom:32px; }
+    .auth-logo img { width:180px; height:auto; }
+    .auth-title { font-family:'Cinzel',serif; font-size:20px; color:var(--white); text-align:center; margin-bottom:6px; }
+    .auth-sub { color:var(--text-muted); font-size:13px; text-align:center; margin-bottom:28px; }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom:16px; }
+    .form-label { display:block; color:var(--text-muted); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:7px; }
+    .form-input { width:100%; background:var(--navy3); border:1px solid var(--border); border-radius:10px; padding:12px 16px; color:var(--white); font-size:14px; font-family:'DM Sans',sans-serif; transition:border-color 0.2s; outline:none; }
+    .form-input:focus { border-color:var(--gold); }
+    .form-input::placeholder { color:var(--text-muted); }
+    select.form-input { cursor:pointer; }
+    select.form-input option { background:var(--navy2); }
+    textarea.form-input { resize:vertical; min-height:100px; line-height:1.6; }
+
+    /* ── BUTTONS ── */
+    .btn { width:100%; padding:13px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+    .btn-gold { background:var(--gold); color:var(--navy); }
+    .btn-gold:hover { background:var(--gold-dim); }
+    .btn-ghost { background:transparent; border:1px solid var(--gold-border); color:var(--gold); }
+    .btn-ghost:hover { background:var(--gold-light); }
+    .btn-danger { background:rgba(224,85,85,0.1); border:1px solid rgba(224,85,85,0.3); color:var(--error); }
+    .btn-sm { width:auto; padding:7px 16px; font-size:12px; border-radius:8px; }
+    .btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+    /* ── LINKS ── */
+    .auth-link { text-align:center; margin-top:20px; font-size:13px; color:var(--text-muted); }
+    .auth-link a { color:var(--gold); text-decoration:none; cursor:pointer; }
+    .auth-link a:hover { text-decoration:underline; }
+
+    /* ── ALERT ── */
+    .alert { padding:12px 16px; border-radius:10px; font-size:13px; margin-bottom:16px; display:none; }
+    .alert.show { display:block; }
+    .alert-error { background:rgba(224,85,85,0.1); border:1px solid rgba(224,85,85,0.3); color:var(--error); }
+    .alert-success { background:rgba(64,201,106,0.1); border:1px solid rgba(64,201,106,0.3); color:var(--success); }
+
+    /* ── DASHBOARD LAYOUT ── */
+    .dash-wrap { display:none; min-height:100vh; }
+    .dash-wrap.active { display:flex; }
+    .sidebar { width:240px; min-height:100vh; background:var(--navy2); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:24px 0; flex-shrink:0; }
+    .sidebar-logo { padding:0 20px 24px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+    .sidebar-logo img { width:140px; height:auto; }
+    .sidebar-role { background:var(--gold-light); border:1px solid var(--gold-border); border-radius:20px; padding:6px 16px; display:inline-block; margin-top:10px; font-size:13px; font-weight:700; letter-spacing:1.5px; }
+    .sidebar-role span { color:var(--gold); font-size:13px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:11px 20px; color:var(--text-muted); font-size:14px; cursor:pointer; transition:all 0.15s; border-left:2px solid transparent; }
+    .nav-item:hover { background:var(--gold-light); color:var(--text); }
+    .nav-item.active { background:var(--gold-light); color:var(--gold); border-left-color:var(--gold); }
+    .nav-item .nav-icon { font-size:18px; width:22px; text-align:center; }
+    .nav-divider { height:1px; background:var(--border); margin:12px 20px; }
+    .sidebar-bottom { margin-top:auto; padding:0 20px; }
+    .pastor-info { background:var(--navy3); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; }
+    .pastor-info .name { color:var(--white); font-size:14px; font-weight:600; margin-bottom:2px; }
+    .pastor-info .church { color:var(--text-muted); font-size:12px; }
+
+    /* ── MAIN CONTENT ── */
+    .main { flex:1; overflow-y:auto; }
+    .page { display:none; padding:32px; }
+    .page.active { display:block; }
+    .page-header { margin-bottom:28px; }
+    .page-title { font-family:'Cinzel',serif; font-size:22px; color:var(--white); margin-bottom:4px; }
+    .page-sub { color:var(--text-muted); font-size:14px; }
+
+    /* ── STATS GRID ── */
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+    .stat-card { background:var(--navy2); border:1px solid var(--border); border-radius:14px; padding:20px; }
+    .stat-icon { font-size:28px; margin-bottom:10px; }
+    .stat-value { font-family:'Cinzel',serif; font-size:28px; color:var(--white); margin-bottom:4px; }
+    .stat-label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+
+    /* ── SERMON CARDS ── */
+    .sermon-list { display:flex; flex-direction:column; gap:12px; }
+    .sermon-card { background:var(--navy2); border:1px solid var(--border); border-radius:14px; padding:16px 20px; display:flex; align-items:center; gap:16px; }
+    .sermon-thumb { width:70px; height:54px; border-radius:8px; background:var(--navy3); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+    .sermon-info { flex:1; min-width:0; }
+    .sermon-title { color:var(--white); font-size:14px; font-weight:600; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sermon-meta { color:var(--text-muted); font-size:12px; display:flex; gap:12px; }
+    .sermon-actions { display:flex; gap:8px; flex-shrink:0; }
+    .status-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+    .status-live { background:rgba(64,201,106,0.15); border:1px solid rgba(64,201,106,0.4); color:var(--success); }
+    .status-pending { background:rgba(240,165,0,0.15); border:1px solid rgba(240,165,0,0.4); color:var(--warning); }
+    .status-archived { background:rgba(143,163,192,0.1); border:1px solid rgba(143,163,192,0.2); color:var(--text-muted); }
+
+    /* ── UPLOAD FORM ── */
+    .upload-card { background:var(--navy2); border:1px solid var(--border); border-radius:16px; padding:28px; max-width:680px; }
+    .type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:4px; }
+    .type-btn { background:var(--navy3); border:1px solid var(--border); border-radius:10px; padding:14px 8px; text-align:center; cursor:pointer; transition:all 0.15s; }
+    .type-btn.active { background:var(--gold-light); border-color:var(--gold); }
+    .type-btn .type-icon { font-size:24px; margin-bottom:6px; }
+    .type-btn .type-label { color:var(--text-muted); font-size:12px; }
+    .type-btn.active .type-label { color:var(--gold); }
+    .lang-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .lang-btn { background:var(--navy3); border:1px solid var(--border); border-radius:8px; padding:8px 10px; text-align:center; cursor:pointer; color:var(--text-muted); font-size:12px; transition:all 0.15s; }
+    .lang-btn.active { background:var(--gold-light); border-color:var(--gold); color:var(--gold); }
+    .upload-area { border:2px dashed var(--border); border-radius:12px; padding:32px; text-align:center; cursor:pointer; transition:border-color 0.2s; margin-bottom:4px; }
+    .upload-area:hover { border-color:var(--gold); }
+    .upload-area p { color:var(--text-muted); font-size:13px; margin-top:8px; }
+    .section-label { color:var(--text-muted); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; display:block; }
+
+    /* ── LIVE STREAM ── */
+    .live-card { background:var(--navy2); border:1px solid var(--border); border-radius:16px; padding:28px; max-width:600px; }
+    .live-status { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+    .live-dot { width:10px; height:10px; border-radius:50%; background:var(--error); animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .stream-key-box { background:var(--navy3); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-family:monospace; font-size:13px; color:var(--gold); word-break:break-all; margin-bottom:8px; }
+
+    /* ── ANALYTICS ── */
+    .period-tabs { display:flex; gap:8px; margin-bottom:20px; }
+    .period-tab { padding:7px 18px; border-radius:20px; font-size:12px; cursor:pointer; border:1px solid var(--border); color:var(--text-muted); background:transparent; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+    .period-tab.active { background:var(--gold-light); border-color:var(--gold); color:var(--gold); }
+    .top-sermons { display:flex; flex-direction:column; gap:10px; }
+    .top-sermon-item { display:flex; align-items:center; gap:12px; background:var(--navy2); border:1px solid var(--border); border-radius:10px; padding:12px 16px; }
+    .rank { font-family:'Cinzel',serif; color:var(--gold); font-size:18px; width:28px; }
+
+    /* ── PROFILE ── */
+    .profile-card { background:var(--navy2); border:1px solid var(--border); border-radius:16px; padding:28px; max-width:560px; }
+    .avatar-section { display:flex; align-items:center; gap:20px; margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+    .avatar { width:72px; height:72px; border-radius:36px; background:var(--navy3); border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:28px; color:var(--gold); flex-shrink:0; }
+
+    /* ── APPLICATION ── */
+    .apply-card { background:var(--navy2); border:1px solid var(--border); border-radius:16px; padding:28px; max-width:600px; }
+    .criteria-box { background:var(--gold-light); border:1px solid var(--gold-border); border-radius:12px; padding:16px; margin-bottom:24px; }
+    .criteria-box h4 { color:var(--gold); font-size:13px; font-weight:600; margin-bottom:10px; }
+    .criteria-box ul { color:var(--text-sec); font-size:13px; padding-left:18px; }
+    .criteria-box li { margin-bottom:4px; }
+
+    /* ── NOTIFICATIONS ── */
+    .notif-item { display:flex; gap:14px; padding:16px; border-bottom:1px solid rgba(212,175,55,0.06); align-items:flex-start; }
+    .notif-item:last-child { border-bottom:none; }
+    .notif-icon { width:38px; height:38px; border-radius:19px; background:var(--navy3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .notif-unread { background:rgba(212,175,55,0.06); }
+    .notif-dot { width:7px; height:7px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:6px; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .sidebar { width:60px; }
+      .sidebar-logo, .nav-item span, .sidebar-bottom, .nav-divider { display:none; }
+      .nav-item { padding:14px; justify-content:center; }
+      .page { padding:20px 16px; }
+      .type-grid { grid-template-columns:repeat(2,1fr); }
+      .lang-grid { grid-template-columns:repeat(2,1fr); }
+    }
+
+    .loading { display:flex; align-items:center; justify-content:center; padding:40px; color:var(--text-muted); }
+    .spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin-right:10px; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .empty-state { text-align:center; padding:60px 20px; }
+    .empty-state .empty-icon { font-size:48px; margin-bottom:16px; }
+    .empty-state h3 { color:var(--white); font-size:18px; margin-bottom:8px; }
+    .empty-state p { color:var(--text-muted); font-size:14px; }
+    .divider { height:1px; background:var(--border); margin:20px 0; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:100; padding:24px; }
+    .modal-overlay.show { display:flex; }
+    .modal { background:var(--navy2); border:1px solid var(--gold-border); border-radius:16px; padding:28px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
+    .modal-title { font-family:'Cinzel',serif; font-size:18px; color:var(--white); margin-bottom:20px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     AUTH SCREENS
+════════════════════════════════════════════════════ -->
+
+<!-- LOGIN -->
+
+<!-- ══════════════════════════════════════
+     STEP 1: WELCOME / CHOOSE ACTION
+════════════════════════════════════════ -->
+<div id="screen-login" class="auth-wrap" style="position:relative;">
+  <a class="back-arrow" href="https://trinitarian.app">&#8592; Home</a>
+  <div class="auth-card" style="width:100%;max-width:460px;">
+
+    <!-- Logo + Title -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <img src="data:image/jpeg;base64,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" style="height:60px;width:auto;margin-bottom:16px;" alt="Trinitarian"/>
+      <h1 style="color:var(--white);font-size:24px;font-family:Georgia,serif;margin-bottom:8px;" data-i18n="pastor_portal">Pastor Portal</h1>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6;" data-i18n="share_worldwide">Share your sermons with believers worldwide</p>
+    </div>
+
+    <!-- Error / Info message -->
+    <div id="login-error" style="display:none;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;line-height:1.6;"></div>
+
+    <!-- Email field -->
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="email_address">Email Address</label>
+      <input type="email" class="form-input" id="login-email" placeholder="your@email.com" autocomplete="email"/>
+    </div>
+
+    <!-- Password field -->
+    <div style="margin-bottom:20px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="password">Password</label>
+      <div style="position:relative;">
+        <input type="password" class="form-input" id="login-password" placeholder="Your password" style="padding-right:44px;" autocomplete="current-password"/>
+        <span onclick="var i=document.getElementById('login-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;user-select:none;">👁</span>
+      </div>
+    </div>
+
+    <!-- Sign In button -->
+    <button id="login-btn" onclick="handleLogin()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:16px;">
+      Sign In
+    </button>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="color:var(--text-muted);font-size:12px;">or</span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <!-- New pastor button -->
+    <button onclick="showScreen('register')" class="btn btn-ghost" style="width:100%;padding:14px;font-size:15px;margin-bottom:20px;">
+      ✝ New Pastor? Create Account
+    </button>
+
+    <!-- Forgot password -->
+    <p style="text-align:center;margin:0;">
+      <a onclick="showScreen('forgot')" style="color:var(--text-muted);font-size:13px;cursor:pointer;">Forgot your password?</a>
+    </p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     STEP 1b: CREATE ACCOUNT (simple)
+════════════════════════════════════════ -->
+<div id="screen-register" class="auth-wrap" style="display:none;position:relative;">
+  <span class="back-arrow" onclick="showScreen('login')">&#8592; Back</span>
+  <div class="auth-card" style="width:100%;max-width:460px;">
+
+    <div style="text-align:center;margin-bottom:28px;">
+      <img src="data:image/jpeg;base64,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" style="height:52px;width:auto;margin-bottom:12px;" alt="Trinitarian"/>
+      <h2 style="color:var(--white);font-size:22px;font-family:Georgia,serif;margin-bottom:6px;" data-i18n="create_account">Create Your Account</h2>
+      <p style="color:var(--text-muted);font-size:13px;">Step 1 of 2 — Takes less than 2 minutes</p>
+    </div>
+
+    <div id="register-success" style="display:none;background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.3);color:#40c96a;padding:14px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;line-height:1.6;"></div>
+    <div id="register-error" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="your_full_name">Your Full Name</label>
+      <input type="text" class="form-input" id="reg-name" placeholder="e.g. Pastor John Mensah" autocomplete="name"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="email_address">Email Address</label>
+      <input type="email" class="form-input" id="reg-email" placeholder="your@email.com" autocomplete="email"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="choose_username">Choose a Username</label>
+      <input type="text" class="form-input" id="reg-username" placeholder="e.g. pastorjohn" autocomplete="username"/>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="no_spaces">No spaces. Letters and numbers only.</p>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="create_password">Create a Password</label>
+      <div style="position:relative;">
+        <input type="password" class="form-input" id="reg-password" placeholder="At least 8 characters" style="padding-right:44px;" autocomplete="new-password"/>
+        <span onclick="var i=document.getElementById('reg-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;user-select:none;">👁</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="confirm_password">Confirm Password</label>
+      <div style="position:relative;">
+        <input type="password" class="form-input" id="reg-confirm" placeholder="Repeat your password" style="padding-right:44px;" autocomplete="new-password"/>
+        <span onclick="var i=document.getElementById('reg-confirm');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;user-select:none;">👁</span>
+      </div>
+    </div>
+
+    <button onclick="handleRegister()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:16px;">
+      Continue to Step 2 →
+    </button>
+
+    <p style="text-align:center;margin:0;">Already have an account? <a onclick="showScreen('login')" style="color:var(--gold);cursor:pointer;">Sign In</a></p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     STEP 2: PASTOR APPLICATION (simple)
+════════════════════════════════════════ -->
+<div id="screen-apply" class="auth-wrap" style="display:none;position:relative;">
+  <span class="back-arrow" onclick="showScreen('login')">&#8592; Back</span>
+  <div class="auth-card" style="width:100%;max-width:520px;max-height:90vh;overflow-y:auto;">
+
+    <div style="text-align:center;margin-bottom:24px;">
+      <img src="data:image/jpeg;base64,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" style="height:52px;width:auto;margin-bottom:12px;" alt="Trinitarian"/>
+      <h2 style="color:var(--white);font-size:22px;font-family:Georgia,serif;margin-bottom:6px;" data-i18n="pastor_verify">Pastor Verification</h2>
+      <p style="color:var(--text-muted);font-size:13px;line-height:1.6;">Step 2 of 2 — Tell us about your ministry</p>
+    </div>
+
+    <!-- What you need box -->
+    <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:14px 16px;margin-bottom:20px;">
+      <p style="color:var(--gold);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">✅ To qualify, you must be:</p>
+      <ul style="color:var(--text-sec);font-size:13px;line-height:1.9;margin:0;padding-left:16px;">
+        <li>An ordained or licensed pastor</li>
+        <li>Leading or serving in a recognised church or ministry</li>
+        <li>Committed to biblical, doctrinally sound teaching</li>
+      </ul>
+    </div>
+
+    <div id="apply-success" style="display:none;background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.3);color:#40c96a;padding:14px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;line-height:1.8;"></div>
+    <div id="apply-error" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Your Full Name *</label>
+      <input type="text" class="form-input" id="apply-name" placeholder="Pastor John Mensah"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Church / Ministry Name *</label>
+      <input type="text" class="form-input" id="apply-church" placeholder="e.g. Grace Gospel Church"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Phone Number *</label>
+      <input type="tel" class="form-input" id="apply-phone" placeholder="e.g. +234 801 234 5678" autocomplete="tel"/>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Include country code. Used for verification only — not displayed publicly.</p>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Denomination *</label>
+      <select class="form-input" id="apply-denom" onchange="document.getElementById('apply-denom-other-wrap').style.display=this.value==='Other'?'block':'none'">
+        <option value="">Select your denomination</option>
+        <option>Anglican / Episcopal</option>
+        <option>Baptist</option>
+        <option>Catholic</option>
+        <option>Charismatic / Pentecostal</option>
+        <option>Evangelical</option>
+        <option>Lutheran</option>
+        <option>Methodist</option>
+        <option>Non-denominational</option>
+        <option>Presbyterian</option>
+        <option>Reformed</option>
+        <option>Seventh-day Adventist</option>
+        <option>Other</option>
+      </select>
+      <div id="apply-denom-other-wrap" style="display:none;margin-top:8px;">
+        <input type="text" class="form-input" id="apply-denom-other" placeholder="Please specify your denomination"/>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">Country *</label>
+        <input type="text" class="form-input" id="apply-country" placeholder="e.g. Nigeria"/>
+      </div>
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">City *</label>
+        <input type="text" class="form-input" id="apply-city" placeholder="e.g. Lagos"/>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="ordaining_body">Ordaining Body</label>
+        <input type="text" class="form-input" id="apply-ordination" placeholder="e.g. Diocese of Lagos, RCCG Lagos Province"/>
+        <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">Who ordained you? (optional)</p>
+      </div>
+      <div>
+        <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="years_ministry">Years in Ministry</label>
+        <select class="form-input" id="apply-years">
+          <option value="">Select</option>
+          <option value="1">Less than 1 year</option>
+          <option value="1">1 year</option>
+          <option value="2">2–5 years</option>
+          <option value="6">6–10 years</option>
+          <option value="11">11–20 years</option>
+          <option value="21">20+ years</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">
+        Brief Personal Statement *
+        <span id="apply-word-count" style="color:var(--gold);margin-left:8px;text-transform:none;font-size:12px;letter-spacing:0;">(0 words — minimum 100)</span>
+      </label>
+      <textarea class="form-input" id="apply-statement" rows="5"
+        placeholder="Tell us about yourself, your calling, your ministry, and the types of sermons you will share. (Minimum 100 words)"
+        oninput="const w=this.value.trim().split(/\s+/).filter(Boolean).length;document.getElementById('apply-word-count').textContent='('+w+' words'+(w<100?' — minimum 100':' ✓')+')';document.getElementById('apply-word-count').style.color=w>=100?'#40c96a':'var(--gold)';"
+        style="resize:vertical;min-height:120px;"></textarea>
+    </div>
+
+    <!-- Optional documents -->
+    <div style="margin-bottom:20px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">
+        Ordination Certificate <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional — PDF, JPG or PNG)</span>
+      </label>
+      <div style="background:var(--navy2);border:2px dashed rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;" onclick="document.getElementById('cert-file').click()">
+        <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="updateCertLabel(this)"/>
+        <div id="cert-label" style="color:var(--text-muted);font-size:13px;">📎 Click to attach document</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="cert_note">Uploading a certificate speeds up verification but is not required.</p>
+    </div>
+
+    <!-- Declaration -->
+    <div style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="apply-declaration" style="margin-top:3px;accent-color:#D4AF37;width:16px;height:16px;flex-shrink:0;"/>
+        <span style="color:#b0c4d8;font-size:13px;line-height:1.6;">
+          I declare that the information submitted in this application is true and accurate to the best of my knowledge. I understand that submitting false information may result in permanent removal from the Trinitarian platform.
+        </span>
+      </label>
+    </div>
+
+    <button onclick="handleApply()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:12px;">
+      Submit Application
+    </button>
+
+    <p style="text-align:center;color:var(--text-muted);font-size:12px;line-height:1.6;">
+      After submitting, you will receive an email confirmation.<br>
+      Review takes <strong style="color:var(--text-sec);">3–5 business days</strong>.
+    </p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     FORGOT PASSWORD
+════════════════════════════════════════ -->
+<div id="screen-forgot" class="auth-wrap" style="display:none;position:relative;">
+  <span class="back-arrow" onclick="showScreen('login')">&#8592; Back</span>
+  <div class="auth-card" style="width:100%;max-width:420px;">
+
+    <div style="text-align:center;margin-bottom:28px;">
+      <img src="data:image/jpeg;base64,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" style="height:52px;width:auto;margin-bottom:12px;" alt="Trinitarian"/>
+      <h2 style="color:var(--white);font-size:22px;font-family:Georgia,serif;margin-bottom:6px;" data-i18n="reset_password">Reset Password</h2>
+      <p style="color:var(--text-muted);font-size:13px;line-height:1.6;" data-i18n="email_reset">Enter your email and we will send you a reset link</p>
+    </div>
+
+    <div id="ll-fmsg" style="display:none;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="email_address">Email Address</label>
+      <input type="email" class="form-input" id="ll-femail" placeholder="your@email.com" autocomplete="email"/>
+    </div>
+
+    <button onclick="handleForgot()" class="btn btn-gold" style="width:100%;padding:14px;font-size:16px;margin-bottom:16px;">
+      Send Reset Link
+    </button>
+
+    <p style="text-align:center;margin:0;">
+      <a onclick="showScreen('login')" style="color:var(--text-muted);font-size:13px;cursor:pointer;">← Back to Sign In</a>
+    </p>
+  </div>
+</div>
+
+<div id="screen-dashboard" class="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="data:image/jpeg;base64,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" alt="Trinitarian" id="logo-dash" />
+      <div class="sidebar-role" style="text-align:center;margin-bottom:4px;"><span id="dash-role" data-i18n="pastor_label">PASTOR</span></div>
+    <div style="padding:8px 12px;border-top:1px solid rgba(212,175,55,0.15);border-bottom:1px solid rgba(212,175,55,0.15);margin-bottom:4px;">
+      <select id="pd-lang-select" onchange="pdApplyTranslations(this.value)" style="width:100%;background:#0d2142;color:#D4AF37;border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
+        <option value="en">🌐 English</option>
+        <option value="fr">🌐 Français</option>
+        <option value="yo">🌐 Yorùbá</option>
+        <option value="ig">🌐 Igbo</option>
+        <option value="ha">🌐 Hausa</option>
+        <option value="pt">🌐 Português</option>
+        <option value="tw">🌐 Twi</option>
+        <option value="zu">🌐 isiZulu</option>
+        <option value="ar">🌐 العربية</option>
+        <option value="zh">🌐 中文</option>
+        <option value="hi">🌐 हिन्दी</option>
+        <option value="es">🌐 Español</option>
+        <option value="de">🌐 Deutsch</option>
+        <option value="it">🌐 Italiano</option>
+      </select>
+    </div>
+    </div>
+
+    <nav>
+      <div class="nav-item active" onclick="showPage('overview')">
+        <span class="nav-icon">📊</span><span data-i18n="overview">Overview</span>
+      </div>
+      <div class="nav-item" onclick="showPage('sermons')">
+        <span class="nav-icon">🎧</span><span data-i18n="my_sermons">My Sermons</span>
+      </div>
+      <div class="nav-item" onclick="showPage('upload')">
+        <span class="nav-icon">⬆️</span><span data-i18n="upload_sermon">Upload Sermon</span>
+      </div>
+      <div class="nav-item" onclick="showPage('live')">
+        <span class="nav-icon">📡</span><span data-i18n="live_stream">Live Stream</span>
+      </div>
+      <div class="nav-item" onclick="showPage('analytics')">
+        <span class="nav-icon">📈</span><span data-i18n="analytics">Analytics</span>
+      </div>
+      <div class="nav-item" onclick="showPage('notifications')">
+        <span class="nav-icon">🔔</span><span data-i18n="notifications">Notifications</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" id="admin-nav" style="display:none;" onclick="showPage('admin')">
+        <span class="nav-icon">🛡️</span><span data-i18n="admin_panel">Admin Panel</span>
+      </div>
+      <div class="nav-item" id="users-nav" style="display:none;" onclick="showPage('users')">
+        <span class="nav-icon">👥</span><span data-i18n="users">Users</span>
+      </div>
+      <div class="nav-item" id="pastors-nav" style="display:none;" onclick="showPage('pastors')">
+        <span class="nav-icon">✝️</span><span data-i18n="pastors">Pastors</span>
+      </div>
+      <div class="nav-item" id="inbox-nav" onclick="showPage('inbox')">
+        <span class="nav-icon">📬</span><span data-i18n="messages">Messages</span>
+      </div>
+      <div class="nav-item" id="explore-nav" onclick="showPage('explore')">
+        <span class="nav-icon">🔍</span><span data-i18n="explore">Explore</span>
+      </div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <span class="nav-icon">⚙️</span><span data-i18n="settings">Settings</span>
+      </div>
+      <div class="nav-item" onclick="showPage('profile')">
+        <span class="nav-icon">👤</span><span data-i18n="profile">Profile</span>
+      </div>
+    
+</nav>
+
+    <div class="sidebar-bottom">
+      <div class="pastor-info">
+        <div class="name" id="sidebar-name" data-i18n="pastor_role">Pastor</div>
+        <div class="church" id="sidebar-church">Trinitarian</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;" onclick="handleLogout()" data-i18n="sign_out">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div id="page-overview" class="page active">
+      <div class="page-header">
+        <h1 class="page-title">Welcome back, <span id="overview-name" data-i18n="pastor_role">Pastor</span></h1>
+        <p class="page-sub" data-i18n="here_how">Here's how your ministry is performing</p>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card" onclick="showPage('sermons')" style="cursor:pointer;" title="View my sermons"><div class="stat-icon">🎧</div><div class="stat-value" id="stat-sermons">—</div><div class="stat-label" data-i18n="total_sermons">Total Sermons</div></div>
+        <div class="stat-card" onclick="showPage('analytics')" style="cursor:pointer;" title="View analytics"><div class="stat-icon">👁️</div><div class="stat-value" id="stat-views">—</div><div class="stat-label" data-i18n="total_views">Total Views</div></div>
+        <div class="stat-card" onclick="showPage('analytics')" style="cursor:pointer;" title="View analytics"><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label" data-i18n="followers">Followers</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label" data-i18n="live_streams">Live Streams</div></div>
+      </div>
+      <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;" data-i18n="recent_sermons">Recent Sermons</span>
+        <button class="btn btn-ghost btn-sm" onclick="showPage('upload')">+ Upload New</button>
+      </div>
+      <div class="sermon-list" id="recent-sermons"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
+
+    <!-- MY SERMONS -->
+    <div id="page-sermons" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <h1 class="page-title" data-i18n="my_sermons">My Sermons</h1>
+          <p class="page-sub" data-i18n="manage_content">Manage all your uploaded content</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="downloadAllSermons()">⬇ Download All</button>
+          <button class="btn btn-ghost btn-sm" onclick="archiveAll()">📦 Archive All</button>
+          <button class="btn btn-gold btn-sm" onclick="showPage('upload')">+ Upload</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;position:relative;max-width:400px;">
+        <input type="text" id="sermon-search" placeholder="🔍 Search sermons..." oninput="filterSermons()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;" data-i18n-ph="search_sermons_ph"/>
+        <span id="sermon-search-clear" onclick="clearSermonSearch()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;display:none;">✕</span>
+      </div>
+      <div class="sermon-list" id="all-sermons"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="page-upload" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="upload_sermon">Upload Sermon</h1>
+        <p class="page-sub" data-i18n="share_message">Share your message with the world</p>
+      </div>
+      <div class="upload-card">
+        <div class="alert alert-error" id="upload-error"></div>
+        <div class="alert alert-success" id="upload-success"></div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="sermon_title_label">Sermon Title *</label>
+          <input type="text" class="form-input" id="up-title" placeholder="e.g. The Power of Grace" />
+        </div>
+
+        <div class="form-group">
+          <span class="section-label" data-i18n="content_type_label">Content Type *</span>
+          <div class="type-grid">
+            <div class="type-btn active" onclick="selectType(this,'video')"><div class="type-icon">🎬</div><div class="type-label" data-i18n="video">Video</div></div>
+            <div class="type-btn" onclick="selectType(this,'audio')"><div class="type-icon">🎧</div><div class="type-label" data-i18n="audio">Audio</div></div>
+            <div class="type-btn" onclick="selectType(this,'text')"><div class="type-icon">📄</div><div class="type-label" data-i18n="text">Text</div></div>
+            <div class="type-btn" onclick="selectType(this,'article')"><div class="type-icon">📰</div><div class="type-label" data-i18n="article">Article</div></div>
+          </div>
+          <input type="hidden" id="up-type" value="video" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="category">Category</label>
+          <select class="form-input" id="up-category">
+            <option value="">Select category *</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <span class="section-label" data-i18n="language">Language</span>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="lang-grid">
+            <div class="lang-btn active" onclick="selectLang(this,'en')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">English</div>
+            <div class="lang-btn " onclick="selectLang(this,'fr')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Français</div>
+            <div class="lang-btn " onclick="selectLang(this,'ig')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Igbo</div>
+            <div class="lang-btn " onclick="selectLang(this,'yo')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Yorùbá</div>
+            <div class="lang-btn " onclick="selectLang(this,'ha')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Hausa</div>
+            <div class="lang-btn " onclick="selectLang(this,'pt')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Português</div>
+            <div class="lang-btn " onclick="selectLang(this,'tw')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Twi</div>
+            <div class="lang-btn " onclick="selectLang(this,'zu')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">isiZulu</div>
+            <div class="lang-btn " onclick="selectLang(this,'ar')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Arabic</div>
+            <div class="lang-btn " onclick="selectLang(this,'zh')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">中文</div>
+            <div class="lang-btn " onclick="selectLang(this,'hi')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Hindi</div>
+            <div class="lang-btn " onclick="selectLang(this,'es')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Español</div>
+            <div class="lang-btn " onclick="selectLang(this,'de')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Deutsch</div>
+            <div class="lang-btn " onclick="selectLang(this,'it')" style="border-radius:10px;padding:10px 6px;text-align:center;font-size:13px;font-weight:600;">Italiano</div>
+          </div>
+          <input type="hidden" id="up-lang" value="en" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="scripture_ref">Scripture Reference</label>
+          <input type="text" class="form-input" id="up-scripture" placeholder="e.g. John 3:16" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="description">Description</label>
+          <textarea class="form-input" id="up-desc" placeholder="Brief description of this sermon…" data-i18n-ph="desc_ph"></textarea>
+        </div>
+
+        <div class="form-group">
+          <span class="section-label" data-i18n="transcript_label">Transcript / Full Text (optional)</span>
+          <div style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" id="transcribe-btn" onclick="toggleTranscription()" class="btn btn-ghost btn-sm">🎙 Start dictation</button>
+              <span id="transcribe-status" style="color:var(--text-muted);font-size:12px;"></span>
+            </div>
+            <p style="color:var(--text-muted);font-size:11px;margin:8px 0 0;line-height:1.5;">Free in-browser dictation: click Start, then play your sermon audio aloud or speak. Words appear below. Best with clear audio in a quiet room. Always review and correct the draft. (Works in Chrome and Edge.)</p>
+          </div>
+          <textarea class="form-input" id="up-transcript" placeholder="Paste the full sermon transcript here, or use dictation above…" style="min-height:160px;" data-i18n-ph="transcript_ph"></textarea>
+        </div>
+
+        <div class="form-group">
+          <span class="section-label" data-i18n="media_file">Media File</span>
+          <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <div style="font-size:36px;">📁</div>
+            <p data-i18n="file_select_hint" data-i18n="file_select_hint">Click to select a video, audio or document file</p>
+            <p style="font-size:11px;margin-top:4px;">MP4, MP3, PDF, DOC supported · Max 500MB</p>
+            <p id="file-name" style="color:var(--gold);margin-top:8px;font-size:13px;"></p>
+          </div>
+          <input type="file" id="file-input" style="display:none;" accept="video/*,audio/*,.pdf,.doc,.docx" onchange="handleFileSelect(this)" />
+          
+        </div>
+
+        <button class="btn btn-gold" onclick="handleUpload()">Publish Sermon</button>
+      </div>
+    </div>
+
+    <!-- LIVE STREAM -->
+    <div id="page-live" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="live_streaming">Live Streaming</h1>
+        <p class="page-sub" data-i18n="coming_soon_sub">This feature is coming soon</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;">
+        <div style="font-size:64px;margin-bottom:24px;">📡</div>
+        <h2 style="color:var(--gold);font-size:22px;font-weight:700;margin-bottom:12px;" data-i18n="coming_soon">Coming Soon</h2>
+        <p style="color:var(--text-muted);font-size:14px;max-width:340px;line-height:1.7;" data-i18n="live_coming_soon_desc">Live streaming is under development and will be available in a future update. Stay tuned!</p>
+        <div style="margin-top:32px;background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:20px 28px;">
+          <p style="color:var(--text-muted);font-size:12px;margin-bottom:4px;" data-i18n="notify_when_ready">You will be notified when this feature launches.</p>
+          <p style="color:var(--gold);font-size:13px;font-weight:600;">Trinitarian · Globiq Media Technologies</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="analytics">Analytics</h1>
+        <p class="page-sub" data-i18n="track_ministry">Track your ministry's reach and impact</p>
+      </div>
+      <div class="period-tabs">
+        <button class="period-tab active" onclick="loadAnalytics(7,this)">7 Days</button>
+        <button class="period-tab" onclick="loadAnalytics(30,this)">30 Days</button>
+        <button class="period-tab" onclick="loadAnalytics(90,this)">90 Days</button>
+      </div>
+      <div class="stats-grid" id="analytics-stats">
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👁️</div><div class="stat-value" id="an-views">—</div><div class="stat-label" data-i18n="views">Views</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">🎧</div><div class="stat-value" id="an-sermons">—</div><div class="stat-label" data-i18n="my_sermons">Sermons</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👥</div><div class="stat-icon">—</div><div class="stat-label" data-i18n="new_followers">New Followers</div></div>
+      </div>
+      <div style="margin-top:20px;">
+        <span class="section-label">🔥 Top Performing Sermons</span>
+        <div class="top-sermons" id="top-sermons"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div id="page-notifications" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <h1 class="page-title" data-i18n="notifications">Notifications</h1>
+          <p class="page-sub" data-i18n="ministry_activity">Stay updated on your ministry activity</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <div id="notifications-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="page-admin" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="admin_panel">Admin Panel</h1>
+        <p class="page-sub" data-i18n="manage_platform">Manage platform users and content</p>
+      </div>
+      <div class="stats-grid" id="admin-stats">
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👥</div><div class="stat-value" id="ad-users">—</div><div class="stat-label" data-i18n="total_users">Total Users</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">🎧</div><div class="stat-value" id="ad-sermons">—</div><div class="stat-label" data-i18n="my_sermons">Sermons</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">⏳</div><div class="stat-value" id="ad-pending">—</div><div class="stat-label" data-i18n="pending_apps">Pending Applications</div></div>
+        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">⚑</div><div class="stat-value" id="ad-flags">—</div><div class="stat-label" data-i18n="unresolved_flags">Unresolved Flags</div></div>
+      </div>
+      <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="section-label" data-i18n="pastor_apps">Pastor Applications</span>
+        <div style="display:flex;gap:6px;">
+          <button onclick="filterApps('pending',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(240,165,0,0.4);background:rgba(240,165,0,0.1);color:var(--warning);cursor:pointer;font-size:12px;">⏳ Pending</button>
+          <button onclick="filterApps('approved',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">✅ Approved</button>
+          <button onclick="filterApps('rejected',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">❌ Rejected</button>
+          <button onclick="filterApps('all',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">All</button>
+        </div>
+      </div>
+      <div id="admin-applications"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="page-profile" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="my_profile">My Profile</h1>
+        <p class="page-sub" data-i18n="manage_profile">Manage your pastor profile</p>
+      </div>
+      <div class="profile-card">
+        <div class="avatar-section">
+          <div style="position:relative;cursor:pointer;" onclick="document.getElementById('photo-upload').click()">
+            <div class="avatar" id="profile-avatar" onclick="uploadAvatar()" title="Click to change photo" style="cursor:pointer;" style="overflow:hidden;">P</div>
+            <div style="position:absolute;bottom:0;right:0;background:var(--gold);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;">📷</div>
+          </div>
+          <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)"/>
+          <button id="remove-photo-btn" onclick="removePhoto()" style="display:none;margin-top:6px;background:transparent;border:1px solid rgba(224,85,85,0.4);color:#e05555;border-radius:12px;padding:4px 12px;font-size:11px;cursor:pointer;">✕ Remove photo</button>
+          <div>
+            <div style="color:var(--white);font-size:18px;font-weight:600;margin-bottom:4px;" id="profile-name" data-i18n="pastor_role">Pastor</div>
+            <div style="color:var(--text-muted);font-size:13px;margin-bottom:8px;" id="profile-email">email</div>
+            <div class="status-badge status-live" id="profile-role-badge" data-i18n="pastor_label">PASTOR</div>
+            <div style="color:var(--text-muted);font-size:11px;margin-top:6px;" data-i18n="click_photo">Click photo to update</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="display_name">Display Name</label>
+          <input type="text" class="form-input" id="prof-name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="email_address">Email Address</label>
+          <input type="email" class="form-input" id="prof-email" disabled style="opacity:0.6;" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="church_name">Church Name</label>
+          <input type="text" class="form-input" id="prof-church" placeholder="Grace Chapel International" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="bio">Bio</label>
+          <textarea class="form-input" id="prof-bio" placeholder="Tell your congregation about yourself…"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <button class="btn btn-gold" onclick="saveProfile()" style="flex:1;" data-i18n="save_changes">Save Changes</button>
+          <button class="btn btn-ghost" onclick="showPage('changepass')" style="flex:1;">Change Password</button>
+        </div>
+        <button class="btn btn-danger" onclick="deletePastorAccount()" style="width:100%;opacity:0.8;">🗑 Delete My Account</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    
+    <!-- ══ EXPLORE ══ -->
+    <div id="page-explore" class="page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title" data-i18n="explore">Explore</h1>
+          <p class="page-sub" data-i18n="browse_pastors">Browse sermons from all verified pastors</p>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div style="margin-bottom:16px;position:relative;">
+        <input type="text" id="explore-search" oninput="exploreFilter();document.getElementById('explore-search-clear').style.display=this.value?'block':'none';" placeholder="Search sermons..." class="form-input" style="padding-left:40px;"/>
+        <span id="explore-search-clear" onclick="document.getElementById('explore-search').value='';exploreFilter();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:18px;z-index:10;background:var(--navy2);padding:2px 4px;border-radius:4px;">✕</span>
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;">🔍</span>
+      </div>
+
+      <!-- Category pills -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="explore-cat active" onclick="exploreSetCat('All')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:var(--gold);cursor:pointer;font-size:12px;">All</button>
+        <button class="explore-cat" onclick="exploreSetCat('Faith')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Faith</button>
+        <button class="explore-cat" onclick="exploreSetCat('Salvation')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Salvation</button>
+        <button class="explore-cat" onclick="exploreSetCat('Healing')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Healing</button>
+        <button class="explore-cat" onclick="exploreSetCat('Prosperity')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Prosperity</button>
+        <button class="explore-cat" onclick="exploreSetCat('Prophecy')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Prophecy</button>
+        <button class="explore-cat" onclick="exploreSetCat('Marriage')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Marriage</button>
+        <button class="explore-cat" onclick="exploreSetCat('Leadership')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Leadership</button>
+        <button class="explore-cat" onclick="exploreSetCat('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Bible Study</button>
+        <button class="explore-cat" onclick="exploreSetCat('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Prayer</button>
+      </div>
+
+      <!-- Sermon grid -->
+      <div id="explore-sermons" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);" data-i18n="loading_sermons">Loading sermons...</div>
+      </div>
+    </div>
+
+    <div id="page-settings" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="settings">Settings</h1>
+        <p class="page-sub" data-i18n="manage_account">Manage your account preferences</p>
+      </div>
+      <div class="profile-card" style="max-width:560px;">
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="account">Account</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="display_name">Display Name</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-name">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="username">Username</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-username">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="email">Email</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-email">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="denomination">Denomination</span>
+            <span style="color:var(--text-muted);font-size:13px;" id="set-denom">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
+            <span style="color:var(--text);font-size:14px;" data-i18n="role">Role</span>
+            <span style="color:var(--gold);font-size:13px;font-weight:600;" id="set-role">—</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="font_display">Font & Display</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <div id="pd-font-preview" style="background:var(--navy);border-radius:8px;padding:14px;color:var(--text-sec);font-size:15px;line-height:1.8;">
+              <span style="color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;" data-i18n="preview">Preview</span data-i18n="verse_text">
+              "For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life." — John 3:16
+            </div>
+          <div style="margin-bottom:16px;">
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;" data-i18n="font_size">Font Size</span>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <button onclick="setFontSize('small')" id="fs-small" class="fs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;text-align:center;">
+                <div style="font-size:13px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;" data-i18n="small">Small</div>
+              </button>
+              <button onclick="setFontSize('medium')" id="fs-medium" class="fs-btn active-fs" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;text-align:center;">
+                <div style="font-size:16px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;" data-i18n="medium">Medium</div>
+              </button>
+              <button onclick="setFontSize('large')" id="fs-large" class="fs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;text-align:center;">
+                <div style="font-size:19px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;" data-i18n="large">Large</div>
+              </button>
+              <button onclick="setFontSize('xlarge')" id="fs-xlarge" class="fs-btn" style="flex:1;padding:12px 6px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;text-align:center;">
+                <div style="font-size:22px;font-weight:700;margin-bottom:2px;">A</div><div style="font-size:9px;" data-i18n="extra_large">XL</div>
+              </button>
+            </div>
+            
+          </div>
+          <div style="margin-bottom:16px;">
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;" data-i18n="line_spacing">Line Spacing</span>
+            <div style="display:flex;gap:8px;">
+              <button onclick="setSpacing('compact')" id="sp-compact" class="sp-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;" data-i18n="compact">Compact</button>
+              <button onclick="setSpacing('normal')" id="sp-normal" class="sp-btn active-sp" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:12px;" data-i18n="normal">Normal</button>
+              <button onclick="setSpacing('relaxed')" id="sp-relaxed" class="sp-btn" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:12px;" data-i18n="relaxed">Relaxed</button>
+            </div>
+          </div>
+          <div>
+            <span style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;" data-i18n="font_style">Font Style</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="setFont('default')" id="ff-default" class="ff-btn active-ff" style="padding:8px 14px;border-radius:8px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;" data-i18n="default_style">Default</button>
+              <button onclick="setFont('serif')" id="ff-serif" class="ff-btn" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:13px;font-family:Georgia,serif;" data-i18n="serif">Serif</button>
+              <button onclick="setFont('mono')" id="ff-mono" class="ff-btn" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--navy2);color:var(--text-muted);cursor:pointer;font-size:13px;font-family:monospace;" data-i18n="mono">Mono</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="language">Language</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+          <div id="lang-settings-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div onclick="setLang('en',this)" class="lang-setting-btn active-lang" style="background:var(--gold-light);border:1px solid var(--gold-border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--gold);font-size:13px;font-weight:600;">English</div></div>
+            <div onclick="setLang('fr',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Français</div></div>
+            <div onclick="setLang('ig',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Igbo</div></div>
+            <div onclick="setLang('yo',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Yorùbá</div></div>
+            <div onclick="setLang('ha',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Hausa</div></div>
+            <div onclick="setLang('pt',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Português</div></div>
+            <div onclick="setLang('tw',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Twi</div></div>
+            <div onclick="setLang('zu',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">isiZulu</div></div>
+            <div onclick="setLang('ar',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Arabic</div></div>
+            <div onclick="setLang('zh',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">中文</div></div>
+            <div onclick="setLang('hi',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Hindi</div></div>
+            <div onclick="setLang('es',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Español</div></div>
+            <div onclick="setLang('de',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Deutsch</div></div>
+            <div onclick="setLang('it',this)" class="lang-setting-btn" style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;"><div style="color:var(--text-muted);font-size:13px;font-weight:600;">Italiano</div></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="notifications">Notifications</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <div><div style="color:var(--text);font-size:14px;" data-i18n="new_sermons">New Sermons</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;" data-i18n="notif_upload">When pastors you follow upload</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-sermons" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;" id="notif-sermons-knob"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <div><div style="color:var(--text);font-size:14px;" data-i18n="live_streams">Live Streams</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;" data-i18n="notif_live">When pastors you follow go live</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-streams" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;">
+            <div><div style="color:var(--text);font-size:14px;" data-i18n="inbox">Inbox Messages</div><div style="color:var(--text-muted);font-size:15px;font-weight:600;" data-i18n="notif_msg">When you receive a message</div></div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;"><input type="checkbox" id="notif-inbox" checked onchange="saveNotifPref()" style="opacity:0;width:0;height:0;"/><span style="position:absolute;inset:0;background:var(--gold);border-radius:24px;transition:0.3s;"></span><span style="position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.3s;"></span></label>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="security">Security</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+          <div onclick="showPage('changepass')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="change_password">Change Password</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="handleLogout()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;">
+            <span style="color:var(--error);font-size:14px;" data-i18n="sign_out">Sign Out</span>
+            <span style="color:var(--error);font-size:18px;">›</span>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <span style="color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;" data-i18n="legal">Legal</span>
+        </div>
+        <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div onclick="window.open('https://trinitarian.app/privacy/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="privacy_policy">Privacy Policy</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="window.open('https://trinitarian.app/terms/index.html','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(212,175,55,0.08);">
+            <span style="color:var(--text);font-size:14px;" data-i18n="terms_of_service">Terms of Service</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+          <div onclick="window.open('https://trinitarian.app/dmca','_blank')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;">
+            <span style="color:var(--text);font-size:14px;" data-i18n="dmca_policy">DMCA Policy</span>
+            <span style="color:var(--text-muted);font-size:18px;">›</span>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);font-size:11px;text-align:center;margin-top:20px;">Trinitarian v1.0 · Globiq Media Technologies Ltd</p>
+      </div>
+    </div>
+
+    <!-- CHANGE PASSWORD -->
+    <div id="page-changepass" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="change_password">Change Password</h1>
+        <p class="page-sub" data-i18n="pwd_sub">Update your account password</p>
+      </div>
+      <div style="max-width:480px;">
+        <div id="cp-success" style="display:none;" class="alert alert-success"></div>
+        <div id="cp-error" style="display:none;" class="alert alert-error"></div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="current_password">Current Password</label>
+          <input type="password" class="form-input" id="cp-current" placeholder="Enter current password"/>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="new_password">New Password</label>
+          <input type="password" class="form-input" id="cp-new" placeholder="Enter new password (min. 8 characters)"/>
+        </div>
+        <div style="margin-bottom:24px;">
+          <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="confirm_new_pwd">Confirm New Password</label>
+          <input type="password" class="form-input" id="cp-confirm" placeholder="Confirm new password"/>
+        </div>
+        <button onclick="handleChangePassword()" class="btn btn-gold" style="width:100%;padding:14px;">Update Password</button>
+      </div>
+    </div>
+
+    <div id="page-inbox" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1 class="page-title" data-i18n="inbox">Inbox</h1><p class="page-sub" data-i18n="notifs_support">Notifications and support messages</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <!-- Tabs: Notifications | Support Messages (admin only) -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;" id="inbox-tabs">
+        <button onclick="showInboxTab('notifications',this)" class="btn btn-gold btn-sm" id="tab-notifications">Notifications</button>
+        <button onclick="showInboxTab('support',this)" class="btn btn-ghost btn-sm" id="tab-support" style="display:none;">📨 Support Messages</button>
+        <button onclick="showInboxTab('escalations',this)" class="btn btn-ghost btn-sm" id="tab-escalations" style="display:none;">⬆ Escalations</button>
+        <button onclick="showInboxTab('mod-escalate',this)" class="btn btn-ghost btn-sm" id="tab-mod-escalate" style="display:none;">⬆ Escalate</button>
+   
+        <button onclick="showInboxTab('reports',this)" class="btn btn-ghost btn-sm" id="tab-reports" style="display:none;">⚑ Reports</button>
+        <button onclick="showInboxTab('flagged',this)" class="btn btn-ghost btn-sm" id="tab-flagged" style="display:none;">🚩 Flagged Content</button>   </div>
+      <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <div id="inbox-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+      </div>
+      <div id="support-list" style="display:none;background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;"></div>
+      <div style="margin-top:20px;">
+        <span class="section-label" data-i18n="send_to_admin">📨 Send Message to Admin</span>
+        <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:10px;">
+          <textarea class="form-input" id="inbox-msg" placeholder="Type your message to Trinitarian support…" style="min-height:100px;margin-bottom:12px;"></textarea>
+          <button class="btn btn-gold btn-sm" onclick="sendInboxMessage()">Send Message</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="page-users" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="all_users">All Users</h1>
+        <p class="page-sub" data-i18n="manage_users">Manage platform users</p>
+      </div>
+      <div style="margin-bottom:16px;position:relative;max-width:400px;">
+        <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers();document.getElementById('users-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;" data-i18n-ph="search_users_ph"/>
+        <span id="users-search-clear" onclick="document.getElementById('users-search').value='';filterUsers();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
+      </div>
+      <div id="users-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
+
+    <!-- PASTORS LIST -->
+    <div id="page-pastors" class="page">
+      <div class="page-header">
+        <h1 class="page-title" data-i18n="verified_pastors">Verified Pastors</h1>
+        <p class="page-sub" data-i18n="browse_pastors">All verified pastors on Trinitarian</p>
+      </div>
+      <div style="margin-bottom:16px;position:relative;max-width:400px;">
+        <input type="text" id="pastors-search" placeholder="🔍 Search pastors..." oninput="filterPastors();document.getElementById('pastors-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;" data-i18n-ph="search_pastors_ph"/>
+        <span id="pastors-search-clear" onclick="document.getElementById('pastors-search').value='';filterPastors();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
+      </div>
+      <div id="pastors-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════ -->
+
 
 
 <!-- Cookie Consent Banner -->
