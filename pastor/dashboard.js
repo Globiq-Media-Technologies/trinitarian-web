@@ -2029,7 +2029,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ── LIVE STREAM (Agora) ──────────────────────────────────────────────────────
-var LIVE_ENABLED = false; // Set to true when ready to launch live streaming
+// LIVE_ENABLED already declared above
 const AGORA_APP_ID = 'YOUR_AGORA_APP_ID';
 let agoraClient = null, localVideoTrack = null, localAudioTrack = null;
 let isStreaming = false, isMicOn = true, isCamOn = true;
