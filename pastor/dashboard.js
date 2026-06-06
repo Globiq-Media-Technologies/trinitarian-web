@@ -2031,8 +2031,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ── LIVE STREAM (Agora) ──────────────────────────────────────────────────────
 // LIVE_ENABLED already declared above
 // AGORA_APP_ID already declared above
-// agoraClient already declared above
-let localVideoTrack = null, localAudioTrack = null;
+// agoraClient, localVideoTrack, localAudioTrack already declared above
 let isStreaming = false, isMicOn = true, isCamOn = true;
 let streamDurationTimer = null, streamSeconds = 0, currentChannelName = null;
 let viewerPollInterval = null;
