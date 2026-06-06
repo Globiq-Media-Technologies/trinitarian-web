@@ -2025,3 +2025,133 @@ async function pdToggleMute(type) {
 document.addEventListener('DOMContentLoaded', function() {
   // Called when navigating to live page
 });
+
+
+
+// ── LIVE STREAM (Agora) ──────────────────────────────────────────────────────
+var LIVE_ENABLED = false; // Set to true when ready to launch live streaming
+const AGORA_APP_ID = 'YOUR_AGORA_APP_ID';
+let agoraClient = null, localVideoTrack = null, localAudioTrack = null;
+let isStreaming = false, isMicOn = true, isCamOn = true;
+let streamDurationTimer = null, streamSeconds = 0, currentChannelName = null;
+let viewerPollInterval = null;
+
+function initLivePage() {
+  const enabled = typeof LIVE_ENABLED !== 'undefined' && LIVE_ENABLED;
+  document.getElementById('live-coming-soon').style.display = enabled ? 'none' : 'block';
+  document.getElementById('live-studio').style.display = enabled ? 'block' : 'none';
+  if (enabled) loadPastStreams();
+}
+
+async function startLiveStream() {
+  const title = (document.getElementById('live-title').value||'').trim();
+  if (!title) { showToast('Please enter a stream title'); return; }
+  try {
+    const user = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+    const token = localStorage.getItem('pastor_token');
+    const channelName = 'trin_' + (user && user.id ? user.id : Date.now());
+    currentChannelName = channelName;
+    await fetch(API_BASE + '/live/start', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({title, category: document.getElementById('live-category').value,
+        language: document.getElementById('live-language').value, channel_name: channelName})
+    });
+    const tokenRes = await fetch(API_BASE + '/live/token?channel=' + channelName, {headers:{'Authorization':'Bearer '+token}});
+    const tokenData = await tokenRes.json();
+    agoraClient = AgoraRTC.createClient({mode:'live',codec:'vp8'});
+    await agoraClient.setClientRole('host');
+    await agoraClient.join(AGORA_APP_ID, channelName, tokenData.token, user && user.id);
+    const tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+    localAudioTrack = tracks[0]; localVideoTrack = tracks[1];
+    localVideoTrack.play('local-video-container');
+    await agoraClient.publish([localAudioTrack, localVideoTrack]);
+    isStreaming = true;
+    document.getElementById('camera-placeholder').style.display = 'none';
+    document.getElementById('live-badge').style.display = 'block';
+    document.getElementById('stream-indicator').style.background = '#e53e3e';
+    document.getElementById('stream-status-text').textContent = 'LIVE';
+    document.getElementById('stream-status-text').style.color = '#e53e3e';
+    document.getElementById('btn-start-stream').style.display = 'none';
+    document.getElementById('btn-end-stream').style.display = 'block';
+    document.getElementById('stream-setup').style.opacity = '0.5';
+    document.getElementById('stream-setup').style.pointerEvents = 'none';
+    streamSeconds = 0;
+    streamDurationTimer = setInterval(function() {
+      streamSeconds++;
+      const m = String(Math.floor(streamSeconds/60)).padStart(2,'0');
+      const s = String(streamSeconds%60).padStart(2,'0');
+      document.getElementById('live-duration').textContent = m+':'+s;
+    }, 1000);
+    if (viewerPollInterval) clearInterval(viewerPollInterval);
+    viewerPollInterval = setInterval(async function() {
+      try {
+        const r = await fetch(API_BASE+'/live/viewers?channel='+channelName, {headers:{'Authorization':'Bearer '+token}});
+        const d = await r.json(); document.getElementById('live-viewer-count').textContent = d.count||0;
+      } catch(e) {}
+    }, 5000);
+    showToast('You are now live!');
+  } catch(e) { console.error('Live stream error:',e); showToast('Failed to start stream. Please try again.'); }
+}
+
+async function endLiveStream() {
+  if (!isStreaming) return;
+  try {
+    const token = localStorage.getItem('pastor_token');
+    await fetch(API_BASE+'/live/end', {method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({channel_name: currentChannelName, duration: streamSeconds})});
+    if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack.close(); }
+    if (localVideoTrack) { localVideoTrack.stop(); localVideoTrack.close(); }
+    if (agoraClient) await agoraClient.leave();
+    if (viewerPollInterval) clearInterval(viewerPollInterval);
+    if (streamDurationTimer) clearInterval(streamDurationTimer);
+    isStreaming = false;
+    document.getElementById('camera-placeholder').style.display = 'flex';
+    document.getElementById('live-badge').style.display = 'none';
+    document.getElementById('stream-indicator').style.background = '#555';
+    document.getElementById('stream-status-text').textContent = 'Not streaming';
+    document.getElementById('stream-status-text').style.color = 'var(--text-muted)';
+    document.getElementById('btn-start-stream').style.display = 'block';
+    document.getElementById('btn-end-stream').style.display = 'none';
+    document.getElementById('stream-setup').style.opacity = '1';
+    document.getElementById('stream-setup').style.pointerEvents = 'auto';
+    document.getElementById('live-viewer-count').textContent = '0';
+    document.getElementById('live-duration').textContent = '00:00';
+    showToast('Stream ended. Great job!');
+    loadPastStreams();
+  } catch(e) { console.error('End stream error:',e); showToast('Error ending stream'); }
+}
+
+function toggleMic() {
+  if (!localAudioTrack) return;
+  isMicOn = !isMicOn; localAudioTrack.setEnabled(isMicOn);
+  document.getElementById('btn-mic').textContent = isMicOn ? '🎙' : '🔇';
+  document.getElementById('btn-mic').style.borderColor = isMicOn ? 'var(--border)' : '#e53e3e';
+}
+
+function toggleCamera() {
+  if (!localVideoTrack) return;
+  isCamOn = !isCamOn; localVideoTrack.setEnabled(isCamOn);
+  document.getElementById('btn-cam').textContent = isCamOn ? '📷' : '🚫';
+  document.getElementById('btn-cam').style.borderColor = isCamOn ? 'var(--border)' : '#e53e3e';
+}
+
+async function loadPastStreams() {
+  try {
+    const token = localStorage.getItem('pastor_token');
+    const r = await fetch(API_BASE+'/live/history', {headers:{'Authorization':'Bearer '+token}});
+    const data = await r.json();
+    const container = document.getElementById('past-streams-list');
+    if (!data.streams || !data.streams.length) {
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">No past streams yet</p>';
+      return;
+    }
+    container.innerHTML = data.streams.map(function(s) {
+      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px;">'+new Date(s.created_at).toLocaleDateString()+' · '+Math.round((s.duration||0)/60)+' min · 👥 '+(s.peak_viewers||0)+' peak</div></div><div style="color:var(--gold);font-size:11px;font-weight:600;">ENDED</div></div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('past-streams-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Could not load past streams</p>';
+  }
+}
+// ── END LIVE STREAM ──────────────────────────────────────────────────────────
+
