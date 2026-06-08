@@ -2360,9 +2360,13 @@ document.addEventListener('visibilitychange', async function() {
 // ── View sermon with media player ──
 async function viewSermon(id) {
   try {
-    const data = await api('/api/sermons/' + id);
-    const s = data?.sermon || data;
-    if (!s) { alert('Sermon not found'); return; }
+    // First try from cache
+    let s = allSermonsCache?.find(x => x.id == id);
+    if (!s) {
+      const data = await api('/api/sermons/' + id);
+      s = data?.sermon || data?.sermons?.[0] || data;
+    }
+    if (!s?.id) { alert('Sermon not found'); return; }
     
     const overlay = document.createElement('div');
     overlay.id = 'sermon-view-overlay';
