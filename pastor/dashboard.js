@@ -2321,3 +2321,24 @@ async function openSupportMessage(msgId) {
     loadInbox(); // Refresh to mark as read
   } catch(e) { alert('Could not open message'); }
 }
+
+// Refresh user role when tab becomes visible again
+document.addEventListener('visibilitychange', async function() {
+  if (document.visibilityState === 'visible' && token) {
+    try {
+      const fresh = await api('/api/auth/me');
+      if (fresh?.id) {
+        user = fresh;
+        localStorage.setItem('pastor_user', JSON.stringify(user));
+        // Update role display without full re-init
+        const roleEl = document.getElementById('sidebar-church');
+        const dashRole = document.getElementById('dash-role');
+        if (roleEl) roleEl.textContent = user.role?.toUpperCase() || 'PASTOR';
+        if (dashRole) dashRole.textContent = (user.role || 'pastor').toUpperCase();
+        // Show/hide admin nav
+        const adminNav = document.getElementById('admin-nav');
+        if (adminNav) adminNav.style.display = ['admin','moderator'].includes(user.role) ? 'flex' : 'none';
+      }
+    } catch(e) {}
+  }
+});
