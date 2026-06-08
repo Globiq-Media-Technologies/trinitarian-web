@@ -1284,7 +1284,7 @@ function loadNotifPrefs() {
 
 // ── Apply saved font settings on load ──
 window.addEventListener('load', function(){
-  pdApplyTranslations(localStorage.getItem('trinitarian_pd_lang')||'en');document.addEventListener('click',function(){setTimeout(function(){pdApplyTranslations(pdCurrentLang);},500);});
+  pdApplyTranslations(localStorage.getItem('trinitarian_pd_lang')||'en');// Translation re-apply on navigation only (not every click to avoid breaking dictation)
   const sz=localStorage.getItem('pastor_font_size');
   const sp=localStorage.getItem('pastor_spacing');
   const ff=localStorage.getItem('pastor_font_family');
@@ -1876,8 +1876,8 @@ function toggleTranscription(){
       else{interim+=t;}
     }
     if(finalText){baseText+=finalText;}
-    textarea.value=baseText+interim;
-    textarea.scrollTop=textarea.scrollHeight;
+    const ta=document.getElementById('up-transcript');
+    if(ta){ta.value=baseText+interim;ta.scrollTop=ta.scrollHeight;}
   };
   _recognition.onerror=function(e){
     if(status)status.textContent='Dictation error: '+e.error+(e.error==='not-allowed'?' (please allow microphone access)':'');
