@@ -109,7 +109,8 @@ function showPage(name) {
   if (name === 'notifications') loadNotifications();
   if (name === 'admin' && ['admin','moderator'].includes(user?.role)) loadAdmin();
   if (name === 'profile') loadProfile();
-  if (name === 'inbox') loadInbox();
+  if (name === 'inbox') { loadInbox(); setTimeout(() => pdApplyTranslations(pdCurrentLang), 300); }
+  if (name === 'explore') setTimeout(() => pdApplyTranslations(pdCurrentLang), 300);
   if (name === 'users') loadUsers();
   if (name === 'pastors') loadPastorsList();
   if (name === 'settings') {
