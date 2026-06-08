@@ -556,7 +556,18 @@ function selectLang(el, lang) {
 
 function handleFileSelect(input) {
   const file = input.files[0];
-  if (file) document.getElementById('file-name').textContent = `📎 ${file.name}`;
+  const nameEl = document.getElementById('file-name');
+  if (file) {
+    nameEl.innerHTML = `📎 ${file.name} <span onclick="removeMediaFile(event)" style="color:#e05555;cursor:pointer;margin-left:8px;font-size:12px;">✕ Remove</span>`;
+  }
+}
+
+function removeMediaFile(e) {
+  e.stopPropagation();
+  const input = document.getElementById('file-input');
+  input.value = '';
+  const nameEl = document.getElementById('file-name');
+  if (nameEl) nameEl.innerHTML = '';
 }
 
 async function loadCategories() {
@@ -1148,6 +1159,7 @@ function renderUsers(list) {
       <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
         ${adminMode ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')" title="Change role">👤 Role</button>` : ''}
         ${adminMode ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active!==false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
+        ${adminMode ? `<button class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;" onclick="sendMessageToUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">✉ Message</button>` : ''}
       </div>
     </div>
   `).join('')}</div>`;
@@ -1197,6 +1209,7 @@ function renderPastors(list) {
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
       <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      ${user?.role === 'admin' || user?.role === 'moderator' ? `<button onclick="event.stopPropagation();sendMessageToUser('${p.id||p.user_id}','${(p.display_name||p.username||'Pastor').replace(/'/g,'')}')" class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;">✉ Message</button>` : ''}
     </div>
   `).join('')}</div>`;
 }
@@ -2342,3 +2355,51 @@ document.addEventListener('visibilitychange', async function() {
     } catch(e) {}
   }
 });
+
+
+// ── View sermon with media player ──
+async function viewSermon(id) {
+  try {
+    const data = await api('/api/sermons/' + id);
+    const s = data?.sermon || data;
+    if (!s) { alert('Sermon not found'); return; }
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'sermon-view-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;flex-direction:column;overflow-y:auto;';
+    
+    let mediaHtml = '';
+    if (s.media_url && s.type === 'video') {
+      mediaHtml = `<video controls style="width:100%;max-height:400px;background:#000;border-radius:8px;" src="${s.media_url}">Your browser does not support video.</video>`;
+    } else if (s.media_url && s.type === 'audio') {
+      mediaHtml = `<audio controls style="width:100%;margin:16px 0;accent-color:#D4AF37;" src="${s.media_url}">Your browser does not support audio.</audio>`;
+    } else if (!s.media_url) {
+      mediaHtml = `<div style="background:#071528;border-radius:8px;padding:20px;text-align:center;color:#8fa3c0;font-size:13px;">No media file for this sermon.</div>`;
+    }
+    
+    overlay.innerHTML = `
+      <div style="background:#0d2142;min-height:100%;max-width:700px;margin:0 auto;width:100%;padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h2 style="color:#fff;font-size:18px;flex:1;padding-right:16px;">${s.title}</h2>
+          <button onclick="document.getElementById('sermon-view-overlay').remove()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;flex-shrink:0;">✕ Close</button>
+        </div>
+        <div style="color:#D4AF37;font-size:13px;margin-bottom:16px;">
+          ${s.pastor_name || s.display_name || 'Verified Pastor'} &nbsp;·&nbsp; 
+          ${(s.type||'').toUpperCase()} &nbsp;·&nbsp; 
+          👁 ${parseInt(s.views_count||0).toLocaleString()} views
+        </div>
+        ${mediaHtml}
+        ${s.description ? `<div style="color:#b0c4d8;font-size:14px;line-height:1.7;margin-top:16px;padding:16px;background:#071528;border-radius:8px;">${s.description}</div>` : ''}
+        ${s.transcript ? `<div style="margin-top:16px;"><div style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Transcript</div><div style="color:#b0c4d8;font-size:14px;line-height:1.8;white-space:pre-wrap;background:#071528;padding:16px;border-radius:8px;">${s.transcript}</div></div>` : ''}
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+          <button onclick="editSermon && openEditSermon(${JSON.stringify(s).replace(/'/g,'\'').replace(/"/g,'&quot;')})" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
+          <button onclick="deleteSermon('${s.id}','${s.title?.replace(/'/g,"\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
+          <button onclick="copySermonLink('${s.id}')" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#b0c4d8;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🔗 Copy Link</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+  } catch(e) {
+    console.error('viewSermon error:', e);
+    alert('Could not load sermon. Please try again.');
+  }
+}
