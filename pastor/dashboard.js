@@ -477,7 +477,7 @@ function renderSermonList(sermons, containerId) {
   `).join('');
 }
 
-async async function deleteSermon(id, title){
+async function deleteSermon(id, title){
   if(!confirm('Delete "'+title+'"?\n\nThis cannot be undone.')) return;
   try{
     await api('/api/sermons/'+id,'DELETE');
@@ -1034,7 +1034,7 @@ async function markSupportRead(id, row) {
   } catch(e) {}
 }
 
-async async function loadInbox() {
+async function loadInbox() {
   try {
     // Load notifications, admin messages and support messages
     const [notifData, msgData, supportData] = await Promise.all([
