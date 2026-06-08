@@ -18,6 +18,7 @@ const PD_TRANS={
 let pdCurrentLang=localStorage.getItem('trinitarian_pd_lang')||'en';
 
 function pdApplyTranslations(lang){
+  localStorage.setItem('trinitarian_pd_lang', lang);
   pdCurrentLang=lang;
   localStorage.setItem('trinitarian_pd_lang',lang);
   const tt=PD_TRANS[lang]||PD_TRANS.en;
@@ -109,10 +110,12 @@ function showPage(name) {
   if (name === 'notifications') loadNotifications();
   if (name === 'admin' && ['admin','moderator'].includes(user?.role)) loadAdmin();
   if (name === 'profile') loadProfile();
-  if (name === 'inbox') { loadInbox(); setTimeout(() => pdApplyTranslations(pdCurrentLang), 300); }
-  if (name === 'explore') setTimeout(() => pdApplyTranslations(pdCurrentLang), 300);
+  if (name === 'inbox') loadInbox();
+  if (name === 'explore') loadExplore();
   if (name === 'users') loadUsers();
   if (name === 'pastors') loadPastorsList();
+  // Apply translations after all content loads
+  setTimeout(() => pdApplyTranslations(pdCurrentLang), 400);
   if (name === 'settings') {
     if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
     if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
@@ -261,9 +264,19 @@ function prefillApply() {
 function updateCertLabel(input) {
   const label = document.getElementById('cert-label');
   if (input.files && input.files[0]) {
-    label.textContent = '✅ ' + input.files[0].name;
+    label.innerHTML = '✅ ' + input.files[0].name + 
+      ' <span onclick="removeCert(event)" style="color:#e05555;cursor:pointer;margin-left:8px;font-size:12px;">✕ Remove</span>';
     label.style.color = '#40c96a';
   }
+}
+
+function removeCert(e) {
+  e.stopPropagation();
+  const input = document.getElementById('cert-file');
+  input.value = '';
+  const label = document.getElementById('cert-label');
+  label.innerHTML = '📎 Click to attach document';
+  label.style.color = 'var(--text-muted)';
 }
 
 async function handleApply() {
@@ -464,7 +477,7 @@ function renderSermonList(sermons, containerId) {
   `).join('');
 }
 
-async function deleteSermon(id, title){
+async async function deleteSermon(id, title){
   if(!confirm('Delete "'+title+'"?\n\nThis cannot be undone.')) return;
   try{
     await api('/api/sermons/'+id,'DELETE');
@@ -476,6 +489,36 @@ async function deleteSermon(id, title){
     setTimeout(()=>toast.remove(),2500);
   }catch(e){alert('Delete failed. Please try again.');}
 }
+
+async function editSermon(id, title, description, type, language) {
+  const newTitle = prompt('Edit sermon title:', title);
+  if (!newTitle || newTitle === title) return;
+  try {
+    const res = await api('/api/admin/sermons/' + id, 'PUT', { title: newTitle });
+    if (res?.sermon) {
+      loadSermons();
+      const toast = document.createElement('div');
+      toast.textContent = '✅ Sermon updated';
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    } else {
+      alert(res?.error || 'Failed to edit sermon');
+    }
+  } catch(e) { alert('Edit failed. Please try again.'); }
+}
+
+function copySermonLink(id) {
+  const url = 'https://trinitarian.app/?sermon=' + id;
+  navigator.clipboard.writeText(url).then(function() {
+    const toast = document.createElement('div');
+    toast.textContent = '🔗 Link copied!';
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }).catch(function() { prompt('Copy this link:', url); });
+}
+
 
 async function archiveSermon(id) {
   if (!confirm('Archive this sermon?')) return;
@@ -991,14 +1034,52 @@ async function markSupportRead(id, row) {
   } catch(e) {}
 }
 
-async function loadInbox() {
+async async function loadInbox() {
   try {
-    const data = await api('/api/notifications');
-    const notifs = data?.notifications || [];
+    // Load notifications, admin messages and support messages
+    const [notifData, msgData, supportData] = await Promise.all([
+      api('/api/notifications'),
+      user?.role === 'admin' || user?.role === 'moderator' ? api('/api/admin/messages') : Promise.resolve({messages:[]}),
+      user?.role === 'admin' || user?.role === 'moderator' ? api('/api/admin/support') : Promise.resolve({messages:[]})
+    ]);
+    const notifs = notifData?.notifications || [];
+    const msgs = msgData?.messages || [];
+    const supportMsgs = supportData?.messages || [];
     const el = document.getElementById('inbox-list');
     const ICONS = { new_sermon:'🎧', live_stream:'📡', admin_message:'📬', follow:'👤', application_update:'🛡️' };
-    if (!notifs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3 data-i18n="no_messages">No messages yet</h3></div>'; return; }
-    el.innerHTML = notifs.map(n => `
+    if (!notifs.length && !msgs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3 data-i18n="no_messages">No messages yet</h3></div>'; return; }
+    
+    // Show support messages (from listeners/pastors) if admin
+    let html = '';
+    if (supportMsgs.length) {
+      html += '<div style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding:0 4px;">Messages from Users</div>';
+      html += supportMsgs.map(m => `
+        <div class="notif-item ${!m.is_read?'notif-unread':''}" onclick="openSupportMessage('${m.id}')" style="cursor:pointer;">
+          <div style="font-size:20px;flex-shrink:0;">💬</div>
+          <div style="flex:1;">
+            <div style="color:#e8e8e8;font-size:14px;font-weight:600;">${m.subject||'Support Request'} ${!m.is_read?'<span style=\"background:#e05555;color:#fff;font-size:9px;padding:2px 6px;border-radius:10px;margin-left:6px;\">NEW</span>':''}</div>
+            <div style="color:#8fa3c0;font-size:12px;">From: ${m.display_name||m.email||'Listener'} · ${new Date(m.created_at).toLocaleDateString('en-GB')}</div>
+          </div>
+        </div>`).join('');
+      if (msgs.length || notifs.length) html += '<div style="height:1px;background:rgba(212,175,55,0.1);margin:16px 0;"></div>';
+    }
+    
+    // Show admin messages section if any
+    if (msgs.length) {
+      html += '<div style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding:0 4px;">Sent Messages</div>';
+      html += msgs.map(m => `
+        <div class="notif-item" onclick="openMessage('${m.id}')" style="cursor:pointer;">
+          <div style="font-size:20px;flex-shrink:0;">📬</div>
+          <div style="flex:1;">
+            <div style="color:#e8e8e8;font-size:14px;font-weight:600;">${m.subject||'Message'}</div>
+            <div style="color:#8fa3c0;font-size:12px;">To: ${m.to_name||m.to_email||'User'} · ${new Date(m.created_at).toLocaleDateString('en-GB')}</div>
+          </div>
+        </div>`).join('');
+      if (notifs.length) html += '<div style="height:1px;background:rgba(212,175,55,0.1);margin:16px 0;"></div>';
+    }
+    
+    if (!notifs.length && !msgs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>No messages yet</h3></div>'; return; }
+    el.innerHTML = html + notifs.map(n => `
       <div class="notif-item ${!n.is_read?'notif-unread':''}" onclick="markRead('${n.id}')">
         <div class="notif-icon">${ICONS[n.type]||'🔔'}</div>
         <div style="flex:1;">
@@ -1167,6 +1248,7 @@ function setLang(lang, el) {
   el.style.background='var(--gold-light)';el.style.borderColor='var(--gold-border)';
   el.querySelector('div:last-child').style.color='var(--gold)';
   // Sync with sidebar selector and apply translations
+  localStorage.setItem('trinitarian_pd_lang', lang);
   pdApplyTranslations(lang);
 }
 
@@ -1775,9 +1857,15 @@ function toggleTranscription(){
 
   _recognition.onstart=function(){
     _transcribing=true;
-    if(btn)btn.textContent='⏹ Stop dictation';
-    if(btn)btn.style.color='#e05555';
-    if(status)status.textContent='🔴 Listening… speak or play audio';
+    if(btn){btn.textContent='⏹ Stop Dictation';btn.style.background='rgba(224,85,85,0.2)';btn.style.color='#e05555';btn.style.border='1px solid rgba(224,85,85,0.5)';}
+    if(status){
+      status.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;background:#e05555;border-radius:50%;display:inline-block;animation:pulse 1s infinite;"></span> Recording — speak clearly into your microphone</span>';
+      status.style.color='#e05555';
+      status.style.background='rgba(224,85,85,0.08)';
+      status.style.border='1px solid rgba(224,85,85,0.2)';
+      status.style.borderRadius='8px';
+      status.style.padding='8px 12px';
+    }
   };
   _recognition.onresult=function(e){
     let finalText='';
@@ -1796,8 +1884,8 @@ function toggleTranscription(){
   };
   _recognition.onend=function(){
     _transcribing=false;
-    if(btn){btn.textContent='🎙 Start dictation';btn.style.color='';}
-    if(status)status.textContent='Dictation stopped. Review and edit the text above.';
+    if(btn){btn.textContent='🎙 Start Dictation';btn.style.color='';btn.style.background='';btn.style.border='';}
+    if(status){status.innerHTML='✅ Dictation stopped. Review and edit the text above.';status.style.color='#40c96a';status.style.background='rgba(64,201,106,0.08)';status.style.border='1px solid rgba(64,201,106,0.2)';}
     // Keep whatever was captured
     const textarea=document.getElementById('up-transcript');
     if(textarea)textarea.value=textarea.value.trim();
@@ -2156,3 +2244,80 @@ async function loadPastStreams() {
 }
 // ── END LIVE STREAM ──────────────────────────────────────────────────────────
 
+
+
+// ── Admin: Send message to user ──
+async function sendMessageToUser(userId, userName) {
+  const subject = prompt(`Send message to ${userName}\nSubject:`, 'Message from Trinitarian Admin');
+  if (!subject) return;
+  const body = prompt('Message body:');
+  if (!body?.trim()) return;
+  try {
+    const res = await api('/api/admin/message', 'POST', { to_user_id: userId, subject, body });
+    if (res?.message || res?.id) {
+      const toast = document.createElement('div');
+      toast.textContent = '✅ Message sent to ' + userName;
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    } else {
+      alert(res?.error || 'Failed to send message');
+    }
+  } catch(e) { alert('Send failed. Please try again.'); }
+}
+
+// ── Admin: Open message thread ──
+async function openMessage(msgId) {
+  try {
+    const data = await api('/api/admin/messages/' + msgId);
+    const msg = data?.message;
+    if (!msg) { alert('Message not found'); return; }
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
+    overlay.innerHTML = `
+      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3 style="color:#fff;font-size:16px;">${msg.subject || 'Message'}</h3>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:transparent;border:none;color:#8fa3c0;font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <div style="color:#8fa3c0;font-size:12px;margin-bottom:16px;">
+          From: <span style="color:#D4AF37;">${msg.from_name || 'Unknown'}</span> &nbsp;→&nbsp; 
+          To: <span style="color:#D4AF37;">${msg.to_name || 'Unknown'}</span><br>
+          ${new Date(msg.created_at).toLocaleString('en-GB')}
+        </div>
+        <div style="background:#071528;border-radius:10px;padding:16px;color:#e8e8e8;font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.body}</div>
+      </div>`;
+    document.body.appendChild(overlay);
+  } catch(e) { alert('Could not open message'); }
+}
+
+
+async function openSupportMessage(msgId) {
+  try {
+    // Mark as read
+    await api('/api/admin/support/' + msgId + '/read', 'PUT');
+    // Get from already loaded data (reload if needed)
+    const data = await api('/api/admin/support');
+    const msg = (data?.messages || []).find(m => m.id === msgId);
+    if (!msg) { alert('Message not found'); return; }
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
+    overlay.innerHTML = `
+      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3 style="color:#fff;font-size:16px;">${msg.subject||'Support Request'}</h3>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:transparent;border:none;color:#8fa3c0;font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <div style="color:#8fa3c0;font-size:12px;margin-bottom:16px;">
+          From: <span style="color:#D4AF37;">${msg.display_name||msg.email||'User'}</span><br>
+          ${new Date(msg.created_at).toLocaleString('en-GB')}
+        </div>
+        <div style="background:#071528;border-radius:10px;padding:16px;color:#e8e8e8;font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.body}</div>
+        <div style="margin-top:16px;">
+          <button onclick="sendMessageToUser('${msg.from_user_id}','${msg.display_name||'User'}')" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Reply</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    loadInbox(); // Refresh to mark as read
+  } catch(e) { alert('Could not open message'); }
+}
