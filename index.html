@@ -1560,11 +1560,17 @@ function playerFullscreen(){
     overlay.appendChild(header);
     var body=document.createElement('div');
     body.style.cssText='padding:32px 24px;color:#e8e8e8;max-width:700px;margin:0 auto;';
-    body.innerHTML='<div style="font-size:48px;text-align:center;margin-bottom:20px;">'+(s.type==='video'?'🎬':'🎧')+'</div>'
-      +'<h2 style="color:#fff;font-size:22px;margin-bottom:12px;line-height:1.4;">'+s.title+'</h2>'
-      +'<p style="color:#D4AF37;font-size:14px;margin-bottom:16px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
-      +(s.description?'<p style="color:#b0c4d8;font-size:15px;line-height:1.8;">'+s.description+'</p>':'')
-      +'<div style="margin-top:24px;color:#8fa3c0;font-size:13px;">👁 '+parseInt(s.views_count||0).toLocaleString()+' views &nbsp;·&nbsp; '+(s.type||'').toUpperCase()+'</div>';
+    var mediaHtml='';
+    if(s.media_url&&s.type==='video'){
+      mediaHtml='<video controls autoplay style="width:100%;max-height:60vh;background:#000;border-radius:10px;margin-bottom:16px;" src="'+s.media_url+'">Your browser does not support video.</video>';
+    }else if(s.media_url&&s.type==='audio'){
+      mediaHtml='<audio controls autoplay style="width:100%;margin-bottom:16px;accent-color:#D4AF37;" src="'+s.media_url+'">Your browser does not support audio.</audio>';
+    }
+    body.innerHTML=mediaHtml
+      +'<h2 style="color:#fff;font-size:18px;margin-bottom:8px;line-height:1.4;">'+s.title+'</h2>'
+      +'<p style="color:#D4AF37;font-size:13px;margin-bottom:12px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
+      +(s.description?'<p style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;">'+s.description+'</p>':'')
+      +'<div style="color:#8fa3c0;font-size:12px;">👁 '+parseInt(s.views_count||0).toLocaleString()+' views &nbsp;·&nbsp; '+(s.type||'').toUpperCase()+'</div>';
     overlay.appendChild(body);
     document.body.appendChild(overlay);
     document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',esc);}});
