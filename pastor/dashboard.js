@@ -1921,8 +1921,9 @@ function toggleTranscription(){
   };
   _recognition.onend=function(){
     _transcribing=false;
+    _recognition=null; // Reset so a new instance is created on next start
     if(btn){btn.textContent='🎙 Start Dictation';btn.style.color='';btn.style.background='';btn.style.border='';}
-    if(status){status.innerHTML='✅ Dictation stopped. Review and edit the text above.';status.style.color='#40c96a';status.style.background='rgba(64,201,106,0.08)';status.style.border='1px solid rgba(64,201,106,0.2)';}
+    if(status){status.innerHTML='✅ Dictation stopped. Review and edit the text below.';status.style.color='#40c96a';status.style.background='rgba(64,201,106,0.08)';status.style.border='1px solid rgba(64,201,106,0.2)';}
     // Keep whatever was captured
     const textarea=document.getElementById('up-transcript');
     if(textarea)textarea.value=textarea.value.trim();
