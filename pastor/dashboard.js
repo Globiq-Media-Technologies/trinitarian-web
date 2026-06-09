@@ -766,11 +766,22 @@ async function loadAnalytics(period, btn) {
 }
 
 // ── Notifications ──
+async function markRead(id) {
+  try {
+    await api('/api/notifications/' + id + '/read', 'PUT');
+    updateBadges();
+  } catch(e) {}
+}
+
 async function loadNotifications() {
   try {
     const data = await api('/api/notifications');
     const notifs = data?.notifications || [];
     const el = document.getElementById('notifications-list');
+    // Mark all as read and update badge
+    if (notifs.some(n => !n.is_read)) {
+      api('/api/notifications/read-all', 'PUT').then(() => updateBadges()).catch(() => {});
+    }
     const ICONS = { new_sermon:'🎧', live_stream:'📡', download_ready:'⬇️', admin_message:'📬', follow:'👤', application_update:'🛡️' };
     if (!notifs.length) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><h3>All caught up!</h3><p data-i18n="no_notifs">No notifications yet</p></div>';
