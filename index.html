@@ -1371,6 +1371,12 @@ function lhRender(){
   el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
 }
 
+function showShareToast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+  document.body.appendChild(t);setTimeout(function(){t.remove();},2500);
+}
 function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-search-clear').style.display=q?'block':'none';lhRender();}
 function lhClearSearch(){document.getElementById('lh-search').value='';document.getElementById('lh-clear').style.display='none';lhRender();}
 
@@ -2008,7 +2014,13 @@ function shareSermon(){
   const title=currentSermon.title||'Sermon';
   if(navigator.share){
     navigator.share({title:title,text:'Listen to "'+title+'" on Trinitarian',url:url})
-    .catch(function(){});
+    .then(function(){})
+    .catch(function(){
+      // Fallback to clipboard if share fails
+      navigator.clipboard.writeText(url).then(function(){
+        showShareToast('🔗 Link copied to clipboard');
+      }).catch(function(){ prompt('Copy this link:',url); });
+    });
   }else{
     navigator.clipboard.writeText(url).then(function(){
       const t=document.createElement('div');
