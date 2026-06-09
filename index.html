@@ -576,38 +576,15 @@ function lhSendChat() {
 
   <div style="max-width:800px;margin:0 auto;padding:14px 16px;">
     <!-- HTML5 Media Player -->
-    <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+    <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;margin-bottom:14px;">
       <!-- Video player -->
-      <div id="lh-video-wrap" style="display:none;background:#000;border-radius:10px;overflow:hidden;">
-        <video id="lh-video-player" playsinline
-          style="width:100%;max-height:360px;display:block;background:#000;outline:none;"
-          onplay="document.getElementById('player-icon').textContent='▶';lhVideoPlaying=true;lhUpdatePlayBtn();"
-          onpause="document.getElementById('player-icon').textContent='⏸';lhVideoPlaying=false;lhUpdatePlayBtn();"
-          onended="document.getElementById('player-icon').textContent='🎬';lhVideoPlaying=false;lhUpdatePlayBtn();"
-          ontimeupdate="lhUpdateProgress()"
-          onloadedmetadata="lhUpdateDuration()">
-          Your browser does not support video playback.
-        </video>
-        <!-- Custom Controls -->
-        <div style="background:rgba(0,0,0,0.85);padding:10px 14px;">
-          <!-- Progress bar -->
-          <div id="lh-progress-bar" onclick="lhSeek(event)" style="width:100%;height:4px;background:rgba(255,255,255,0.2);border-radius:4px;cursor:pointer;margin-bottom:10px;position:relative;">
-            <div id="lh-progress-fill" style="height:100%;width:0%;background:#D4AF37;border-radius:4px;pointer-events:none;"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <button onclick="lhTogglePlay()" id="lh-play-btn" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;line-height:1;">▶</button>
-            <span id="lh-time-current" style="color:#fff;font-size:11px;min-width:36px;">0:00</span>
-            <span style="color:#8fa3c0;font-size:11px;">/</span>
-            <span id="lh-time-total" style="color:#8fa3c0;font-size:11px;min-width:36px;">0:00</span>
-            <div style="flex:1;"></div>
-            <input type="range" id="lh-volume" min="0" max="1" step="0.05" value="1"
-              oninput="document.getElementById('lh-video-player').volume=this.value"
-              style="width:70px;accent-color:#D4AF37;cursor:pointer;">
-            <button onclick="lhToggleMute()" id="lh-mute-btn" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0;">🔊</button>
-            <button onclick="lhVideoFullscreen()" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0;">⛶</button>
-          </div>
-        </div>
-      </div>
+      <video id="lh-video-player" controls playsinline
+        style="width:100%;height:auto;min-height:200px;display:none;background:#000;border-radius:14px;"
+        onplay="document.getElementById('player-icon').textContent='▶';"
+        onpause="document.getElementById('player-icon').textContent='⏸';"
+        onended="document.getElementById('player-icon').textContent='🎬';">
+        Your browser does not support video playback.
+      </video>
       <!-- Audio player -->
       <div id="lh-audio-wrap" style="display:none;padding:16px 20px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
@@ -1394,15 +1371,6 @@ function lhRender(){
   el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
 }
 
-var lhVideoPlaying=false;
-function lhUpdatePlayBtn(){var btn=document.getElementById('lh-play-btn');if(btn)btn.textContent=lhVideoPlaying?'⏸':'▶';}
-function lhTogglePlay(){var v=document.getElementById('lh-video-player');if(!v)return;if(v.paused){v.play();}else{v.pause();}}
-function lhUpdateProgress(){var v=document.getElementById('lh-video-player');if(!v||!v.duration)return;var pct=(v.currentTime/v.duration)*100;var fill=document.getElementById('lh-progress-fill');if(fill)fill.style.width=pct+'%';var cur=document.getElementById('lh-time-current');if(cur)cur.textContent=lhFmtTime(v.currentTime);}
-function lhUpdateDuration(){var v=document.getElementById('lh-video-player');if(!v)return;var tot=document.getElementById('lh-time-total');if(tot)tot.textContent=lhFmtTime(v.duration);}
-function lhFmtTime(s){if(isNaN(s))return'0:00';var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
-function lhSeek(e){var v=document.getElementById('lh-video-player');var bar=document.getElementById('lh-progress-bar');if(!v||!bar||!v.duration)return;var rect=bar.getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;v.currentTime=pct*v.duration;}
-function lhToggleMute(){var v=document.getElementById('lh-video-player');var btn=document.getElementById('lh-mute-btn');if(!v)return;v.muted=!v.muted;if(btn)btn.textContent=v.muted?'🔇':'🔊';}
-function lhVideoFullscreen(){var v=document.getElementById('lh-video-player');if(!v)return;if(v.requestFullscreen)v.requestFullscreen();else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();}
 function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-search-clear').style.display=q?'block':'none';lhRender();}
 function lhClearSearch(){document.getElementById('lh-search').value='';document.getElementById('lh-clear').style.display='none';lhRender();}
 
@@ -1520,15 +1488,11 @@ function openSermon(s){
   const audioEl=document.getElementById('lh-audio-player');
   const noMedia=document.getElementById('lh-no-media');
   const mediaUrl=s.media_url||null;
-  if(videoEl)videoEl.style.display='none';var vw=document.getElementById('lh-video-wrap');if(vw)vw.style.display='none';
+  if(videoEl)videoEl.style.display='none';
   if(audioWrap)audioWrap.style.display='none';
   if(noMedia)noMedia.style.display='none';
   if(mediaUrl&&(s.type==='video')){
-    var videoWrap=document.getElementById('lh-video-wrap');
-    if(videoEl){videoEl.src=mediaUrl;}
-    if(videoWrap)videoWrap.style.display='block';
-    else if(videoEl)videoEl.style.display='block';
-    lhVideoPlaying=false;lhUpdatePlayBtn();
+    if(videoEl){videoEl.src=mediaUrl;videoEl.style.display='block';}
     document.querySelectorAll('#player-icon').forEach(function(el){el.textContent='🎬';});
   } else if(mediaUrl&&(s.type==='audio')){
     if(audioEl)audioEl.src=mediaUrl;
