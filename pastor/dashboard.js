@@ -1920,10 +1920,12 @@ function toggleTranscription(){
     if(status)status.textContent='Dictation error: '+e.error+(e.error==='not-allowed'?' (please allow microphone access)':'');
   };
   _recognition.onend=function(){
+    const wasTranscribing=_transcribing;
     _transcribing=false;
     _recognition=null; // Reset so a new instance is created on next start
     if(btn){btn.textContent='🎙 Start Dictation';btn.style.color='';btn.style.background='';btn.style.border='';}
-    if(status){status.innerHTML='✅ Dictation stopped. Review and edit the text below.';status.style.color='#40c96a';status.style.background='rgba(64,201,106,0.08)';status.style.border='1px solid rgba(64,201,106,0.2)';}
+    if(status&&wasTranscribing){status.innerHTML='✅ Dictation stopped. Review and edit the text below.';status.style.color='#40c96a';status.style.background='rgba(64,201,106,0.08)';status.style.border='1px solid rgba(64,201,106,0.2)';}
+    else if(status&&!wasTranscribing){status.innerHTML='';status.style.background='';status.style.border='';}
     // Keep whatever was captured
     const textarea=document.getElementById('up-transcript');
     if(textarea)textarea.value=textarea.value.trim();
