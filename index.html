@@ -1786,10 +1786,10 @@ async function loadLhNotifications(){const el=document.getElementById('lh-notifs
     }).catch(function(){});
   }if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_notifs+'</p></div>';return;}el.innerHTML=notifs.map(function(n){
   var data=null;try{data=typeof n.data==='string'?JSON.parse(n.data):n.data;}catch(e){}
-  var sermonId=data?.sermon_id||data?.id||null;
+  var sermonId=data&&(data.sermon_id||data.id)||null;
   var clickable=n.type==='new_sermon'&&sermonId;
   var icon=n.type==='new_sermon'?'🎧':n.type==='live_stream'?'📡':n.type==='application_update'?'🛡️':n.type==='follow'?'👤':'🔔';
-  return '<div onclick="'+(clickable?'lhOpenNotifSermon(''+sermonId+'')':'')+'" style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">Tap to listen →</div>':'')+'</div></div>';
+  return '<div '+(clickable?'onclick="lhOpenNotifSermon(\'' +sermonId+ '\')"':'')+' style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'" ><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">Tap to listen →</div>':'')+'</div></div>';
 }).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}
 
