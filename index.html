@@ -1371,6 +1371,21 @@ function lhRender(){
   el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
 }
 
+function lhOpenNotifSermon(sermonId){
+  if(!sermonId)return;
+  // Find sermon in cache or fetch it
+  var cached=(window.lhAllSermons||[]).find(function(s){return s.id===sermonId;});
+  if(cached){openSermon(cached);goTo('player');return;}
+  // Fetch from API
+  fetch(API+'/api/sermons/'+sermonId,{headers:{Authorization:'Bearer '+(localStorage.getItem('trinitarian_token')||'')}})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var s=data?.sermon||data;
+    if(s?.id){openSermon(s);goTo('player');}
+  })
+  .catch(function(){});
+}
+
 function showShareToast(msg){
   const t=document.createElement('div');
   t.textContent=msg;
@@ -1769,7 +1784,13 @@ async function loadLhNotifications(){const el=document.getElementById('lh-notifs
       var badge=document.getElementById('lh-notif-count');
       if(badge)badge.style.display='none';
     }).catch(function(){});
-  }if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_notifs+'</p></div>';return;}el.innerHTML=notifs.map(n=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">🔔</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+'</div></div>').join('');}catch(e){
+  }if(!notifs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔔</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_notifs+'</p></div>';return;}el.innerHTML=notifs.map(function(n){
+  var data=null;try{data=typeof n.data==='string'?JSON.parse(n.data):n.data;}catch(e){}
+  var sermonId=data?.sermon_id||data?.id||null;
+  var clickable=n.type==='new_sermon'&&sermonId;
+  var icon=n.type==='new_sermon'?'🎧':n.type==='live_stream'?'📡':n.type==='application_update'?'🛡️':n.type==='follow'?'👤':'🔔';
+  return '<div onclick="'+(clickable?'lhOpenNotifSermon(''+sermonId+'')':'')+'" style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">Tap to listen →</div>':'')+'</div></div>';
+}).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}
 
 async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const msgs=data?.notifications||[];if(!msgs.length){el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p style="color:#8fa3c0;" data-i18n="no_messages">No messages yet</p></div>';return;}el.innerHTML=msgs.map(m=>'<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">📬</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;">'+m.body+'</div>':'')+'</div></div>').join('');}catch(e){
