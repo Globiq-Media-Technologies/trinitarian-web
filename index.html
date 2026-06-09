@@ -574,12 +574,12 @@ function lhSendChat() {
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
 
-  <div style="max-width:800px;margin:0 auto;padding:14px 16px;">
+  <div style="max-width:100%;margin:0 auto;padding:14px 16px;">
     <!-- HTML5 Media Player -->
     <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;margin-bottom:14px;">
       <!-- Video player -->
       <video id="lh-video-player" controls playsinline
-        style="width:100%;height:auto;min-height:200px;display:none;background:#000;border-radius:14px;"
+        style="width:100%;min-height:240px;display:none;background:#000;border-radius:14px;"
         onplay="document.getElementById('player-icon').textContent='▶';"
         onpause="document.getElementById('player-icon').textContent='⏸';"
         onended="document.getElementById('player-icon').textContent='🎬';">

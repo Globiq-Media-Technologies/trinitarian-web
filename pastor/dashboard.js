@@ -426,6 +426,30 @@ function initDashboard() {
   loadOverview();
 }
 
+// ── Update notification/inbox badges ──
+async function updateBadges() {
+  try {
+    const data = await api('/api/notifications');
+    const unread = (data?.notifications || []).filter(n => !n.is_read).length;
+    const badge = document.getElementById('notif-badge');
+    if (badge) {
+      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline'; }
+      else { badge.style.display = 'none'; }
+    }
+    // Check support messages if admin
+    if (user?.role === 'admin' || user?.role === 'moderator') {
+      const sData = await api('/api/admin/support');
+      const unreadSupport = (sData?.messages || []).filter(m => !m.is_read).length;
+      const iBadge = document.getElementById('inbox-badge');
+      if (iBadge) {
+        if (unreadSupport > 0) { iBadge.textContent = unreadSupport > 99 ? '99+' : unreadSupport; iBadge.style.display = 'inline'; }
+        else { iBadge.style.display = 'none'; }
+      }
+    }
+  } catch(e) {}
+}
+
+
 // ── Overview ──
 async function loadOverview() {
   try {
