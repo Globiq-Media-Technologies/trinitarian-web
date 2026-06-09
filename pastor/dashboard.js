@@ -1604,7 +1604,7 @@ async function loadFlaggedContent(){
 
 async function resolveReport(id,action){
   try{
-    await api('/api/admin/flagged/'+id,'PUT',{action:action});
+    await api('/api/admin/reports/'+id+'/resolve','PUT',{action:action});
     showToast(action==='remove'?'Sermon removed':'Report dismissed');
     loadFlaggedContent();
   }catch(e){showToast('Failed to resolve report','error');}
