@@ -1359,7 +1359,7 @@ function exploreRender(){
     card.style.cssText='background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;';
     card.onmouseover=function(){card.style.borderColor='rgba(212,175,55,0.4)';};
     card.onmouseout=function(){card.style.borderColor='var(--border)';};
-    card.onclick=function(){window.open('https://trinitarian.app','_blank');};
+    card.onclick=function(){viewSermon(s.id);};
     card.innerHTML='<div style="font-size:32px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div>'
       +'<div style="color:var(--white);font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">'+s.title+'</div>'
       +'<div style="color:var(--gold);font-size:12px;margin-bottom:6px;">'+( s.pastor_name||s.display_name||'Verified Pastor')+'</div>'
