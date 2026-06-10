@@ -1,6 +1,147 @@
 
 
 
+
+// ── Users ──
+let allUsersCache = [];
+
+async function loadUsers() {
+  const el = document.getElementById('users-list');
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const data = await api('/api/admin/users?limit=100');
+    allUsersCache = data?.users || data || [];
+    renderUsers(allUsersCache);
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><h3>Failed to load users</h3></div>';
+  }
+}
+
+function filterUsers() {
+  const q = (document.getElementById('user-search')?.value || '').toLowerCase();
+  renderUsers(q ? allUsersCache.filter(u => (u.display_name+u.email+u.username).toLowerCase().includes(q)) : allUsersCache);
+}
+
+function renderUsers(list) {
+  const el = document.getElementById('users-list');
+  if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3 data-i18n="no_users">No users found</h3></div>'; return; }
+  const adminMode = user?.role === 'admin' || user?.role === 'moderator';
+  el.innerHTML = `<div class="sermon-list">${list.map(u => `
+    <div class="sermon-card">
+      <div style="width:44px;height:44px;border-radius:22px;background:var(--navy3);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
+        ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:44px;height:44px;border-radius:22px;object-fit:cover;"/>` : '👤'}
+      </div>
+      <div class="sermon-info">
+        <div class="sermon-title">${u.display_name||u.username||'User'}</div>
+        <div class="sermon-meta">
+          <span>${u.email||''}</span>
+          <span style="padding:2px 8px;border-radius:8px;font-size:11px;background:${u.role==='admin'?'rgba(212,175,55,0.15)':u.role==='moderator'?'rgba(100,150,255,0.15)':u.role==='pastor'?'rgba(64,201,106,0.15)':'rgba(255,255,255,0.05)'};color:${u.role==='admin'?'#D4AF37':u.role==='moderator'?'#6496ff':u.role==='pastor'?'#40c96a':'var(--text-muted)'};">${u.role||'listener'}</span>
+          ${u.is_active===false?'<span style="padding:2px 8px;border-radius:8px;font-size:11px;background:rgba(224,85,85,0.15);color:#e05555;">Suspended</span>':''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+        ${adminMode ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')">👤 Role</button>` : ''}
+        ${adminMode ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
+        ${adminMode ? `<button class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;" onclick="sendMessageToUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">✉ Message</button>` : ''}
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+async function suspendUser(id, name, isSuspended) {
+  const action = isSuspended ? 'reinstate' : 'suspend';
+  const reason = isSuspended ? null : prompt('Reason for suspending ' + name + ' (optional):');
+  if (!isSuspended && reason === null) return;
+  try {
+    await api('/api/admin/users/' + id + '/suspend', 'PUT', { suspended: !isSuspended, reason });
+    showToast(isSuspended ? 'User reinstated successfully' : 'User suspended successfully');
+    loadUsers();
+  } catch(e) { showToast('Failed to update user status', 'error'); }
+}
+
+async function changeUserRole(id, name, currentRole) {
+  const roles = ['listener', 'pastor', 'moderator', 'admin'];
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:400px;';
+  inner.innerHTML = '<h3 style="color:var(--white);margin-bottom:16px;">Change Role: ' + name + '</h3>'
+    + '<select id="role-select-inner" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:12px;">'
+    + roles.map(r => `<option value="${r}" ${r===currentRole?'selected':''}>${r}</option>`).join('')
+    + '</select>'
+    + '<div id="role-err-inner" style="display:none;color:#e05555;font-size:13px;margin-bottom:12px;"></div>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button id="role-cancel-inner" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:10px;padding:10px;cursor:pointer;">Cancel</button>'
+    + '<button id="role-save-inner" style="flex:1;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:700;">Save</button>'
+    + '</div>';
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+  inner.querySelector('#role-cancel-inner').onclick = function() { modal.remove(); };
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  inner.querySelector('#role-save-inner').onclick = async function() {
+    const newRole = inner.querySelector('#role-select-inner').value;
+    if (newRole === currentRole) { modal.remove(); return; }
+    try {
+      await api('/api/admin/users/' + id + '/role', 'PUT', { role: newRole });
+      modal.remove();
+      showToast('Role updated to ' + newRole);
+      loadUsers();
+    } catch(e) {
+      const err = inner.querySelector('#role-err-inner');
+      err.textContent = e.message || 'Failed to update role';
+      err.style.display = 'block';
+    }
+  };
+}
+
+// ── Pastors ──
+let allPastorsCache = [];
+
+async function loadPastorsList() {
+  try {
+    const data = await api('/api/pastors?limit=100');
+    allPastorsCache = Array.isArray(data) ? data : (data?.pastors||[]);
+    renderPastors(allPastorsCache);
+  } catch(e) {
+    const el = document.getElementById('pastors-list');
+    if (el) el.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><h3>Failed to load pastors</h3></div>';
+  }
+}
+
+function filterPastors() {
+  const q = (document.getElementById('pastor-search')?.value || '').toLowerCase();
+  renderPastors(q ? allPastorsCache.filter(p => (p.display_name+p.username+(p.church_name||'')).toLowerCase().includes(q)) : allPastorsCache);
+}
+
+function renderPastors(list) {
+  const el = document.getElementById('pastors-list');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">✝️</div><h3 data-i18n="no_pastors_yet">No verified pastors yet</h3><p data-i18n="no_apps">Approved pastor applications will appear here.</p></div>'; return; }
+  el.innerHTML = `<div class="sermon-list">${list.map(p => `
+    <div class="sermon-card">
+      <div style="width:44px;height:44px;border-radius:22px;background:rgba(212,175,55,0.1);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✝</div>
+      <div class="sermon-info">
+        <div class="sermon-title">${p.display_name||p.username||'Pastor'}</div>
+        <div class="sermon-meta">
+          <span>${p.church_name||'—'}</span>
+          <span>${p.denomination||''}</span>
+          <span>${p.country||''}</span>
+        </div>
+        <div class="sermon-meta" style="margin-top:4px;">
+          <span>📖 ${p.sermons_count||0} sermons</span>
+          <span>👥 ${p.followers_count||0} followers</span>
+          <span>👁 ${parseInt(p.total_views||0).toLocaleString()} views</span>
+        </div>
+      </div>
+      <div><span class="status-badge status-live" data-i18n="verified_label">VERIFIED</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      ${user?.role === 'admin' || user?.role === 'moderator' ? `<button onclick="sendMessageToUser('${p.id||p.user_id}','${(p.display_name||p.username||'Pastor').replace(/'/g,'')}')" class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;">✉ Message</button>` : ''}
+    </div>
+  `).join('')}</div>`;
+}
+
 // ── Explore ──
 let exploreAllSermons = [];
 let exploreActiveCat = 'All';
