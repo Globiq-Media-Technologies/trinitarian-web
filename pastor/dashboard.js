@@ -1019,6 +1019,39 @@ async function loadNotifications() {
   } catch(e) { document.getElementById('notifications-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;" data-i18n="failed_load">Failed to load notifications</p>'; }
 }
 
+
+async function markAllReadInbox() {
+  // Determine active tab
+  const notifTab = document.getElementById('tab-notifications');
+  const isNotifActive = notifTab && notifTab.classList.contains('btn-gold');
+  
+  if (isNotifActive) {
+    // Mark notifications as read
+    await markAllRead();
+  } else {
+    // Mark support messages as read
+    try {
+      const data = await api('/api/admin/support');
+      const msgs = data?.messages || [];
+      const unread = msgs.filter(m => !m.is_read);
+      // Mark each unread message
+      await Promise.all(unread.map(m => 
+        api('/api/admin/support/' + m.id + '/read', 'PUT').catch(() => {})
+      ));
+      // Update UI immediately
+      document.querySelectorAll('#support-list .notif-item.notif-unread').forEach(el => {
+        el.classList.remove('notif-unread');
+      });
+      document.querySelectorAll('#support-list .notif-dot').forEach(el => el.remove());
+      // Update badge
+      const badge = document.getElementById('inbox-badge');
+      if (badge) badge.style.display = 'none';
+      setTimeout(() => loadSupportMessages(), 500);
+      showToast('All messages marked as read');
+    } catch(e) { showToast('Failed to mark as read', 'error'); }
+  }
+}
+
 async function markAllRead() {
   try {
     await api('/api/notifications/read-all', 'PUT');

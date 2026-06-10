@@ -975,7 +975,7 @@ async function loadPastStreams() {
           <h1 class="page-title" data-i18n="notifications">Notifications</h1>
           <p class="page-sub" data-i18n="ministry_activity">Stay updated on your ministry activity</p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+        <button class="btn btn-ghost btn-sm" onclick="markAllReadInbox()">Mark all read</button>
       </div>
       <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <div id="notifications-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
@@ -1266,7 +1266,7 @@ async function loadPastStreams() {
     <div id="page-inbox" class="page">
       <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><h1 class="page-title" data-i18n="inbox">Inbox</h1><p class="page-sub" data-i18n="notifs_support">Notifications and support messages</p></div>
-        <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+        <button class="btn btn-ghost btn-sm" onclick="markAllReadInbox()">Mark all read</button>
       </div>
       <!-- Tabs: Notifications | Support Messages (admin only) -->
       <div style="display:flex;gap:8px;margin-bottom:16px;" id="inbox-tabs">
