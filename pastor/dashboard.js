@@ -346,6 +346,10 @@ function removeCert(e) {
 }
 
 async function handleApply() {
+  if (!document.getElementById('apply-disclaimer')?.checked) {
+    showAlert('apply-error', 'Please read and accept the Terms of Service and disclaimer to continue.');
+    return;
+  }
   const denom = document.getElementById('apply-denom').value;
   const denomOther = document.getElementById('apply-denom-other').value.trim();
   const finalDenom = denom === 'Other' ? denomOther : denom;
@@ -1114,8 +1118,10 @@ async function loadSupportMessages() {
   try {
     const data = await api('/api/admin/support');
     const msgs = data?.messages || [];
+    // Show disclaimer banner
+    const disclaimer = '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:10px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.7;margin:0;">⚠ Trinitarian is not responsible for outcomes of direct communications with listeners. Exercise discretion and do not solicit payments. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Terms →</a></p></div>';
     if (!msgs.length) {
-      el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-muted);" data-i18n="no_support">No support messages yet</div>';
+      el.innerHTML = disclaimer + '<div style="padding:30px;text-align:center;color:var(--text-muted);" data-i18n="no_support">No support messages yet</div>';
       return;
     }
     el.innerHTML = msgs.map(m => `
