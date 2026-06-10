@@ -1020,7 +1020,19 @@ async function loadNotifications() {
 }
 
 async function markAllRead() {
-  try { await api('/api/notifications/read-all', 'PUT'); loadNotifications(); } catch(e) {}
+  try {
+    await api('/api/notifications/read-all', 'PUT');
+    // Update UI immediately - mark all items as read visually
+    document.querySelectorAll('.notif-item.notif-unread').forEach(el => {
+      el.classList.remove('notif-unread');
+    });
+    document.querySelectorAll('.notif-dot').forEach(el => el.remove());
+    // Update badge
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+    // Reload to confirm
+    setTimeout(() => loadNotifications(), 500);
+  } catch(e) { showToast('Failed to mark as read', 'error'); }
 }
 
 // ── Admin ──
