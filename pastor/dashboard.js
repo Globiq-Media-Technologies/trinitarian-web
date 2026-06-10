@@ -137,7 +137,7 @@ function renderPastors(list) {
       <div><span class="status-badge status-live" data-i18n="verified_label">VERIFIED</span></div>
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;">
-      ${user?.role === 'admin' || user?.role === 'moderator' ? `<button onclick="sendMessageToUser('${p.id||p.user_id}','${(p.display_name||p.username||'Pastor').replace(/'/g,'')}')" class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;">✉ Message</button>` : ''}
+
     </div>
   `).join('')}</div>`;
 }
@@ -487,10 +487,6 @@ function removeCert(e) {
 }
 
 async function handleApply() {
-  if (!document.getElementById('apply-disclaimer')?.checked) {
-    showAlert('apply-error', 'Please read and accept the Terms of Service and disclaimer to continue.');
-    return;
-  }
   const denom = document.getElementById('apply-denom').value;
   const denomOther = document.getElementById('apply-denom-other').value.trim();
   const finalDenom = denom === 'Other' ? denomOther : denom;
@@ -1313,7 +1309,7 @@ async function loadSupportMessages() {
     // Show disclaimer banner - adapted to role
     const isPastor = user?.role === 'pastor';
     const disclaimerText = isPastor
-      ? '⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian is not responsible for any outcomes arising from your responses. Do not solicit payments or personal information. Any advice you give is in your personal capacity, not on behalf of Trinitarian. Report abuse to <a href=\"mailto:support@trinitarian.app\" style=\"color:#D4AF37;\">support@trinitarian.app</a>. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Full Terms →</a>'
+      ? '⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian facilitates pastoral communication including prayer requests, but does not provide professional counselling or crisis services. Do not solicit payments or personal information. Any advice or prayer is in your personal capacity, not on behalf of Trinitarian. Report abuse to <a href=\"mailto:support@trinitarian.app\" style=\"color:#D4AF37;\">support@trinitarian.app</a>. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Full Terms →</a>'
       : '⚠ Trinitarian is not responsible for outcomes of direct communications. Exercise discretion and do not solicit payments. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Terms →</a>';
     const disclaimer = '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.8;margin:0;">' + disclaimerText + '</p></div>';
     if (!msgs.length) {
@@ -1371,7 +1367,7 @@ async function loadInbox() {
     // Show support messages (from listeners/pastors) if admin
     // Add disclaimer for pastors
     const isPastor = user?.role === 'pastor';
-    let html = isPastor ? '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.8;margin:0;">⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian is not responsible for any outcomes arising from your responses. Do not solicit payments or personal information. Any advice you give is in your personal capacity, not on behalf of Trinitarian. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Full Terms →</a></p></div>' : '';
+    let html = isPastor ? '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.8;margin:0;">⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian facilitates pastoral communication including prayer requests, but does not provide professional counselling or crisis services. Do not solicit payments or personal information. Any advice or prayer is in your personal capacity, not on behalf of Trinitarian. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Full Terms →</a></p></div>' : '';
     if (supportMsgs.length) {
       html += '<div style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding:0 4px;">Messages from Users</div>';
       html += supportMsgs.map(m => `
@@ -2063,52 +2059,6 @@ async function loadPastStreams() {
 
 
 
-// ── Admin: Send message to user ──
-async function sendMessageToUser(userId, userName) {
-  const subject = prompt(`Send message to ${userName}\nSubject:`, 'Message from Trinitarian Admin');
-  if (!subject) return;
-  const body = prompt('Message body:');
-  if (!body?.trim()) return;
-  try {
-    const res = await api('/api/admin/message', 'POST', { to_user_id: userId, subject, body });
-    if (res?.message || res?.id) {
-      const toast = document.createElement('div');
-      toast.textContent = '✅ Message sent to ' + userName;
-      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    } else {
-      alert(res?.error || 'Failed to send message');
-    }
-  } catch(e) { alert('Send failed. Please try again.'); }
-}
-
-// ── Admin: Open message thread ──
-async function openMessage(msgId) {
-  try {
-    const data = await api('/api/admin/messages/' + msgId);
-    const msg = data?.message;
-    if (!msg) { alert('Message not found'); return; }
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
-    overlay.innerHTML = `
-      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <h3 style="color:#fff;font-size:16px;">${msg.subject || 'Message'}</h3>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background:transparent;border:none;color:#8fa3c0;font-size:20px;cursor:pointer;">✕</button>
-        </div>
-        <div style="color:#8fa3c0;font-size:12px;margin-bottom:16px;">
-          From: <span style="color:#D4AF37;">${msg.from_name || 'Unknown'}</span> &nbsp;→&nbsp; 
-          To: <span style="color:#D4AF37;">${msg.to_name || 'Unknown'}</span><br>
-          ${new Date(msg.created_at).toLocaleString('en-GB')}
-        </div>
-        <div style="background:#071528;border-radius:10px;padding:16px;color:#e8e8e8;font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.body}</div>
-      </div>`;
-    document.body.appendChild(overlay);
-  } catch(e) { alert('Could not open message'); }
-}
-
-
 async function openSupportMessage(msgId) {
   try {
     // Mark as read
@@ -2131,7 +2081,7 @@ async function openSupportMessage(msgId) {
         </div>
         <div style="background:#071528;border-radius:10px;padding:16px;color:#e8e8e8;font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.body}</div>
         <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:10px 12px;margin-top:12px;">
-          <p style="color:#8fa3c0;font-size:11px;line-height:1.7;margin:0;">⚠ <strong>Important Notice:</strong> Your response is a personal communication. Do not solicit payments or personal information. Any advice is in your personal capacity only. <a href="https://trinitarian.app/terms" target="_blank" style="color:#D4AF37;">Terms →</a></p>
+          <p style="color:#8fa3c0;font-size:11px;line-height:1.7;margin:0;">⚠ <strong>Important Notice:</strong> Your response is a personal pastoral communication. Trinitarian facilitates prayer requests and encouragement but does not provide professional counselling or crisis services. Do not solicit payments or personal information. <a href="https://trinitarian.app/terms" target="_blank" style="color:#D4AF37;">Terms →</a></p>
         </div>
         <div style="margin-top:16px;">
           <button onclick="sendMessageToUser('${msg.from_user_id}','${msg.display_name||'User'}')" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Reply</button>

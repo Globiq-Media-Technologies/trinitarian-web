@@ -456,7 +456,7 @@ function lhSendChat() {
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
           <input type="checkbox" id="ll-reg-disclaimer" style="margin-top:3px;accent-color:#D4AF37;flex-shrink:0;"/>
           <span style="color:#8fa3c0;font-size:12px;line-height:1.7;">
-            I agree to the <a href="https://trinitarian.app/terms" target="_blank" style="color:#D4AF37;">Terms of Service</a> and <a href="https://trinitarian.app/privacy" target="_blank" style="color:#D4AF37;">Privacy Policy</a>. I understand that Trinitarian is not responsible for outcomes of direct communications between users, and that no professional advice is provided on this platform.
+            I agree to the <a href="https://trinitarian.app/terms" target="_blank" style="color:#D4AF37;">Terms of Service</a> and <a href="https://trinitarian.app/privacy" target="_blank" style="color:#D4AF37;">Privacy Policy</a>.
           </span>
         </label>
       </div>
@@ -622,7 +622,6 @@ function lhSendChat() {
       <button onclick="playerFullscreen()" id="fs-btn" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_fullscreen">⛶ Fullscreen</button>
       
       <button onclick="playerDownload()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_download">⬇ Download</button>
-      <button onclick="messagePastor()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.08);color:#D4AF37;cursor:pointer;font-size:13px;">✉ Message Pastor</button>
       <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;" data-i18n="report">⚑ Report</button>
         <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;" data-i18n="like">♡ Like</button>
         <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:13px;" data-i18n="share">🔗 Share</button>
@@ -1401,74 +1400,6 @@ function lhOpenNotifSermon(sermonId){
 }
 
 
-function messagePastor() {
-  if (!currentSermon) return;
-  const token = localStorage.getItem('trinitarian_token');
-  if (!token) {
-    alert('Please sign in to message a pastor.');
-    return;
-  }
-  const pastorName = currentSermon.pastor_name || currentSermon.display_name || 'the Pastor';
-  const pastorId = currentSermon.pastor_id;
-  if (!pastorId) { alert('Pastor information not available for this sermon.'); return; }
-
-  // Show disclaimer modal first
-  const overlay = document.createElement('div');
-  overlay.id = 'msg-pastor-modal';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:flex-end;justify-content:center;padding:0;';
-  overlay.innerHTML = `
-    <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;">
-      <h3 style="color:#D4AF37;font-size:16px;margin-bottom:12px;">✉ Message ${pastorName}</h3>
-      <div style="background:rgba(224,85,85,0.08);border:1px solid rgba(224,85,85,0.2);border-radius:10px;padding:12px;margin-bottom:16px;">
-        <p style="color:#e05555;font-size:12px;line-height:1.7;margin:0;">
-          <strong>⚠ Important Notice</strong><br>
-          This message will be sent to the pastor directly. Trinitarian is not responsible for any consequences arising from personal communications between listeners and pastors. Please keep all interactions respectful and in line with Christian values. Do not share personal financial information or make payments outside this platform.
-        </p>
-      </div>
-      <div style="margin-bottom:12px;">
-        <input id="msg-pastor-subject" type="text" placeholder="Subject (e.g. Prayer Request)" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:10px 14px;color:#e8e8e8;font-size:14px;margin-bottom:10px;box-sizing:border-box;"/>
-        <textarea id="msg-pastor-body" placeholder="Write your message here..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:10px 14px;color:#e8e8e8;font-size:14px;min-height:120px;resize:vertical;box-sizing:border-box;"></textarea>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;cursor:pointer;font-size:14px;">Cancel</button>
-        <button onclick="sendMsgToPastor('${pastorId}','${pastorName.replace(/'/g,"\'")}',this)" style="flex:2;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;cursor:pointer;font-size:14px;font-weight:700;">Send Message</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
-}
-
-async function sendMsgToPastor(pastorId, pastorName, btn) {
-  const subject = document.getElementById('msg-pastor-subject').value.trim() || 'Message from Listener';
-  const body = document.getElementById('msg-pastor-body').value.trim();
-  if (!body) { alert('Please write a message.'); return; }
-  btn.textContent = 'Sending...'; btn.disabled = true;
-  try {
-    const token = localStorage.getItem('trinitarian_token');
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch(API + '/api/admin/user-message', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ to_user_id: pastorId, subject, body }),
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
-    // Close modal
-    const modal = document.getElementById('msg-pastor-modal');
-    if (modal) modal.remove();
-    else { const fixed = btn.closest('[id="msg-pastor-modal"]') || btn.closest('div[style*="position:fixed"]'); if(fixed) fixed.remove(); }
-    // Show success toast
-    const t = document.createElement('div');
-    t.textContent = '✅ Message sent to ' + pastorName;
-    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
-    document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
-  } catch(e) {
-    btn.textContent = 'Send Message'; btn.disabled = false;
-    if (e.name === 'AbortError') { alert('Request timed out. Message may have been sent — check with the pastor.'); }
-    else { alert('Failed to send. Please try again.'); }
-  }
-}
 
 function showShareToast(msg){
   const t=document.createElement('div');
