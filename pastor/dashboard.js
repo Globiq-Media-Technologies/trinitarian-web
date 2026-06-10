@@ -1320,7 +1320,7 @@ async function loadSupportMessages() {
       el.innerHTML = disclaimer + '<div style="padding:30px;text-align:center;color:var(--text-muted);" data-i18n="no_support">No support messages yet</div>';
       return;
     }
-    el.innerHTML = msgs.map(m => `
+    el.innerHTML = disclaimer + '<div>' + msgs.map(m => `
       <div onclick="markSupportRead('${m.id}',this)" style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;background:${m.is_read ? 'transparent' : 'rgba(212,175,55,0.03)'}">
         <div style="font-size:20px;flex-shrink:0;">📩</div>
         <div style="flex:1;">

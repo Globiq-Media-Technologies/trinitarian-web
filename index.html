@@ -1414,6 +1414,7 @@ function messagePastor() {
 
   // Show disclaimer modal first
   const overlay = document.createElement('div');
+  overlay.id = 'msg-pastor-modal';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:flex-end;justify-content:center;padding:0;';
   overlay.innerHTML = `
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;">
@@ -1453,14 +1454,19 @@ async function sendMsgToPastor(pastorId, pastorName, btn) {
       signal: controller.signal
     });
     clearTimeout(timeout);
-    document.querySelector('[style*=fixed]').remove();
+    // Close modal
+    const modal = document.getElementById('msg-pastor-modal');
+    if (modal) modal.remove();
+    else { const fixed = btn.closest('[id="msg-pastor-modal"]') || btn.closest('div[style*="position:fixed"]'); if(fixed) fixed.remove(); }
+    // Show success toast
     const t = document.createElement('div');
     t.textContent = '✅ Message sent to ' + pastorName;
     t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
     document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
   } catch(e) {
     btn.textContent = 'Send Message'; btn.disabled = false;
-    alert('Failed to send. Please try again.');
+    if (e.name === 'AbortError') { alert('Request timed out. Message may have been sent — check with the pastor.'); }
+    else { alert('Failed to send. Please try again.'); }
   }
 }
 
