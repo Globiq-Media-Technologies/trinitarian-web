@@ -588,7 +588,7 @@ function lhSendChat() {
     <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;margin-bottom:14px;">
       <!-- Video player -->
       <video id="lh-video-player" controls playsinline
-        style="width:100%;min-height:240px;display:none;background:#000;border-radius:14px;"
+        style="width:100%;max-height:200px;display:none;background:#000;border-radius:14px;object-fit:contain;"
         onplay="document.getElementById('player-icon').textContent='▶';"
         onpause="document.getElementById('player-icon').textContent='⏸';"
         onended="document.getElementById('player-icon').textContent='🎬';">
