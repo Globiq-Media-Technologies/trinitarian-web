@@ -451,6 +451,9 @@ function handleLogout() {
 // ── Dashboard Init ──
 function initDashboard() {
   showScreen('dashboard');
+  // Apply saved language immediately
+  const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
+  if (savedLang !== 'en') pdApplyTranslations(savedLang);
   document.getElementById('sidebar-name').textContent = user?.display_name || 'Pastor';
   const savedAvatar=localStorage.getItem('pastor_avatar');
   if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';const rb=document.getElementById('remove-photo-btn');if(rb)rb.style.display='block';}}
@@ -1061,6 +1064,9 @@ document.getElementById('login-password').addEventListener('keypress', e => { if
 
 // ── Init ──
 async function init() {
+  // Apply saved language immediately before anything else
+  const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
+  pdApplyTranslations(savedLang);
   await loadCategories();
   if (token && user) {
     try {
