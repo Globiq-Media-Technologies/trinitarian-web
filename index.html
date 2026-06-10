@@ -583,12 +583,12 @@ function lhSendChat() {
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
 
-  <div style="max-width:100%;margin:0 auto;padding:14px 16px;">
+  <div style="max-width:100%;margin:0 auto;padding:0;">
     <!-- HTML5 Media Player -->
-    <div id="player-media" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;margin-bottom:14px;">
+    <div id="player-media" style="background:#000;margin-bottom:0;">
       <!-- Video player -->
       <video id="lh-video-player" controls playsinline
-        style="width:100%;max-height:200px;display:none;background:#000;border-radius:14px;object-fit:contain;"
+        style="width:100%;max-height:220px;display:none;background:#000;object-fit:contain;"
         onplay="document.getElementById('player-icon').textContent='▶';"
         onpause="document.getElementById('player-icon').textContent='⏸';"
         onended="document.getElementById('player-icon').textContent='🎬';">
@@ -1626,6 +1626,24 @@ let rdFontSz=16,rdIsNight=false,rdFont='serif';
 
 
 function playerFullscreen(){
+  if(!currentSermon)return;
+  // For video/audio - use native fullscreen on the video element
+  if(currentSermon.type==='video'||currentSermon.type==='audio'){
+    const v=document.getElementById('lh-video-player');
+    const a=document.getElementById('lh-audio-wrap');
+    const el=v&&v.style.display!=='none'?v:(a&&a.style.display!=='none'?a:null);
+    if(el){
+      if(el.requestFullscreen)el.requestFullscreen();
+      else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
+      else if(el.webkitEnterFullscreen)el.webkitEnterFullscreen();
+      return;
+    }
+  }
+  // For text/article - use UI overlay fullscreen
+  _playerFullscreenOverlay();
+}
+
+function _playerFullscreenOverlay(){
   var s=currentSermon;
   if(!s)return;
   var existing=document.getElementById('fs-overlay');
