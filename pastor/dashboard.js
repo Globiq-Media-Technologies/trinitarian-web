@@ -1361,10 +1361,17 @@ async function loadInbox() {
     const supportMsgs = supportData?.messages || [];
     const el = document.getElementById('inbox-list');
     const ICONS = { new_sermon:'🎧', live_stream:'📡', admin_message:'📬', follow:'👤', application_update:'🛡️' };
-    if (!notifs.length && !msgs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3 data-i18n="no_messages">No messages yet</h3></div>'; return; }
+    const isPastor2 = user?.role === 'pastor';
+    if (!notifs.length && !msgs.length && !supportMsgs.length) {
+      el.innerHTML = (isPastor2 ? '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.8;margin:0;">⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian is not responsible for any outcomes. Do not solicit payments. Any advice is in your personal capacity only. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Terms →</a></p></div>' : '')
+        + '<div class="empty-state"><div class="empty-icon">📭</div><h3 data-i18n="no_messages">No messages yet</h3></div>';
+      return;
+    }
     
     // Show support messages (from listeners/pastors) if admin
-    let html = '';
+    // Add disclaimer for pastors
+    const isPastor = user?.role === 'pastor';
+    let html = isPastor ? '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;"><p style="color:#8fa3c0;font-size:11px;line-height:1.8;margin:0;">⚠ <strong>Important Notice:</strong> Messages from listeners are personal communications. Trinitarian is not responsible for any outcomes arising from your responses. Do not solicit payments or personal information. Any advice you give is in your personal capacity, not on behalf of Trinitarian. <a href=\"https://trinitarian.app/terms\" target=\"_blank\" style=\"color:#D4AF37;\">Full Terms →</a></p></div>' : '';
     if (supportMsgs.length) {
       html += '<div style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding:0 4px;">Messages from Users</div>';
       html += supportMsgs.map(m => `
