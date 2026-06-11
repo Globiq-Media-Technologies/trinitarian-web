@@ -588,7 +588,7 @@ function lhSendChat() {
     <div id="player-media" style="background:#000;margin-bottom:0;">
       <!-- Video player -->
       <video id="lh-video-player" controls playsinline
-        style="width:100%;aspect-ratio:16/9;max-height:50vh;display:none;background:#000;object-fit:contain;"
+        style="width:100%;max-height:200px;display:none;background:#000;object-fit:contain;"
         onplay="document.getElementById('player-icon').textContent='▶';"
         onpause="document.getElementById('player-icon').textContent='⏸';"
         onended="document.getElementById('player-icon').textContent='🎬';">
@@ -617,15 +617,15 @@ function lhSendChat() {
       </div>
     </div>
     <!-- Actions -->
-    <div style="display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding:0 16px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
-      <button onclick="playerSave()" id="btn-save" style="display:flex;align-items:center;gap:6px;padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:13px;" data-i18n="p_save">🔖 Save</button>
-      <button onclick="playerFullscreen()" id="fs-btn" style="display:flex;align-items:center;gap:6px;padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_fullscreen">⛶ Fullscreen</button>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+      <button onclick="playerSave()" id="btn-save" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:13px;" data-i18n="p_save">🔖 Save</button>
+      <button onclick="playerFullscreen()" id="fs-btn" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_fullscreen">⛶ Fullscreen</button>
       
-      <button onclick="playerDownload()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_download">⬇ Download</button>
-      <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;" data-i18n="report">⚑ Report</button>
-        <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="like">♡ Like</button>
-        <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="share">🔗 Share</button>
-        <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="copy">📋 Copy</button>
+      <button onclick="playerDownload()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_download">⬇ Download</button>
+      <button onclick="playerReport()" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(224,85,85,0.2);background:transparent;color:#e05555;cursor:pointer;font-size:13px;" data-i18n="report">⚑ Report</button>
+        <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:9px 16px;cursor:pointer;font-size:13px;" data-i18n="like">♡ Like</button>
+        <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:9px 16px;cursor:pointer;font-size:13px;" data-i18n="share">🔗 Share</button>
+        <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:9px 16px;cursor:pointer;font-size:13px;" data-i18n="copy">📋 Copy</button>
     </div>
     <!-- Transcript tabs -->
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;position:sticky;top:56px;z-index:40;background:#071528;padding:10px 0;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;border-bottom:1px solid rgba(212,175,55,0.1);">
@@ -649,7 +649,7 @@ function lhSendChat() {
     </div>
     <!-- Transcript tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-transcript" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
+    <div id="ptab-transcript" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <span style="color:#D4AF37;font-size:11px;letter-spacing:1px;">FONT SIZE:</span>
         <button onclick="ptFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:6px;padding:4px 10px;cursor:pointer;">A-</button>
@@ -661,7 +661,7 @@ function lhSendChat() {
     </div>
     <!-- Reading Mode tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-reading" style="display:none;">
+    <div id="ptab-reading" style="display:block;">
       <div style="text-align:center;margin-bottom:10px;">
         <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
       </div>
@@ -685,7 +685,7 @@ function lhSendChat() {
 
     <!-- Comments tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-comments" style="display:none;">
+    <div id="ptab-comments" style="display:block;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
@@ -1583,10 +1583,6 @@ function playerShowTab(tab,evt){
   document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
   if(tab==='reading'){loadReadingMode();setTimeout(restoreReadingPosition,400);}
-  // Read and Reading Mode open directly in fullscreen
-  if(tab==='transcript'||tab==='reading'){
-    setTimeout(_playerFullscreenOverlay,50);
-  }
 }
 
 let rdFontSz=16,rdIsNight=false,rdFont='serif';
