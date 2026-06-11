@@ -988,9 +988,11 @@ async function loadNotifications() {
     const data = await api('/api/notifications');
     const notifs = data?.notifications || [];
     const el = document.getElementById('notifications-list');
-    // Mark all as read and update badge
+    // Mark as read after a delay - gives user time to see what's new
     if (notifs.some(n => !n.is_read)) {
-      api('/api/notifications/read-all', 'PUT').then(() => updateBadges()).catch(() => {});
+      setTimeout(() => {
+        api('/api/notifications/read-all', 'PUT').then(() => updateBadges()).catch(() => {});
+      }, 2000);
     }
     const ICONS = { new_sermon:'🎧', live_stream:'📡', download_ready:'⬇️', admin_message:'📬', follow:'👤', application_update:'🛡️', report:'⚑' };
     if (!notifs.length) {
