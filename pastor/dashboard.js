@@ -1054,6 +1054,41 @@ async function markAllReadInbox() {
   }
 }
 
+
+async function clearAllNotifications() {
+  if (!confirm('Clear all notifications? This cannot be undone.')) return;
+  try {
+    await api('/api/notifications', 'DELETE');
+    loadNotifications();
+    updateBadges();
+    showToast('All notifications cleared');
+  } catch(e) { showToast('Failed to clear notifications', 'error'); }
+}
+
+async function clearAllInbox() {
+  // Determine active tab
+  const notifTab = document.getElementById('tab-notifications');
+  const isNotifActive = notifTab && notifTab.classList.contains('btn-gold');
+
+  if (isNotifActive) {
+    if (!confirm('Clear all notifications? This cannot be undone.')) return;
+    try {
+      await api('/api/notifications', 'DELETE');
+      loadInbox();
+      updateBadges();
+      showToast('All notifications cleared');
+    } catch(e) { showToast('Failed to clear notifications', 'error'); }
+  } else {
+    if (!confirm('Clear all support messages? This cannot be undone.')) return;
+    try {
+      await api('/api/admin/support', 'DELETE');
+      loadSupportMessages();
+      updateBadges();
+      showToast('All messages cleared');
+    } catch(e) { showToast('Failed to clear messages', 'error'); }
+  }
+}
+
 async function markAllRead() {
   try {
     await api('/api/notifications/read-all', 'PUT');

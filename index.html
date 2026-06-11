@@ -742,7 +742,8 @@ function lhSendChat() {
 <div id="page-lh-inbox" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
-    <span style="color:#fff;font-size:16px;font-weight:600;">Messages</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;flex:1;">Messages</span>
+    <span onclick="lhClearAllInbox()" style="color:#e05555;font-size:13px;cursor:pointer;">🗑 Clear all</span>
   </div>
   <div style="max-width:700px;margin:0 auto;padding:24px 24px 80px;">
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;margin-bottom:20px;" id="lh-inbox-list">
@@ -760,7 +761,8 @@ function lhSendChat() {
 <div id="page-lh-notifications" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
     <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
-    <span style="color:#fff;font-size:16px;font-weight:600;" data-i18n="notifications">Notifications</span>
+    <span style="color:#fff;font-size:16px;font-weight:600;flex:1;" data-i18n="notifications">Notifications</span>
+    <span onclick="lhClearAllNotifications()" style="color:#e05555;font-size:13px;cursor:pointer;">🗑 Clear all</span>
   </div>
   <div style="max-width:700px;margin:0 auto;padding:24px;">
     <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;overflow:hidden;" id="lh-notifs-list">
@@ -1382,6 +1384,26 @@ function lhRender(){
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.created_at&&(Date.now()-new Date(s.created_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span></div></div>`).join('');
+}
+
+async function lhClearAllNotifications() {
+  if (!confirm('Clear all notifications? This cannot be undone.')) return;
+  try {
+    const token = localStorage.getItem('trinitarian_token');
+    await fetch(API + '/api/notifications', { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadLhNotifications();
+    var badge = document.getElementById('lh-notif-count');
+    if (badge) badge.style.display = 'none';
+  } catch(e) {}
+}
+
+async function lhClearAllInbox() {
+  if (!confirm('Clear all messages? This cannot be undone.')) return;
+  try {
+    const token = localStorage.getItem('trinitarian_token');
+    await fetch(API + '/api/notifications', { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadLhInbox();
+  } catch(e) {}
 }
 
 function lhOpenNotifSermon(sermonId){
