@@ -1297,7 +1297,13 @@ function showInboxTab(tab, btn) {
   if (btn) btn.className = 'btn btn-gold btn-sm';
   document.getElementById('inbox-list').style.display = tab === 'notifications' ? 'block' : 'none';
   document.getElementById('support-list').style.display = tab === 'support' ? 'block' : 'none';
+  const reportsEl = document.getElementById('reports-list');
+  const flaggedEl = document.getElementById('flagged-list');
+  if (reportsEl) reportsEl.style.display = tab === 'reports' ? 'block' : 'none';
+  if (flaggedEl) flaggedEl.style.display = tab === 'flagged' ? 'block' : 'none';
   if (tab === 'support') loadSupportMessages();
+  if (tab === 'reports') loadReports();
+  if (tab === 'flagged') loadReports();
 }
 
 async function loadSupportMessages() {
@@ -1572,7 +1578,7 @@ async function submitEscalation(){
 
 
 async function loadReports(){
-  const content=document.getElementById('inbox-content');
+  const content=document.getElementById('reports-list');
   if(!content)return;
   content.innerHTML='<div style="color:var(--text-muted);padding:20px;" data-i18n="loading_reports">Loading reports...</div>';
   try{
