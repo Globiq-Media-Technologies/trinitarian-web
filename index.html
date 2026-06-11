@@ -626,11 +626,13 @@ function lhSendChat() {
         <button id="lh-like-btn" onclick="toggleLike()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="like">♡ Like</button>
         <button onclick="shareSermon()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="share">🔗 Share</button>
         <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:7px 12px;white-space:nowrap;cursor:pointer;font-size:13px;" data-i18n="copy">📋 Copy</button>
-      <span style="display:inline-block;width:1px;background:rgba(212,175,55,0.15);margin:0 4px;flex-shrink:0;"></span>
-      <button onclick="playerShowTab('info',event)" class="ptab active" style="padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:13px;flex-shrink:0;" data-i18n="info">Info</button>
-      <button onclick="playerShowTab('transcript',event)" class="ptab" style="padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;flex-shrink:0;" data-i18n="read">📖 Read</button>
-      <button onclick="playerShowTab('reading',event)" class="ptab" style="padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;flex-shrink:0;" data-i18n="reading_mode">✨ Reading Mode</button>
-      <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 12px;white-space:nowrap;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;flex-shrink:0;" data-i18n="comments">💬 Comments</button>
+    </div>
+    <!-- Transcript tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;position:sticky;top:56px;z-index:40;background:#071528;padding:10px 0;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;border-bottom:1px solid rgba(212,175,55,0.1);">
+      <button onclick="playerShowTab('info',event)" class="ptab active" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:13px;" data-i18n="info">Info</button>
+      <button onclick="playerShowTab('transcript',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="read">📖 Read</button>
+      <button onclick="playerShowTab('reading',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="reading_mode">✨ Reading Mode</button>
+      <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="comments">💬 Comments</button>
     </div>
     <!-- Info tab -->
     <div id="ptab-info" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;">
