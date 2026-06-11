@@ -1583,6 +1583,10 @@ function playerShowTab(tab,evt){
   document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
   if(tab==='reading'){loadReadingMode();setTimeout(restoreReadingPosition,400);}
+  // Read and Reading Mode open directly in fullscreen
+  if(tab==='transcript'||tab==='reading'){
+    setTimeout(_playerFullscreenOverlay,50);
+  }
 }
 
 let rdFontSz=16,rdIsNight=false,rdFont='serif';
