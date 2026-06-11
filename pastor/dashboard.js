@@ -992,7 +992,7 @@ async function loadNotifications() {
     if (notifs.some(n => !n.is_read)) {
       api('/api/notifications/read-all', 'PUT').then(() => updateBadges()).catch(() => {});
     }
-    const ICONS = { new_sermon:'🎧', live_stream:'📡', download_ready:'⬇️', admin_message:'📬', follow:'👤', application_update:'🛡️' };
+    const ICONS = { new_sermon:'🎧', live_stream:'📡', download_ready:'⬇️', admin_message:'📬', follow:'👤', application_update:'🛡️', report:'⚑' };
     if (!notifs.length) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><h3>All caught up!</h3><p data-i18n="no_notifs">No notifications yet</p></div>';
       return;
@@ -1357,7 +1357,7 @@ async function loadInbox() {
     const msgs = msgData?.messages || [];
     const supportMsgs = supportData?.messages || [];
     const el = document.getElementById('inbox-list');
-    const ICONS = { new_sermon:'🎧', live_stream:'📡', admin_message:'📬', follow:'👤', application_update:'🛡️' };
+    const ICONS = { new_sermon:'🎧', live_stream:'📡', admin_message:'📬', follow:'👤', application_update:'🛡️', report:'⚑' };
     if (!notifs.length && !msgs.length && !supportMsgs.length) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3 data-i18n="no_messages">No messages yet</h3></div>';
       return;
