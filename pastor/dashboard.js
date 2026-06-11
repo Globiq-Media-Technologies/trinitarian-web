@@ -591,6 +591,10 @@ function initDashboard() {
   // Apply saved language immediately
   const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
   if (savedLang !== 'en') pdApplyTranslations(savedLang);
+  // Show notification badge on load
+  updateBadges();
+  // Poll every 60s
+  setInterval(updateBadges, 60000);
   document.getElementById('sidebar-name').textContent = user?.display_name || 'Pastor';
   const savedAvatar=localStorage.getItem('pastor_avatar');
   if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';const rb=document.getElementById('remove-photo-btn');if(rb)rb.style.display='block';}}
