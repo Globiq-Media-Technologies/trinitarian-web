@@ -649,7 +649,7 @@ function lhSendChat() {
     </div>
     <!-- Transcript tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-transcript" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
+    <div id="ptab-transcript" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <span style="color:#D4AF37;font-size:11px;letter-spacing:1px;">FONT SIZE:</span>
         <button onclick="ptFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:6px;padding:4px 10px;cursor:pointer;">A-</button>
@@ -661,7 +661,7 @@ function lhSendChat() {
     </div>
     <!-- Reading Mode tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-reading" style="display:block;">
+    <div id="ptab-reading" style="display:none;">
       <div style="text-align:center;margin-bottom:10px;">
         <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
       </div>
@@ -685,7 +685,7 @@ function lhSendChat() {
 
     <!-- Comments tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-comments" style="display:block;">
+    <div id="ptab-comments" style="display:none;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
