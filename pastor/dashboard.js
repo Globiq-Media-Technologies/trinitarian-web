@@ -1751,8 +1751,8 @@ function toggleTranscription(){
 // LIVE STREAMING — Agora.io Integration
 // SET LIVE_ENABLED = true WHEN READY TO LAUNCH
 // ═══════════════════════════════════════════════════════
-const LIVE_ENABLED = false;
-const AGORA_APP_ID = ''; // Add your Agora App ID here when launching
+const LIVE_ENABLED = true;
+const AGORA_APP_ID = '87a5424b14e84e75b9569a80ea053929';
 let agoraClient = null;
 let localAudioTrack = null;
 let localVideoTrack = null;
