@@ -827,7 +827,7 @@ async function handleUpload(isDraft) {
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
   hideAlert('upload-error');
   // Show progress
-  const btn = document.getElementById('upload-btn');
+  const btn = document.getElementById('upload-submit-btn');
   const wrap = document.getElementById('upload-progress-wrap');
   const bar = document.getElementById('upload-progress-bar');
   const pct = document.getElementById('upload-progress-pct');
@@ -874,17 +874,35 @@ async function handleUpload(isDraft) {
         scripture_reference: document.getElementById('up-scripture').value.trim()
       });
     }
+    clearInterval(progressInterval);
+    if (bar) bar.style.width = '100%';
+    if (pct) pct.textContent = '100%';
     if (data.id) {
-      showAlert('upload-success', '✝ Sermon published successfully!', 'success');
+      const msg = isDraft ? '✝ Sermon saved as draft!' : '✝ Sermon published successfully!';
+      showAlert('upload-success', msg, 'success');
+      showAlert('upload-success-bottom', msg, 'success');
+      setTimeout(() => hideAlert('upload-success-bottom'), 5000);
+      hideAlert('upload-error-bottom');
       document.getElementById('up-title').value = '';
       document.getElementById('up-desc').value = '';
       document.getElementById('up-transcript').value = '';
       document.getElementById('up-scripture').value = '';
       document.getElementById('file-name').textContent = '';
+      if (wrap) setTimeout(() => wrap.style.display = 'none', 1000);
     } else {
-      showAlert('upload-error', data.error || 'Upload failed. Make sure you are a verified pastor.');
+      const errMsg = data.error || 'Upload failed. Make sure you are a verified pastor.';
+      showAlert('upload-error', errMsg);
+      showAlert('upload-error-bottom', errMsg);
+      if (wrap) wrap.style.display = 'none';
     }
-  } catch(e) { showAlert('upload-error', 'Connection failed. Please try again.'); }
+  } catch(e) {
+    clearInterval(progressInterval);
+    showAlert('upload-error', 'Connection failed. Please try again.');
+    showAlert('upload-error-bottom', 'Connection failed. Please try again.');
+    if (wrap) wrap.style.display = 'none';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Publish Sermon'; }
+  }
 }
 
 // ── Live Streams ──
