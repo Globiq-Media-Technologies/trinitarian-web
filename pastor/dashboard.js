@@ -1026,7 +1026,21 @@ async function markAllReadInbox() {
   // Determine active tab
   const notifTab = document.getElementById('tab-notifications');
   const isNotifActive = notifTab && notifTab.classList.contains('btn-gold');
-  
+  const reportsTab = document.getElementById('tab-reports');
+  const isReportsActive = reportsTab && reportsTab.classList.contains('btn-gold');
+  const flaggedTab = document.getElementById('tab-flagged');
+  const isFlaggedActive = flaggedTab && flaggedTab.classList.contains('btn-gold');
+
+  if (isReportsActive || isFlaggedActive) {
+    if (!confirm('Resolve all pending reports?')) return;
+    try {
+      await api('/api/admin/reports/resolve-all', 'PUT');
+      loadReports();
+      showToast('All reports resolved');
+    } catch(e) { showToast('Failed to resolve reports', 'error'); }
+    return;
+  }
+
   if (isNotifActive) {
     // Mark notifications as read
     await markAllRead();
@@ -1069,6 +1083,20 @@ async function clearAllInbox() {
   // Determine active tab
   const notifTab = document.getElementById('tab-notifications');
   const isNotifActive = notifTab && notifTab.classList.contains('btn-gold');
+  const reportsTab = document.getElementById('tab-reports');
+  const isReportsActive = reportsTab && reportsTab.classList.contains('btn-gold');
+  const flaggedTab = document.getElementById('tab-flagged');
+  const isFlaggedActive = flaggedTab && flaggedTab.classList.contains('btn-gold');
+
+  if (isReportsActive || isFlaggedActive) {
+    if (!confirm('Clear all reports? This cannot be undone.')) return;
+    try {
+      await api('/api/admin/reports', 'DELETE');
+      loadReports();
+      showToast('All reports cleared');
+    } catch(e) { showToast('Failed to clear reports', 'error'); }
+    return;
+  }
 
   if (isNotifActive) {
     if (!confirm('Clear all notifications? This cannot be undone.')) return;
