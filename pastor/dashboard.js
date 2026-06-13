@@ -1986,25 +1986,38 @@ function initLivePage() {
 async function startLiveStream() {
   const title = (document.getElementById('live-title').value||'').trim();
   if (!title) { showToast('Please enter a stream title'); return; }
+  const token = localStorage.getItem('pastor_token');
   try {
-    const user = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-    const token = localStorage.getItem('pastor_token');
-    const channelName = 'trin_' + (user && user.id ? user.id : Date.now());
-    currentChannelName = channelName;
-    await fetch(API_BASE + '/live/start', {
+    // 1. Create stream record
+    const createRes = await fetch(API + '/api/streams', {
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({title, category: document.getElementById('live-category').value,
-        language: document.getElementById('live-language').value, channel_name: channelName})
+      body: JSON.stringify({
+        title,
+        category: document.getElementById('live-category')?.value || null,
+        description: document.getElementById('live-language')?.value || null
+      })
     });
-    const tokenRes = await fetch(API_BASE + '/live/token?channel=' + channelName, {headers:{'Authorization':'Bearer '+token}});
-    const tokenData = await tokenRes.json();
+    const stream = await createRes.json();
+    if (!createRes.ok) throw new Error(stream.error || 'Failed to create stream');
+    currentStreamId = stream.id;
+    currentChannelName = stream.channel_name;
+
+    // 2. Start stream - get Agora token
+    const startRes = await fetch(API + '/api/streams/' + stream.id + '/start', {
+      method:'POST', headers:{'Authorization':'Bearer '+token}
+    });
+    const data = await startRes.json();
+    if (!startRes.ok) throw new Error(data.error || 'Failed to start stream');
+
+    // 3. Join Agora channel
     agoraClient = AgoraRTC.createClient({mode:'live',codec:'vp8'});
     await agoraClient.setClientRole('host');
-    await agoraClient.join(AGORA_APP_ID, channelName, tokenData.token, user && user.id);
+    await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
     const tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
     localAudioTrack = tracks[0]; localVideoTrack = tracks[1];
     localVideoTrack.play('local-video-container');
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
+
     isStreaming = true;
     document.getElementById('camera-placeholder').style.display = 'none';
     document.getElementById('live-badge').style.display = 'block';
@@ -2025,21 +2038,22 @@ async function startLiveStream() {
     if (viewerPollInterval) clearInterval(viewerPollInterval);
     viewerPollInterval = setInterval(async function() {
       try {
-        const r = await fetch(API_BASE+'/live/viewers?channel='+channelName, {headers:{'Authorization':'Bearer '+token}});
-        const d = await r.json(); document.getElementById('live-viewer-count').textContent = d.count||0;
+        const r = await fetch(API + '/api/streams/' + currentStreamId, {headers:{'Authorization':'Bearer '+token}});
+        const d = await r.json(); document.getElementById('live-viewer-count').textContent = d.viewer_count || 0;
       } catch(e) {}
     }, 5000);
     showToast('You are now live!');
-  } catch(e) { console.error('Live stream error:',e); showToast('Failed to start stream. Please try again.'); }
+  } catch(e) { console.error('Live stream error:',e); showToast('Failed to start stream: ' + (e.message||'Please try again.')); }
 }
 
 async function endLiveStream() {
   if (!isStreaming) return;
   try {
     const token = localStorage.getItem('pastor_token');
-    await fetch(API_BASE+'/live/end', {method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({channel_name: currentChannelName, duration: streamSeconds})});
+    if (currentStreamId) {
+      await fetch(API + '/api/streams/' + currentStreamId + '/end', {method:'POST',
+        headers:{'Authorization':'Bearer '+token}});
+    }
     if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack.close(); }
     if (localVideoTrack) { localVideoTrack.stop(); localVideoTrack.close(); }
     if (agoraClient) await agoraClient.leave();
