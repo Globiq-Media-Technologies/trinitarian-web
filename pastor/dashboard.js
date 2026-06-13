@@ -5,6 +5,18 @@
 // ── Users ──
 let allUsersCache = [];
 
+
+async function sendMessageToUser(userId, displayName) {
+  const subject = prompt(`Message subject to ${displayName} (optional):`) ?? '';
+  const body = prompt(`Message to ${displayName}:`);
+  if (!body || !body.trim()) return;
+  try {
+    const data = await api('/api/admin/message', 'POST', { to_user_id: userId, subject: subject.trim() || null, body: body.trim() });
+    if (data.error) showToast(data.error, 'error');
+    else showToast(`✉ Message sent to ${displayName}`);
+  } catch(e) { showToast('Failed to send message', 'error'); }
+}
+
 async function loadUsers() {
   const el = document.getElementById('users-list');
   if (!el) return;
@@ -1005,6 +1017,22 @@ async function markRead(id) {
   } catch(e) {}
 }
 
+async function deleteNotification(id) {
+  try {
+    await api('/api/notifications/' + id, 'DELETE');
+    loadNotifications();
+    updateBadges();
+  } catch(e) { showToast('Failed to delete', 'error'); }
+}
+
+async function pdOpenNotifSermon(sermonId) {
+  try {
+    const sermon = await api('/api/sermons/' + sermonId);
+    if (sermon && sermon.id) viewSermon(sermon);
+    else showToast('Sermon not found', 'error');
+  } catch(e) { showToast('Failed to open sermon', 'error'); }
+}
+
 async function loadNotifications() {
   try {
     const data = await api('/api/notifications');
@@ -1021,21 +1049,22 @@ async function loadNotifications() {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><h3>All caught up!</h3><p data-i18n="no_notifs">No notifications yet</p></div>';
       return;
     }
-    el.innerHTML = notifs.map(n => `
-      <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}">
+    el.innerHTML = notifs.map(n => {
+      let sermonId = null;
+      try { const d = typeof n.data === 'string' ? JSON.parse(n.data) : n.data; sermonId = d && (d.sermon_id || d.id); } catch(e) {}
+      const clickAttr = sermonId ? `onclick="pdOpenNotifSermon('${sermonId}')" style="cursor:pointer;"` : '';
+      return `
+      <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}" ${clickAttr}>
         <div class="notif-icon">${ICONS[n.type] || '🔔'}</div>
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
           ${n.body ? `<div style="color:var(--text-muted);font-size:12px;line-height:1.6;">${n.body}</div>` : ''}
+          ${n.created_at ? `<div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${new Date(n.created_at).toLocaleString()}</div>` : ''}
         </div>
         ${!n.is_read ? '<div class="notif-dot"></div>' : ''}
+        <button onclick="event.stopPropagation();deleteNotification('${n.id}')" class="btn btn-ghost btn-sm" style="color:var(--text-muted);padding:4px 8px;" title="Delete">✕</button>
       </div>
-      <div style="display:flex;gap:6px;margin-top:8px;">
-      <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
-    </div>
-  `).join('');
+    `;}).join('');
   } catch(e) { document.getElementById('notifications-list').innerHTML = '<p style="color:var(--text-muted);padding:20px;" data-i18n="failed_load">Failed to load notifications</p>'; }
 }
 

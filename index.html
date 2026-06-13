@@ -2467,16 +2467,18 @@ async function saveLhPassword(){
   if(newPwd.length<8){showLhAlert('lh-profile-error','New password must be at least 8 characters.');return;}
   if(newPwd!==confirm){showLhAlert('lh-profile-error','Passwords do not match.');return;}
   try{
-    await fetch(API+'/api/auth/change-password',{
-      method:'POST',
+    const res = await fetch(API+'/api/auth/change-password',{
+      method:'PUT',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')},
       body:JSON.stringify({current_password:oldPwd,new_password:newPwd})
     });
+    const data = await res.json();
+    if(!res.ok){ showLhAlert('lh-profile-error', data.error || 'Failed to update password.'); return; }
     showLhAlert('lh-profile-success','✅ Password updated!','success');
     document.getElementById('lh-old-pwd').value='';
     document.getElementById('lh-new-pwd').value='';
     document.getElementById('lh-confirm-pwd').value='';
-  }catch(e){showLhAlert('lh-profile-error','Failed to update password. Check your current password.');}
+  }catch(e){showLhAlert('lh-profile-error','Connection failed. Please try again.');}
 }
 
 function showLhAlert(id,msg,type){
