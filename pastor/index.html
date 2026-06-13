@@ -797,7 +797,9 @@
         </div>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
-        <button id="btn-start-stream" onclick="startLiveStream()" class="btn btn-gold" style="flex:1;min-width:140px;font-size:14px;padding:14px;">🔴 Go Live</button>
+        <button id="btn-start-stream" onclick="startLiveStream()" class="btn btn-gold" style="flex:1;min-width:140px;font-size:14px;padding:14px;position:relative;">🔴 Go Live
+          <span style="position:absolute;top:-8px;right:-8px;background:#8fa3c0;color:#071528;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;">SOON</span>
+        </button>
         <button id="btn-end-stream" onclick="endLiveStream()" style="flex:1;min-width:140px;font-size:14px;padding:14px;background:#e53e3e;color:#fff;border:none;border-radius:10px;cursor:pointer;display:none;">⏹ End Stream</button>
         <button onclick="toggleMic()" id="btn-mic" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Toggle microphone">🎙</button>
         <button onclick="toggleCamera()" id="btn-cam" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Toggle camera">📷</button>
@@ -1162,6 +1164,8 @@
       <div id="support-list" style="display:none;background:var(--navy2);border:1px solid var(--border);border-radius:14px;overflow:hidden;"></div>
       <div id="reports-list" style="display:none;"></div>
       <div id="flagged-list" style="display:none;"></div>
+      <div id="escalations-list" style="display:none;"></div>
+      <div id="mod-escalate-panel" style="display:none;"></div>
       <div style="margin-top:20px;">
         <span class="section-label" data-i18n="send_to_admin">📨 Send Message to Admin</span>
         <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:10px;">

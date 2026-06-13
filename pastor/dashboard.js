@@ -632,7 +632,7 @@ function initDashboard() {
   const escTab=document.getElementById('tab-escalations');
   if(escTab) escTab.style.display=isAdmin?'inline-flex':'none';
   const modEscTab=document.getElementById('tab-mod-escalate');
-  if(modEscTab) modEscTab.style.display=(isModerator&&!isAdmin)?'block':'none';
+  if(modEscTab) modEscTab.style.display=(isModerator&&!isAdmin)?'inline-flex':'none';
   const reportsTab=document.getElementById('tab-reports');
   if(reportsTab) reportsTab.style.display=isAdmin||isModerator?'inline-flex':'none';
   const flaggedTab=document.getElementById('tab-flagged');
@@ -1386,11 +1386,17 @@ function showInboxTab(tab, btn) {
   document.getElementById('support-list').style.display = tab === 'support' ? 'block' : 'none';
   const reportsEl = document.getElementById('reports-list');
   const flaggedEl = document.getElementById('flagged-list');
+  const escEl = document.getElementById('escalations-list');
+  const modEscEl = document.getElementById('mod-escalate-panel');
   if (reportsEl) reportsEl.style.display = tab === 'reports' ? 'block' : 'none';
   if (flaggedEl) flaggedEl.style.display = tab === 'flagged' ? 'block' : 'none';
+  if (escEl) escEl.style.display = tab === 'escalations' ? 'block' : 'none';
+  if (modEscEl) modEscEl.style.display = tab === 'mod-escalate' ? 'block' : 'none';
   if (tab === 'support') loadSupportMessages();
   if (tab === 'reports') loadReports();
   if (tab === 'flagged') loadReports();
+  if (tab === 'escalations') loadAdminEscalations();
+  if (tab === 'mod-escalate') showEscalationPanel();
 }
 
 async function loadSupportMessages() {
@@ -1547,7 +1553,7 @@ function removePhoto(){
 
 
 async function loadAdminEscalations(){
-  const content=document.getElementById('inbox-content');
+  const content=document.getElementById('escalations-list');
   if(!content)return;
   content.innerHTML='<div style="color:var(--text-muted);padding:20px;" data-i18n="loading_escalations">Loading escalations...</div>';
   try{
@@ -1608,7 +1614,7 @@ async function loadEscalations(){
 }
 
 function showEscalationPanel(){
-  const content=document.getElementById('inbox-content');
+  const content=document.getElementById('mod-escalate-panel');
   if(!content)return;
   content.innerHTML=`<div style="max-width:600px;">
     <div id="escalations-list-wrap" style="margin-bottom:24px;"></div>
@@ -1798,6 +1804,7 @@ function toggleTranscription(){
 // SET LIVE_ENABLED = true WHEN READY TO LAUNCH
 // ═══════════════════════════════════════════════════════
 const LIVE_ENABLED = true;
+const LIVE_STREAMING_LAUNCHED = false; // Set to true when ready to let pastors go live
 const AGORA_APP_ID = '87a5424b14e84e75b9569a80ea053929';
 let agoraClient = null;
 let localAudioTrack = null;
@@ -2030,6 +2037,7 @@ function initLivePage() {
 }
 
 async function startLiveStream() {
+  if (!LIVE_STREAMING_LAUNCHED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   const title = (document.getElementById('live-title').value||'').trim();
   if (!title) { showToast('Please enter a stream title'); return; }
   const token = localStorage.getItem('pastor_token');
