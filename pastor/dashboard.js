@@ -634,7 +634,11 @@ function initDashboard() {
   // Hide admin items unless admin/moderator
   const isAdmin = user?.role === 'admin';
   const isModerator = user?.role === 'moderator';
-  ['admin-nav','users-nav','pastors-nav'].forEach(id=>{
+  ['admin-nav'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=(isAdmin||isModerator)?'flex':'none';
+  });
+  ['users-nav','pastors-nav'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=isAdmin?'flex':'none';
   });
