@@ -1503,23 +1503,29 @@ async function lhShowPastors(){
 
 function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){lhFollowing.splice(idx,1);btn.textContent='+ Follow';btn.style.color='#8fa3c0';btn.style.borderColor='rgba(212,175,55,0.2)';btn.style.background='transparent';}else{lhFollowing.push(id);btn.textContent='✓ Following';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.background='rgba(212,175,55,0.15)';}localStorage.setItem('lh_following',JSON.stringify(lhFollowing));try{fetch(API+'/api/users/'+id+'/follow',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
 
-function lhShowSaved(){
+async function lhShowSaved(){
   const el=document.getElementById('lh-sermons');
   el.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;';
-  const saved=lhAllSermons.filter(s=>lhSaved.includes(s.id));
+  el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:32px;">⏳</div></div>';
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-  if(!saved.length){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved+'</p></div>';
-    return;
-  }
-  el.innerHTML='';
-  saved.forEach(function(s){
-    const card=document.createElement('div');
-    card.style.cssText='background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;';
-    card.onclick=function(){openSermonById(s.id);};
-    card.innerHTML='<div style="font-size:36px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">'+s.title+'</div><div style="color:#D4AF37;font-size:12px;">'+(s.pastor_name||'Verified Pastor')+'</div>';
-    el.appendChild(card);
-  });
+  try {
+    const token=localStorage.getItem('trinitarian_token');
+    if(!token){ el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><p style="color:#8fa3c0;">Please log in to view saved sermons.</p></div>'; return; }
+    const data=await fetch(API+'/api/library/saved',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json());
+    const saved=Array.isArray(data)?data:[];
+    if(!saved.length){
+      el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔖</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved+'</p></div>';
+      return;
+    }
+    el.innerHTML='';
+    saved.forEach(function(s){
+      const card=document.createElement('div');
+      card.style.cssText='background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:14px;padding:16px;cursor:pointer;';
+      card.onclick=function(){openSermonById(s.id);};
+      card.innerHTML='<div style="font-size:36px;margin-bottom:10px;">'+(ICONS[s.type]||'🎧')+'</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;">'+s.title+'</div><div style="color:#D4AF37;font-size:12px;">'+(s.pastor_name||'Verified Pastor')+'</div>';
+      el.appendChild(card);
+    });
+  } catch(e){ el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><p style="color:#8fa3c0;">Failed to load saved sermons.</p></div>'; }
 }
 
 function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('listener');}
