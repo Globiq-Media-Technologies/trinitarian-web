@@ -640,7 +640,7 @@ function initDashboard() {
   });
   ['users-nav','pastors-nav'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el) el.style.display=isAdmin?'flex':'none';
+    if(el) el.style.display=(isAdmin||isModerator)?'flex':'none';
   });
   const supportTab=document.getElementById('tab-support');
   if(supportTab) supportTab.style.display=(isAdmin||isModerator)?'block':'none';
