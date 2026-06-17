@@ -1231,6 +1231,25 @@ window.addEventListener('load',async()=>{
   const resetToken=urlParams.get('token');
   if(resetToken){goTo('reset');return;}
   if(window.location.pathname.includes('reset-password')){goTo('reset');return;}
+  // Handle direct sermon links shared via /sermon/:id
+  const sermonPathMatch = window.location.pathname.match(/\/sermon\/([a-zA-Z0-9-]+)/);
+  if(sermonPathMatch){
+    const sermonId = sermonPathMatch[1];
+    fetch(API+'/api/sermons/'+sermonId)
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(sermon){
+        if(sermon && sermon.id){
+          window.lhSermonMap = window.lhSermonMap || {};
+          window.lhSermonMap[sermon.id] = sermon;
+          goTo('listener-home');
+          setTimeout(function(){ openSermon(sermon); }, 50);
+        } else {
+          goTo('listener-home');
+        }
+      })
+      .catch(function(){ goTo('listener-home'); });
+    return;
+  }
   // Handle email verification
   const verifyToken=urlParams.get('verify');
   if(verifyToken){
