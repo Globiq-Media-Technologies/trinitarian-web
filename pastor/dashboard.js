@@ -56,7 +56,7 @@ function renderUsers(list) {
       <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
         ${u.id === user?.id ? `<span style="color:var(--text-muted);font-size:11px;padding:6px 4px;">This is you</span>` : adminMode ? `
         ${isAdmin ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')">👤 Role</button>` : ''}
-        <button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>
+        ${u.role !== 'admin' ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
         <button class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;" onclick="sendMessageToUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">✉ Message</button>
         ` : ''}
       </div>
