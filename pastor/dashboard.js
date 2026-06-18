@@ -406,7 +406,14 @@ async function handleLogin() {
     } else {
       showAlert('login-error', data.error || 'Invalid credentials');
     }
-  } catch(e) { showAlert('login-error', 'Connection failed. Please try again.'); }
+  } catch(e) {
+    const msg = e?.message || '';
+    if (msg && msg !== 'Failed to fetch' && !msg.includes('NetworkError') && !msg.includes('network')) {
+      showAlert('login-error', msg);
+    } else {
+      showAlert('login-error', 'Connection failed. Please try again.');
+    }
+  }
   document.getElementById('login-btn').disabled = false;
 }
 
