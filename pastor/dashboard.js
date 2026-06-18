@@ -293,7 +293,8 @@ async function api(endpoint, method = 'GET', body = null) {
   });
   const data = await res.json();
   if (!res.ok) {
-    if (res.status === 401) {
+    if (res.status === 401 && token) {
+      // Only treat as session expiry if we were already authenticated
       token = null; user = null;
       localStorage.removeItem('pastor_token');
       localStorage.removeItem('pastor_user');
