@@ -38,8 +38,11 @@ function filterUsers() {
 function renderUsers(list) {
   const el = document.getElementById('users-list');
   if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3 data-i18n="no_users">No users found</h3></div>'; return; }
-  const adminMode = user?.role === 'admin' || user?.role === 'moderator';
-  const isAdmin = user?.role === 'admin';
+  const ROLE_RANK = { listener: 0, pastor: 0, moderator: 1, admin: 2, owner: 3 };
+  const canActOn = (actorRole, targetRole) => (ROLE_RANK[actorRole] ?? 0) > (ROLE_RANK[targetRole] ?? 0);
+  const adminMode = ['admin', 'moderator', 'owner'].includes(user?.role);
+  const isAdmin = ['admin', 'owner'].includes(user?.role);
+  const isOwner = user?.role === 'owner';
   el.innerHTML = `<div class="sermon-list">${list.map(u => `
     <div class="sermon-card">
       <div style="width:44px;height:44px;border-radius:22px;background:var(--navy3);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
@@ -49,14 +52,14 @@ function renderUsers(list) {
         <div class="sermon-title">${u.display_name||u.username||'User'}</div>
         <div class="sermon-meta">
           <span>${u.email||''}</span>
-          <span style="padding:2px 8px;border-radius:8px;font-size:11px;background:${u.role==='admin'?'rgba(212,175,55,0.15)':u.role==='moderator'?'rgba(100,150,255,0.15)':u.role==='pastor'?'rgba(64,201,106,0.15)':'rgba(255,255,255,0.05)'};color:${u.role==='admin'?'#D4AF37':u.role==='moderator'?'#6496ff':u.role==='pastor'?'#40c96a':'var(--text-muted)'};">${u.role||'listener'}</span>
+          <span style="padding:2px 8px;border-radius:8px;font-size:11px;background:${u.role==='owner'?'rgba(186,104,255,0.15)':u.role==='admin'?'rgba(212,175,55,0.15)':u.role==='moderator'?'rgba(100,150,255,0.15)':u.role==='pastor'?'rgba(64,201,106,0.15)':'rgba(255,255,255,0.05)'};color:${u.role==='owner'?'#ba68ff':u.role==='admin'?'#D4AF37':u.role==='moderator'?'#6496ff':u.role==='pastor'?'#40c96a':'var(--text-muted)'};">${u.role||'listener'}</span>
           ${u.is_active===false?'<span style="padding:2px 8px;border-radius:8px;font-size:11px;background:rgba(224,85,85,0.15);color:#e05555;">Suspended</span>':''}
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
         ${u.id === user?.id ? `<span style="color:var(--text-muted);font-size:11px;padding:6px 4px;">This is you</span>` : adminMode ? `
-        ${isAdmin ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')">👤 Role</button>` : ''}
-        ${u.role !== 'admin' ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
+        ${isAdmin && canActOn(user?.role, u.role) ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')">👤 Role</button>` : ''}
+        ${canActOn(user?.role, u.role) ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
         <button class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;" onclick="sendMessageToUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">✉ Message</button>
         ` : ''}
       </div>
@@ -76,7 +79,7 @@ async function suspendUser(id, name, isSuspended) {
 }
 
 async function changeUserRole(id, name, currentRole) {
-  const roles = ['listener', 'pastor', 'moderator', 'admin'];
+  const roles = ['listener', 'pastor', 'moderator', ...(user?.role === 'owner' ? ['admin'] : [])];
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   const inner = document.createElement('div');
@@ -634,8 +637,8 @@ function initDashboard() {
   if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
   if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
   if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;document.getElementById('set-role').textContent=user?.role==='admin'?(_tt.admin_label||'ADMIN'):(_tt.pastor_label||'PASTOR');}
-  // Hide admin items unless admin/moderator
-  const isAdmin = user?.role === 'admin';
+  // Hide admin items unless admin/moderator/owner
+  const isAdmin = ['admin', 'owner'].includes(user?.role);
   const isModerator = user?.role === 'moderator';
   ['admin-nav'].forEach(id=>{
     const el=document.getElementById(id);
@@ -670,7 +673,7 @@ async function updateBadges() {
       else { badge.style.display = 'none'; }
     }
     // Check support messages if admin
-    if (user?.role === 'admin' || user?.role === 'moderator') {
+    if (['admin', 'moderator', 'owner'].includes(user?.role)) {
       const sData = await api('/api/admin/support');
       const unreadSupport = (sData?.messages || []).filter(m => !m.is_read).length;
       const iBadge = document.getElementById('inbox-badge');
@@ -1479,8 +1482,8 @@ async function loadInbox() {
     // Load notifications, admin messages and support messages
     const [notifData, msgData, supportData] = await Promise.all([
       api('/api/notifications'),
-      user?.role === 'admin' || user?.role === 'moderator' ? api('/api/admin/messages') : Promise.resolve({messages:[]}),
-      user?.role === 'admin' || user?.role === 'moderator' ? api('/api/admin/support') : Promise.resolve({messages:[]})
+      ['admin', 'moderator', 'owner'].includes(user?.role) ? api('/api/admin/messages') : Promise.resolve({messages:[]}),
+      ['admin', 'moderator', 'owner'].includes(user?.role) ? api('/api/admin/support') : Promise.resolve({messages:[]})
     ]);
     const notifs = notifData?.notifications || [];
     const msgs = msgData?.messages || [];
