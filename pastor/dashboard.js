@@ -333,7 +333,7 @@ function showPage(name) {
   if (name === 'analytics') loadAnalytics(7, document.querySelector('.period-tab.active'));
   if (name === 'live') loadStreams();
   if (name === 'notifications') loadNotifications();
-  if (name === 'admin' && ['admin','moderator'].includes(user?.role)) loadAdmin();
+  if (name === 'admin' && ['admin','moderator','owner'].includes(user?.role)) loadAdmin();
   if (name === 'profile') loadProfile();
   if (name === 'inbox') loadInbox();
   if (name === 'explore') loadExplore();
@@ -619,7 +619,7 @@ function initDashboard() {
   document.getElementById('sidebar-church').textContent = user?.role?.toUpperCase() || 'PASTOR';
   document.getElementById('dash-role').textContent = (user?.role || 'pastor').toUpperCase();
   document.getElementById('overview-name').textContent = user?.display_name || 'Pastor';
-  if (['admin', 'moderator'].includes(user?.role)) {
+  if (['admin', 'moderator', 'owner'].includes(user?.role)) {
     document.getElementById('admin-nav').style.display = 'flex';
     if(document.getElementById('users-nav')) document.getElementById('users-nav').style.display = 'flex';
     if(document.getElementById('pastors-nav')) document.getElementById('pastors-nav').style.display = 'flex';
@@ -2250,7 +2250,7 @@ document.addEventListener('visibilitychange', async function() {
         if (dashRole) dashRole.textContent = (user.role || 'pastor').toUpperCase();
         // Show/hide admin nav
         const adminNav = document.getElementById('admin-nav');
-        if (adminNav) adminNav.style.display = ['admin','moderator'].includes(user.role) ? 'flex' : 'none';
+        if (adminNav) adminNav.style.display = ['admin','moderator','owner'].includes(user.role) ? 'flex' : 'none';
       }
     } catch(e) {}
   }
