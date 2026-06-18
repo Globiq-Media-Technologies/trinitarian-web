@@ -1,5 +1,5 @@
 /privacy /privacy/index.html 200
 /terms /terms/index.html 200
-/reset-password / 200
-/verify-email / 200
-/sermon/* / 200
+/reset-password /index.html 200
+/verify-email /index.html 200
+/sermon/:id /index.html 200
