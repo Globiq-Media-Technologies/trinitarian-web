@@ -397,7 +397,7 @@ async function handleLogin() {
         showAlert('login-error', '⏳ Your pastor application is under review. You will be notified once approved.', false, true);
         return;
       }
-      if (!['pastor','admin','moderator'].includes(role)) {
+      if (!['pastor','admin','moderator','owner'].includes(role)) {
         showAlert('login-error', 'Your account does not have pastor access.');
         return;
       }
