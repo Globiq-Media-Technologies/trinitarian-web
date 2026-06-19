@@ -907,6 +907,10 @@ function lhSendChat() {
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 60%);">
     <div style="width:100%;max-width:420px;background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:40px 36px;">
       <h2 style="color:#fff;font-size:22px;text-align:center;margin-bottom:8px;font-family:Georgia,serif;">Reset Password</h2>
+      <div id="reset-open-app-banner" style="display:none;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+        <p style="color:#D4AF37;font-size:13px;margin-bottom:10px;">Have the Trinitarian app installed? Continue there instead.</p>
+        <button onclick="openResetInApp()" style="background:#D4AF37;color:#0a1628;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📱 Open in App</button>
+      </div>
       <p style="color:#8fa3c0;font-size:13px;text-align:center;margin-bottom:28px;" data-i18n="enter_new_pwd">Enter your new password below</p>
       <div id="reset-error" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
       <div id="reset-success" style="display:none;background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.3);color:#40c96a;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
@@ -1229,7 +1233,15 @@ window.addEventListener('load',async()=>{
   initCookieConsent();
   const urlParams=new URLSearchParams(window.location.search);
   const resetToken=urlParams.get('token');
-  if(resetToken){goTo('reset');return;}
+  if(resetToken){
+    goTo('reset');
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      window.__resetToken = resetToken;
+      var banner = document.getElementById('reset-open-app-banner');
+      if(banner) banner.style.display = 'block';
+    }
+    return;
+  }
   if(window.location.pathname.includes('reset-password')){goTo('reset');return;}
   // Handle direct sermon links shared via /sermon/:id
   const sermonPathMatch = window.location.pathname.match(/\/sermon\/([a-zA-Z0-9-]+)/);
@@ -1553,6 +1565,14 @@ function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(
 let currentSermon=null,ptFontSz=15,ptIsNight=false;
 let comments=JSON.parse(localStorage.getItem('lh_comments')||'{}');
 let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
+
+function openResetInApp(){
+  var t = window.__resetToken;
+  if(!t) return;
+  // Custom scheme doesn't require Android App Links verification, so it
+  // works reliably even on devices where automatic verification failed.
+  window.location.href = 'trinitarian://reset-password?token=' + encodeURIComponent(t);
+}
 
 function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
 
