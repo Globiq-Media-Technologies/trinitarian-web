@@ -732,7 +732,7 @@ function renderSermonList(sermons, containerId) {
         </div>
       </div>
       <div class="sermon-actions">
-        <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'archived' ? 'status-archived' : 'status-pending'}">${s.status?.toUpperCase()}</span>
+        <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'archived' ? 'status-archived' : 'status-pending'}">${s.status === 'live' ? 'PUBLISHED' : s.status === 'archived' ? 'ARCHIVED' : (s.status||'').toUpperCase()}</span>
         ${s.status === 'live' ? `<button class="btn btn-ghost btn-sm" onclick="archiveSermon('${s.id}')">Archive</button>` : ''}
         <button class="btn btn-sm" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:var(--error);" onclick="deleteSermon('${s.id}','${s.title.replace(/'/g,'')}')">Delete</button>
       </div>
@@ -855,6 +855,17 @@ async function loadCategories() {
 async function handleUpload(isDraft) {
   const title = document.getElementById('up-title').value.trim();
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
+  const type = document.getElementById('up-type')?.value;
+  const category = document.getElementById('up-category')?.value;
+  const transcript = document.getElementById('up-transcript')?.value?.trim();
+  const mediaFile = document.getElementById('up-media')?.files?.[0];
+  if (!category) return showAlert('upload-error', 'Please select a category for your sermon');
+  if ((type === 'video' || type === 'audio') && !mediaFile && !transcript) {
+    return showAlert('upload-error', `Please select a ${type} file or add a description before uploading`);
+  }
+  if ((type === 'text' || type === 'article') && !transcript) {
+    return showAlert('upload-error', 'Please enter your sermon content before uploading');
+  }
   hideAlert('upload-error');
   // Show progress
   const btn = document.getElementById('upload-submit-btn');
@@ -955,7 +966,7 @@ async function loadStreams() {
           </div>
         </div>
         <div class="sermon-actions">
-          <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'ended' ? 'status-archived' : 'status-pending'}">${s.status?.toUpperCase()}</span>
+          <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'ended' ? 'status-archived' : 'status-pending'}">${s.status === 'live' ? 'PUBLISHED' : (s.status||'').toUpperCase()}</span>
           ${s.status === 'scheduled' ? `<button class="btn btn-gold btn-sm" onclick="goLive('${s.id}')">Go Live</button>` : ''}
           ${s.status === 'live' ? `<button class="btn btn-danger btn-sm" onclick="endStream('${s.id}')">End</button>` : ''}
         </div>
