@@ -856,12 +856,10 @@ async function handleUpload(isDraft) {
   const title = document.getElementById('up-title').value.trim();
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
   const type = document.getElementById('up-type')?.value;
-  const category = document.getElementById('up-category')?.value;
   const transcript = document.getElementById('up-transcript')?.value?.trim();
   const mediaFile = document.getElementById('up-media')?.files?.[0];
-  if (!category) return showAlert('upload-error', 'Please select a category for your sermon');
-  if ((type === 'video' || type === 'audio') && !mediaFile && !transcript) {
-    return showAlert('upload-error', `Please select a ${type} file or add a description before uploading`);
+  if ((type === 'video' || type === 'audio') && !mediaFile) {
+    return showAlert('upload-error', `Please select a ${type} file to upload`);
   }
   if ((type === 'text' || type === 'article') && !transcript) {
     return showAlert('upload-error', 'Please enter your sermon content before uploading');
