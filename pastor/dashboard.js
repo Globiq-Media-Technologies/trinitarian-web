@@ -857,7 +857,7 @@ async function handleUpload(isDraft) {
   if (!title) return showAlert('upload-error', 'Please enter a sermon title');
   const type = document.getElementById('up-type')?.value;
   const transcript = document.getElementById('up-transcript')?.value?.trim();
-  const mediaFile = document.getElementById('up-media')?.files?.[0];
+  const mediaFile = document.getElementById('file-input')?.files?.[0];
   if ((type === 'video' || type === 'audio') && !mediaFile) {
     return showAlert('upload-error', `Please select a ${type} file to upload`);
   }
