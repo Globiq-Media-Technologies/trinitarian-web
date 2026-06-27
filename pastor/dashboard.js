@@ -79,7 +79,7 @@ async function suspendUser(id, name, isSuspended) {
 }
 
 async function changeUserRole(id, name, currentRole) {
-  const roles = ['listener', 'pastor', 'moderator', ...(user?.role === 'owner' ? ['admin'] : [])];
+  const roles = ['listener', 'pastor', 'moderator', ...(user?.role === 'owner' ? ['admin', 'owner'] : [])];
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   const inner = document.createElement('div');
