@@ -1287,9 +1287,19 @@ window.addEventListener('load',async()=>{
   // Handle sermon deep link from share
   const sermonParam=urlParams.get('sermon');
   if(sermonParam){
-    const token=localStorage.getItem('trinitarian_token');
-    if(token){goTo('listener-home');setTimeout(function(){openSermonById(sermonParam);},1000);}
-    else{goTo('listener');}
+    fetch(API+'/api/sermons/'+sermonParam)
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(sermon){
+        if(sermon && sermon.id){
+          window.lhSermonMap = window.lhSermonMap || {};
+          window.lhSermonMap[sermon.id] = sermon;
+          goTo('listener-home');
+          setTimeout(function(){ openSermon(sermon); }, 300);
+        } else {
+          goTo('listener-home');
+        }
+      })
+      .catch(function(){ goTo('listener-home'); });
     return;
   }
   const hash=window.location.hash.replace('#','');
