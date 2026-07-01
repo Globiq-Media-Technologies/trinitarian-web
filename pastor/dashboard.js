@@ -739,10 +739,49 @@ function renderSermonList(sermons, containerId) {
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
   `).join('');
+}
+
+async function openEditSermon(s){
+  // Remove any existing edit modal
+  const existing = document.getElementById('edit-sermon-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'edit-sermon-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:480px;">
+      <h3 style="color:var(--white);margin-bottom:20px;">Edit Sermon</h3>
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Title</label>
+      <input id="edit-sermon-title" type="text" value="${(s.title||'').replace(/"/g,'&quot;')}" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:14px;margin-bottom:16px;box-sizing:border-box;"/>
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Description</label>
+      <textarea id="edit-sermon-description" rows="3" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:14px;margin-bottom:20px;box-sizing:border-box;resize:vertical;">${s.description||''}</textarea>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('edit-sermon-modal').remove()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-sec);cursor:pointer;">Cancel</button>
+        <button onclick="saveEditSermon('${s.id}')" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--gold);color:#071528;font-weight:700;cursor:pointer;">Save Changes</button>
+      </div>
+    </div>`;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+  document.getElementById('edit-sermon-title').focus();
+}
+
+async function saveEditSermon(id){
+  const title = document.getElementById('edit-sermon-title').value.trim();
+  const description = document.getElementById('edit-sermon-description').value.trim();
+  if (!title) return showToast('Title cannot be empty');
+  try {
+    await api('/api/sermons/'+id, 'PUT', { title, description });
+    document.getElementById('edit-sermon-modal').remove();
+    loadSermons();
+    showToast('Sermon updated successfully');
+  } catch(e) {
+    showToast('Failed to update sermon');
+  }
 }
 
 async function deleteSermon(id, title){
@@ -972,8 +1011,8 @@ async function loadStreams() {
       ${s.stream_key && s.status !== 'ended' ? `<div style="margin-bottom:12px;"><span class="section-label" data-i18n="stream_key">Stream Key</span><div class="stream-key-box">${s.stream_key}</div><p style="color:var(--text-muted);font-size:11px;">Use this key in OBS or your streaming software (RTMP)</p></div>` : ''}
       <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
   `).join('');
   } catch(e) { document.getElementById('my-streams').innerHTML = '<p style="color:var(--text-muted);padding:12px 0;" data-i18n="failed_streams">Failed to load streams</p>'; }
@@ -1026,8 +1065,8 @@ async function loadAnalytics(period, btn) {
         </div>
         <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
   `).join('');
     } else {
@@ -1269,8 +1308,8 @@ function renderApplications(applications) {
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;">
       <button onclick="event.stopPropagation();openEditSermon(s)" class="btn btn-ghost btn-sm">✏ Edit</button>
-      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑</button>
-      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗</button>
+      <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
   `).join('');
 }
