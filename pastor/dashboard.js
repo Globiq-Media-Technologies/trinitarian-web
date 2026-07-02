@@ -1410,6 +1410,30 @@ async function changePassword() {
   } catch(e) { showAlert('cp-error', 'Connection failed'); }
 }
 
+// ── Sermon View Reading Helpers ──
+function vsAdjFont(btn, delta) {
+  var t = document.getElementById('vs-text-content');
+  if (!t) return;
+  var sz = parseInt(t.style.fontSize || 16) + delta;
+  sz = Math.max(12, Math.min(28, sz));
+  t.style.fontSize = sz + 'px';
+}
+function vsToggleFont(btn) {
+  var t = document.getElementById('vs-text-content');
+  if (!t) return;
+  var isSans = t.style.fontFamily.includes('system-ui') || t.style.fontFamily.includes('sans');
+  t.style.fontFamily = isSans ? 'Georgia,serif' : 'system-ui,sans-serif';
+  btn.textContent = isSans ? 'Sans' : 'Serif';
+}
+function vsToggleExpand(btn) {
+  var w = document.getElementById('vs-reading-area');
+  if (!w) return;
+  var expanded = w.style.maxWidth === '100%';
+  w.style.maxWidth = expanded ? '960px' : '100%';
+  btn.textContent = expanded ? '⟺ Expand' : '⟺ Compress';
+}
+
+
 // ── Denomination Other ──
 document.getElementById('apply-denom').addEventListener('change', function() {
   document.getElementById('denom-other-wrap').style.display = this.value === 'Other' ? 'block' : 'none';
@@ -2350,17 +2374,15 @@ async function viewSermon(id) {
         ${mediaHtml}
         ${s.description ? `<div style="color:#b0c4d8;font-size:14px;line-height:1.7;margin-top:16px;padding:16px;background:#071528;border-radius:8px;">${s.description}</div>` : ''}
         ${s.transcript ? `<div style="margin-top:20px;">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:10px;background:#071528;border-radius:10px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:10px;padding:10px;background:#071528;border-radius:10px;">
             <span style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-right:8px;">READING</span>
-            <button onclick="var t=this.closest('.vs-wrap').querySelector('.vs-text');t.style.fontSize=(parseInt(t.style.fontSize||16)-1)+'px'" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#D4AF37;">A-</button>
-            <button onclick="var t=this.closest('.vs-wrap').querySelector('.vs-text');t.style.fontSize=(parseInt(t.style.fontSize||16)+1)+'px'" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#D4AF37;">A+</button>
-            <button onclick="var t=this.closest('.vs-outer').querySelector('.vs-text');t.style.fontFamily=t.style.fontFamily.includes('Georgia')?'system-ui,sans-serif':'Georgia,serif';this.textContent=t.style.fontFamily.includes('Georgia')?'Sans':'Serif'" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">Sans</button>
-            <button onclick="var w=this.closest('.vs-outer').querySelector('.vs-wrap');if(w.style.maxWidth==='100%'){w.style.maxWidth='794px';w.style.padding='48px 64px';this.textContent='⟺ Expand';}else{w.style.maxWidth='100%';w.style.padding='48px 32px';this.textContent='⟺ Compress';}" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
+            <button onclick="vsAdjFont(this,-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#D4AF37;">A-</button>
+            <button onclick="vsAdjFont(this,1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#D4AF37;">A+</button>
+            <button onclick="vsToggleFont(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">Sans</button>
+            <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
-          <div class="vs-outer">
-            <div class="vs-wrap" style="max-width:960px;margin:0 auto;transition:max-width 0.3s ease;padding:48px 64px;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;">
-              <div class="vs-text" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;">${s.transcript}</div>
-            </div>
+          <div id="vs-reading-area" style="width:100%;max-width:960px;margin:0 auto;transition:max-width 0.3s ease;">
+            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:48px 64px;">${s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
