@@ -664,8 +664,9 @@ function lhSendChat() {
     <div id="ptab-reading" style="display:block;">
       <div style="text-align:center;margin-bottom:10px;">
         <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
+        <span onclick="rdToggleWidth(this)" style="cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);color:#D4AF37;font-size:12px;">⟺ Expand</span>
       </div>
-      <div id="reading-wrap" style="background:#fff;border-radius:16px;padding:20px;min-height:300px;">
+      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:40px 60px;min-height:500px;max-width:794px;margin:0 auto;transition:max-width 0.3s ease;">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
           <button onclick="rdFontSize(-1)" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A-</button>
           <button onclick="rdFontSize(1)"  style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A+</button>
@@ -678,8 +679,8 @@ function lhSendChat() {
           <button onclick="downloadTranscript()" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">⬇ Save</button>
           <button id="rd-bookmark-btn"  onclick="rdBookmark()"        style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🔖 Bookmark</button>
         </div>
-        <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#222;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
-        <p   id="rd-empty" style="font-size:16px;color:#666;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
+        <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
+        <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
     </div>
 
@@ -1629,7 +1630,7 @@ function openSermon(s){
   const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_saved:(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_save;}
   loadComments(s.id);setTimeout(loadRecommended,500);
-  if(['text','article'].includes(s.type)){playerShowTab('reading',null);setTimeout(playerFullscreen,400);}
+  if(['text','article'].includes(s.type)){playerShowTab('reading',null);}
   else{playerShowTab('info',null);}
 }
 
@@ -2036,9 +2037,9 @@ function rdToggleNight(){
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
   var n=document.getElementById('rd-night-btn');
-  if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
-  if(t)t.style.color=rdIsNight?'#e0e0e0':'#222';
-  if(e)e.style.color=rdIsNight?'#aaa':'#666';
+  if(w)w.style.background=rdIsNight?'#1a1a2e':'#0d2142';
+  if(t)t.style.color=rdIsNight?'#e0e0e0':'#e8e8e8';
+  if(e)e.style.color=rdIsNight?'#aaa':'#8fa3c0';
   if(n){n.textContent=rdIsNight?'☀ Day':'🌙 Night';n.style.background=rdIsNight?'#333':'#e8e8e8';n.style.color=rdIsNight?'#fff':'#333';}
   var buttons=['rd-font-sans','rd-font-serif','rd-bookmark-btn'];
   for(var i=0;i<buttons.length;i++){
@@ -2085,6 +2086,20 @@ function rdBookmark(){
   var bm=bookmarks.includes(currentSermon.id);
   var btn=document.getElementById('rd-bookmark-btn');
   if(btn){btn.style.background=bm?'#D4AF37':'#e8e8e8';btn.style.color=bm?'#000':'#333';btn.textContent=bm?'🔖 Saved':'🔖 Bookmark';}
+}
+
+function rdToggleWidth(btn){
+  var w=document.getElementById('reading-wrap');
+  if(!w)return;
+  if(w.style.maxWidth==='100%'){
+    w.style.maxWidth='794px';
+    w.style.padding='40px 60px';
+    if(btn)btn.textContent='⟺ Expand';
+  } else {
+    w.style.maxWidth='100%';
+    w.style.padding='40px 32px';
+    if(btn)btn.textContent='⟺ Compress';
+  }
 }
 
 function loadReadingMode(){
