@@ -1484,10 +1484,11 @@ function setFontSize(size) {
   const sizes = { small: 13, medium: 15, large: 17, xlarge: 20 };
   const px = sizes[size] || 15;
   localStorage.setItem('pd_font_size', px);
-  document.documentElement.style.fontSize = px + 'px';
+  const preview = document.getElementById('pd-font-preview');
+  if (preview) preview.style.fontSize = px + 'px';
   document.querySelectorAll('.fs-btn').forEach(b => {
     b.style.background = 'var(--navy2)';
-    b.style.color = 'var(--text-sec)';
+    b.style.color = 'var(--text-muted)';
     b.style.borderColor = 'var(--border)';
   });
   const active = document.getElementById('fs-' + size);
@@ -1507,14 +1508,21 @@ function setSpacing(spacing) {
 }
 
 function setFont(font) {
-  const fonts = { default: 'system-ui,sans-serif', serif: 'Georgia,serif', mono: 'monospace' };
-  const val = fonts[font] || 'system-ui,sans-serif';
+  const fonts = { default: "'DM Sans',system-ui,sans-serif", serif: 'Georgia,serif', mono: 'monospace' };
+  const val = fonts[font] || "'DM Sans',system-ui,sans-serif";
   localStorage.setItem('pd_font', font);
-  document.body.style.fontFamily = val;
-  document.querySelectorAll('.ff-btn').forEach(b => { b.classList.remove('active-ff'); b.style.background = 'var(--navy2)'; });
+  // Update preview element
+  const preview = document.getElementById('pd-font-preview');
+  if (preview) preview.style.fontFamily = val;
+  // Update active button state
+  document.querySelectorAll('.ff-btn').forEach(b => {
+    b.style.background = 'var(--navy2)';
+    b.style.color = 'var(--text-muted)';
+    b.style.borderColor = 'var(--border)';
+  });
   const active = document.getElementById('ff-' + font);
-  if (active) { active.classList.add('active-ff'); active.style.background = 'var(--gold-light)'; }
-  showToast('Font updated');
+  if (active) { active.style.background = 'var(--gold-light)'; active.style.color = 'var(--gold)'; active.style.borderColor = 'var(--gold-border)'; }
+  showToast('Font style updated');
 }
 
 function toggleNotifSetting(type, el) {
@@ -1604,12 +1612,23 @@ async function uploadAvatar() {
 
 // Apply saved settings on load
 function applyStoredSettings() {
+  // Restore active button states only - don't override body/document styles
   const size = localStorage.getItem('pd_font_size');
-  if (size) document.documentElement.style.fontSize = size + 'px';
-  const spacing = localStorage.getItem('pd_spacing');
-  if (spacing) { const s = { compact:'1.4', normal:'1.7', relaxed:'2.1' }; document.body.style.lineHeight = s[spacing] || '1.7'; }
-  const font = localStorage.getItem('pd_font');
-  if (font) { const f = { default:'system-ui,sans-serif', serif:'Georgia,serif', mono:'monospace' }; document.body.style.fontFamily = f[font] || 'system-ui,sans-serif'; }
+  const sizeMap = { 13: 'small', 15: 'medium', 17: 'large', 20: 'xlarge' };
+  const sizeKey = sizeMap[size] || 'medium';
+  document.querySelectorAll('.fs-btn').forEach(b => { b.style.background = 'var(--navy2)'; b.style.color = 'var(--text-muted)'; b.style.borderColor = 'var(--border)'; });
+  const fsActive = document.getElementById('fs-' + sizeKey);
+  if (fsActive) { fsActive.style.background = 'var(--gold-light)'; fsActive.style.color = 'var(--gold)'; fsActive.style.borderColor = 'var(--gold-border)'; }
+
+  const spacing = localStorage.getItem('pd_spacing') || 'normal';
+  document.querySelectorAll('.sp-btn').forEach(b => { b.style.background = 'var(--navy2)'; b.style.color = 'var(--text-muted)'; });
+  const spActive = document.getElementById('sp-' + spacing);
+  if (spActive) { spActive.style.background = 'var(--gold-light)'; spActive.style.color = 'var(--gold)'; }
+
+  const font = localStorage.getItem('pd_font') || 'default';
+  document.querySelectorAll('.ff-btn').forEach(b => { b.style.background = 'var(--navy2)'; b.style.color = 'var(--text-muted)'; b.style.borderColor = 'var(--border)'; });
+  const ffActive = document.getElementById('ff-' + font);
+  if (ffActive) { ffActive.style.background = 'var(--gold-light)'; ffActive.style.color = 'var(--gold)'; ffActive.style.borderColor = 'var(--gold-border)'; }
 }
 
 
@@ -2546,7 +2565,7 @@ async function viewSermon(id) {
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
           <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;">
-            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:48px 64px;">${s.transcript}</div>
+            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
