@@ -662,23 +662,24 @@ function lhSendChat() {
     <!-- Reading Mode tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
     <div id="ptab-reading" style="display:block;">
-      <div style="text-align:center;margin-bottom:10px;">
-        <span onclick="playerFullscreen()" style="color:#D4AF37;font-size:13px;cursor:pointer;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;">⛶ Open Fullscreen</span>
-        <span onclick="rdToggleWidth(this)" style="cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);color:#D4AF37;font-size:12px;">⟺ Expand</span>
+      <!-- Toolbar -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <button onclick="rdFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#D4AF37;">A-</button>
+        <button onclick="rdFontSize(1)"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#D4AF37;">A+</button>
+        <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
+        <button id="rd-font-sans"  onclick="rdSetFont('sans')"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;font-family:sans-serif;">Sans</button>
+        <button id="rd-font-serif" onclick="rdSetFont('serif')" style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#071528;font-family:Georgia,serif;">Serif</button>
+        <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
+        <button id="rd-night-btn"  onclick="rdToggleNight()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🌙 Night</button>
+        <button                    onclick="rdHighlight()"      style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🖊 Highlight</button>
+        <button onclick="downloadTranscript()"                  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⬇ Save</button>
+        <button id="rd-bookmark-btn" onclick="rdBookmark()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🔖 Bookmark</button>
+        <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
+        <button onclick="rdToggleWidth(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
+        <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
-      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:40px 60px;min-height:500px;max-width:794px;margin:0 auto;transition:max-width 0.3s ease;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
-          <button onclick="rdFontSize(-1)" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A-</button>
-          <button onclick="rdFontSize(1)"  style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:15px;font-weight:700;color:#333;">A+</button>
-          <span style="color:#ccc;font-size:18px;line-height:30px;">|</span>
-          <button id="rd-font-sans"     onclick="rdSetFont('sans')"   style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;font-family:sans-serif;">Sans</button>
-          <button id="rd-font-serif"    onclick="rdSetFont('serif')"  style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#000;font-family:Georgia,serif;" data-i18n="serif">Serif</button>
-          <span style="color:#ccc;font-size:18px;line-height:30px;">|</span>
-          <button id="rd-night-btn"     onclick="rdToggleNight()"     style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🌙 Night</button>
-          <button                       onclick="rdHighlight()"       style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🖊 Highlight</button>
-          <button onclick="downloadTranscript()" style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">⬇ Save</button>
-          <button id="rd-bookmark-btn"  onclick="rdBookmark()"        style="background:#eee;border:1px solid #ccc;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#333;">🔖 Bookmark</button>
-        </div>
+      <!-- A4-width reading area -->
+      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:794px;margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;">
         <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
         <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
@@ -1630,7 +1631,7 @@ function openSermon(s){
   const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_saved:(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_save;}
   loadComments(s.id);setTimeout(loadRecommended,500);
-  if(['text','article'].includes(s.type)){playerShowTab('reading',null);}
+  if(['text','article'].includes(s.type)){setTimeout(function(){playerShowTab('reading',null);},50);}
   else{playerShowTab('info',null);}
 }
 
@@ -2103,7 +2104,7 @@ function rdToggleWidth(btn){
 }
 
 function loadReadingMode(){
-  if(!currentSermon)return;
+  if(!currentSermon){setTimeout(loadReadingMode,100);return;}
   var txt=currentSermon.transcript||'';
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
