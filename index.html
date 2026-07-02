@@ -679,7 +679,7 @@ function lhSendChat() {
         <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
       <!-- A4-width reading area -->
-      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:794px;margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;">
+      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:960px;margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;">
         <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
         <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
@@ -1753,7 +1753,9 @@ function _playerFullscreenOverlay(){
   if(s.transcript){
     content_div.innerHTML=s.transcript;
   } else if(isPdf&&mediaUrl){
-    content_div.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+mediaUrl+'" style="width:100%;min-height:70vh;border:none;border-radius:8px;" title="Sermon document"></iframe>';
+    var isPdfFile=mediaUrl.toLowerCase().includes('.pdf');
+    var viewerSrc=isPdfFile?mediaUrl:'https://docs.google.com/viewer?url='+encodeURIComponent(mediaUrl)+'&embedded=true';
+    content_div.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+viewerSrc+'" style="width:100%;min-height:70vh;border:none;border-radius:8px;" title="Sermon document"></iframe>';
   } else {
     content_div.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
   }
@@ -2099,8 +2101,8 @@ function rdToggleWidth(btn){
   var w=document.getElementById('reading-wrap');
   if(!w)return;
   if(w.style.maxWidth==='100%'){
-    w.style.maxWidth='794px';
-    w.style.padding='40px 60px';
+    w.style.maxWidth='960px';
+    w.style.padding='48px 64px';
     if(btn)btn.textContent='⟺ Expand';
   } else {
     w.style.maxWidth='100%';
@@ -2123,7 +2125,9 @@ function loadReadingMode(){
     e.style.display='none';
   } else if(isPdf && mediaUrl){
     // PDF or document uploaded as media_url — show embedded viewer + download link
-    t.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+mediaUrl+'" style="width:100%;min-height:600px;border:none;border-radius:8px;" title="Sermon document"></iframe>';
+    var isPdfFile2=mediaUrl.toLowerCase().includes('.pdf');
+    var viewerSrc2=isPdfFile2?mediaUrl:'https://docs.google.com/viewer?url='+encodeURIComponent(mediaUrl)+'&embedded=true';
+    t.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+viewerSrc2+'" style="width:100%;min-height:600px;border:none;border-radius:8px;" title="Sermon document"></iframe>';
     t.style.display='block';
     e.style.display='none';
   } else {

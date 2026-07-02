@@ -1054,6 +1054,8 @@ async function loadAnalytics(period, btn) {
   try {
     const data = await api(`/api/admin/analytics?period=${period}`);
     document.getElementById('an-views').textContent = (data?.period_views || 0).toLocaleString();
+    const labelEl = document.getElementById('an-views-label');
+    if(labelEl) labelEl.textContent = `Views (${period} days)`;
     const allTimeEl = document.getElementById('an-views-alltime');
     if(allTimeEl) allTimeEl.textContent = 'All time: ' + (data?.total_views || 0).toLocaleString();
     document.getElementById('an-sermons').textContent = data?.live_sermons || data?.total_sermons || 0;
@@ -2356,11 +2358,11 @@ async function viewSermon(id) {
             <button onclick="var w=this.closest('.vs-outer').querySelector('.vs-wrap');if(w.style.maxWidth==='100%'){w.style.maxWidth='794px';w.style.padding='48px 64px';this.textContent='⟺ Expand';}else{w.style.maxWidth='100%';w.style.padding='48px 32px';this.textContent='⟺ Compress';}" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
           <div class="vs-outer">
-            <div class="vs-wrap" style="max-width:794px;margin:0 auto;transition:max-width 0.3s ease;padding:48px 64px;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;">
+            <div class="vs-wrap" style="max-width:960px;margin:0 auto;transition:max-width 0.3s ease;padding:48px 64px;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;">
               <div class="vs-text" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;">${s.transcript}</div>
             </div>
           </div>
-        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
+        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
           <button onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
           <button onclick="deleteSermon('${s.id}','${(s.title||'').replace(/'/g,"\\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
