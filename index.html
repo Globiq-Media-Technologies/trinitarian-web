@@ -635,7 +635,7 @@ function lhSendChat() {
       <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="comments">💬 Comments</button>
     </div>
     <!-- Info tab -->
-    <div id="ptab-info" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;">
+    <div id="ptab-info" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;">
       <h2 id="player-title2" style="color:#fff;font-size:18px;margin-bottom:8px;"></h2>
       <p id="player-pastor" style="color:#D4AF37;font-size:13px;margin-bottom:12px;"></p>
       <p id="player-desc" style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;"></p>
@@ -649,7 +649,7 @@ function lhSendChat() {
     </div>
     <!-- Transcript tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-transcript" style="display:block;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
+    <div id="ptab-transcript" style="display:none;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:24px;">
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <span style="color:#D4AF37;font-size:11px;letter-spacing:1px;">FONT SIZE:</span>
         <button onclick="ptFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;border-radius:6px;padding:4px 10px;cursor:pointer;">A-</button>
@@ -661,9 +661,9 @@ function lhSendChat() {
     </div>
     <!-- Reading Mode tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-reading" style="display:block;">
+    <div id="ptab-reading" style="display:none;">
       <!-- Toolbar -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px;">
         <button onclick="rdFontSize(-1)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#D4AF37;">A-</button>
         <button onclick="rdFontSize(1)"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#D4AF37;">A+</button>
         <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
@@ -687,7 +687,7 @@ function lhSendChat() {
 
     <!-- Comments tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
-    <div id="ptab-comments" style="display:block;">
+    <div id="ptab-comments" style="display:none;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
@@ -2108,15 +2108,29 @@ function loadReadingMode(){
   var txt=currentSermon.transcript||'';
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
-  if(txt){t.innerHTML=txt;t.style.display='block';e.style.display='none';}
-  else{t.style.display='none';e.style.display='block';}
+  var mediaUrl=currentSermon.media_url||'';
+  var isPdf=mediaUrl && (mediaUrl.toLowerCase().includes('.pdf') || currentSermon.type==='text' || currentSermon.type==='article');
+
+  if(txt){
+    t.innerHTML=txt;
+    t.style.display='block';
+    e.style.display='none';
+  } else if(isPdf && mediaUrl){
+    // PDF or document uploaded as media_url — show embedded viewer + download link
+    t.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+mediaUrl+'" style="width:100%;min-height:600px;border:none;border-radius:8px;" title="Sermon document"></iframe>';
+    t.style.display='block';
+    e.style.display='none';
+  } else {
+    t.style.display='none';
+    e.style.display='block';
+  }
   t.style.fontSize=rdFontSz+'px';
   e.style.fontSize=rdFontSz+'px';
   t.style.fontFamily=rdFont==='sans'?'system-ui,sans-serif':'Georgia,serif';
-  // Restore font button states
+  // Restore font button states (dark theme)
   var s=document.getElementById('rd-font-sans');
   var r=document.getElementById('rd-font-serif');
-  if(s){s.style.background=rdFont==='sans'?'#D4AF37':'#eee';s.style.color=rdFont==='sans'?'#000':'#333';s.style.borderColor=rdFont==='sans'?'#b8972a':'#ccc';}
+  if(s){s.style.background=rdFont==='sans'?'#D4AF37':'rgba(212,175,55,0.1)';s.style.color=rdFont==='sans'?'#071528':'#D4AF37';s.style.borderColor=rdFont==='sans'?'#b8972a':'rgba(212,175,55,0.3)';}
   if(r){r.style.background=rdFont==='serif'?'#D4AF37':'#eee';r.style.color=rdFont==='serif'?'#000':'#333';r.style.borderColor=rdFont==='serif'?'#b8972a':'#ccc';}
   // Restore bookmark state
   var bm=bookmarks.includes(currentSermon.id);
