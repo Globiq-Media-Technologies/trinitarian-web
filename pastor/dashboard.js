@@ -1480,13 +1480,41 @@ function setLang(lang, btn) {
   showToast('Language updated');
 }
 
-function setFontSize(delta) {
-  const els = document.querySelectorAll('.page-content, .sermon-card, .notif-item');
-  const current = parseInt(localStorage.getItem('pd_font_size') || 14);
-  const next = Math.max(12, Math.min(20, current + delta));
-  localStorage.setItem('pd_font_size', next);
-  document.documentElement.style.setProperty('--body-font-size', next + 'px');
+function setFontSize(size) {
+  const sizes = { small: 13, medium: 15, large: 17, xlarge: 20 };
+  const px = sizes[size] || 15;
+  localStorage.setItem('pd_font_size', px);
+  document.documentElement.style.fontSize = px + 'px';
+  document.querySelectorAll('.fs-btn').forEach(b => {
+    b.style.background = 'var(--navy2)';
+    b.style.color = 'var(--text-sec)';
+    b.style.borderColor = 'var(--border)';
+  });
+  const active = document.getElementById('fs-' + size);
+  if (active) { active.style.background = 'var(--gold-light)'; active.style.color = 'var(--gold)'; active.style.borderColor = 'var(--gold-border)'; }
   showToast('Font size updated');
+}
+
+function setSpacing(spacing) {
+  const spacings = { compact: '1.4', normal: '1.7', relaxed: '2.1' };
+  const val = spacings[spacing] || '1.7';
+  localStorage.setItem('pd_spacing', spacing);
+  document.body.style.lineHeight = val;
+  document.querySelectorAll('.sp-btn').forEach(b => { b.classList.remove('active-sp'); b.style.background = 'var(--navy2)'; });
+  const active = document.getElementById('sp-' + spacing);
+  if (active) { active.classList.add('active-sp'); active.style.background = 'var(--gold-light)'; }
+  showToast('Spacing updated');
+}
+
+function setFont(font) {
+  const fonts = { default: 'system-ui,sans-serif', serif: 'Georgia,serif', mono: 'monospace' };
+  const val = fonts[font] || 'system-ui,sans-serif';
+  localStorage.setItem('pd_font', font);
+  document.body.style.fontFamily = val;
+  document.querySelectorAll('.ff-btn').forEach(b => { b.classList.remove('active-ff'); b.style.background = 'var(--navy2)'; });
+  const active = document.getElementById('ff-' + font);
+  if (active) { active.classList.add('active-ff'); active.style.background = 'var(--gold-light)'; }
+  showToast('Font updated');
 }
 
 function toggleNotifSetting(type, el) {
@@ -1530,10 +1558,66 @@ async function openMessage(id) {
 }
 
 
+// ── Function aliases to match HTML onclick calls ──
+function handleChangePassword() { changePassword(); }
+
+function acceptCookies() {
+  localStorage.setItem('pd_cookies', 'accepted');
+  const el = document.getElementById('cookie-banner');
+  if (el) el.style.display = 'none';
+}
+function declineCookies() {
+  const el = document.getElementById('cookie-banner');
+  if (el) el.style.display = 'none';
+}
+
+async function sendInboxMessage() {
+  const msg = document.getElementById('lh-inbox-msg');
+  const text = msg?.value?.trim();
+  if (!text) return showToast('Please enter a message');
+  try {
+    await api('/api/admin/support', 'POST', { message: text });
+    msg.value = '';
+    showToast('Message sent successfully');
+  } catch(e) { showToast('Failed to send message', 'error'); }
+}
+
+async function uploadAvatar() {
+  const input = document.getElementById('avatar-upload') || document.getElementById('photo-upload');
+  if (!input || !input.files?.[0]) return;
+  const file = input.files[0];
+  const fd = new FormData();
+  fd.append('avatar', file);
+  try {
+    const headers = {};
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const res = await fetch(API + '/api/users/avatar', { method: 'POST', headers, body: fd });
+    const data = await res.json();
+    if (data.avatar_url) {
+      if (user) { user.avatar_url = data.avatar_url; localStorage.setItem('pastor_user', JSON.stringify(user)); }
+      const img = document.getElementById('profile-avatar');
+      if (img) img.src = data.avatar_url;
+      showToast('Profile photo updated');
+    }
+  } catch(e) { showToast('Failed to upload photo', 'error'); }
+}
+
+// Apply saved settings on load
+function applyStoredSettings() {
+  const size = localStorage.getItem('pd_font_size');
+  if (size) document.documentElement.style.fontSize = size + 'px';
+  const spacing = localStorage.getItem('pd_spacing');
+  if (spacing) { const s = { compact:'1.4', normal:'1.7', relaxed:'2.1' }; document.body.style.lineHeight = s[spacing] || '1.7'; }
+  const font = localStorage.getItem('pd_font');
+  if (font) { const f = { default:'system-ui,sans-serif', serif:'Georgia,serif', mono:'monospace' }; document.body.style.fontFamily = f[font] || 'system-ui,sans-serif'; }
+}
+
+
 async function init() {
-  // Apply saved language immediately before anything else
+  // Apply saved language and settings immediately
   const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
   pdApplyTranslations(savedLang);
+  applyStoredSettings();
   await loadCategories();
   if (token && user) {
     try {
