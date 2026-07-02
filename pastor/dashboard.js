@@ -1429,7 +1429,7 @@ function vsToggleExpand(btn) {
   var w = document.getElementById('vs-reading-area');
   if (!w) return;
   var expanded = w.style.maxWidth === '100%';
-  w.style.maxWidth = expanded ? '960px' : '100%';
+  w.style.maxWidth = expanded ? 'min(1100px,90vw)' : '100%';
   btn.textContent = expanded ? '⟺ Expand' : '⟺ Compress';
 }
 
@@ -2381,7 +2381,7 @@ async function viewSermon(id) {
             <button onclick="vsToggleFont(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">Sans</button>
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
-          <div id="vs-reading-area" style="width:100%;max-width:960px;margin:0 auto;transition:max-width 0.3s ease;">
+          <div id="vs-reading-area" style="width:100%;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease;">
             <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:48px 64px;">${s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}

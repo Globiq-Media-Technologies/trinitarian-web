@@ -679,7 +679,7 @@ function lhSendChat() {
         <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
       <!-- A4-width reading area -->
-      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:960px;margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;">
+      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;">
         <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
         <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
@@ -2101,7 +2101,7 @@ function rdToggleWidth(btn){
   var w=document.getElementById('reading-wrap');
   if(!w)return;
   if(w.style.maxWidth==='100%'){
-    w.style.maxWidth='960px';
+    w.style.maxWidth='min(1100px,90vw)';
     w.style.padding='48px 64px';
     if(btn)btn.textContent='⟺ Expand';
   } else {
