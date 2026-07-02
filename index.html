@@ -1733,24 +1733,30 @@ function _playerFullscreenOverlay(){
   pastor.textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
   body.appendChild(pastor);
   var toolbar=document.createElement('div');
-  toolbar.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding:10px;background:#0d2142;border-radius:10px;';
+  toolbar.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding:10px;background:#0d2142;border-radius:10px;justify-content:center;';
   var fSz=rdFontSz,fNight=rdIsNight,fFam=rdFont;
-  var BTN_BASE='border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;border:1px solid #ccc;';
+  var BTN_BASE='border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;';
   var makeBtn=function(label,onclick,active){
     var b=document.createElement('button');
     b.textContent=label;
     b.style.cssText=BTN_BASE;
-    b.style.background=active?'#D4AF37':'#f5f5f5';
-    b.style.color=active?'#000':'#333';
-    b.style.borderColor=active?'#b8972a':'#ccc';
+    if(active){b.style.background='#D4AF37';b.style.color='#071528';b.style.borderColor='#b8972a';}
     b.onclick=onclick;
     return b;
   };
-  var setActive=function(btn){btn.style.background='#D4AF37';btn.style.color='#000';btn.style.borderColor='#b8972a';};
-  var setInactive=function(btn){btn.style.background='#f5f5f5';btn.style.color='#333';btn.style.borderColor='#ccc';};
+  var setActive=function(btn){btn.style.background='#D4AF37';btn.style.color='#071528';btn.style.borderColor='#b8972a';};
+  var setInactive=function(btn){btn.style.background='rgba(212,175,55,0.1)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';};
   var content_div=document.createElement('div');
-  content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#fff')+';border-radius:0;padding:20px 24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#222')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;width:100%;box-sizing:border-box;min-height:calc(100vh - 120px);';
-  content_div.innerHTML=s.transcript||'<p style="color:#666;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
+  content_div.style.cssText='background:'+(fNight?'#1a1a2e':'#0d2142')+';border-radius:0;padding:20px 24px;font-size:'+fSz+'px;line-height:1.9;color:'+(fNight?'#e0e0e0':'#e8e8e8')+';font-family:'+(fFam==='sans'?'system-ui,sans-serif':'Georgia,serif')+';white-space:pre-wrap;width:100%;box-sizing:border-box;min-height:calc(100vh - 120px);';
+  var mediaUrl=s.media_url||'';
+  var isPdf=mediaUrl&&(mediaUrl.toLowerCase().includes('.pdf')||(s.type==='text'||s.type==='article'));
+  if(s.transcript){
+    content_div.innerHTML=s.transcript;
+  } else if(isPdf&&mediaUrl){
+    content_div.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+mediaUrl+'" style="width:100%;min-height:70vh;border:none;border-radius:8px;" title="Sermon document"></iframe>';
+  } else {
+    content_div.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
+  }
   var btnAm=makeBtn('A-',function(){fSz=Math.max(12,Math.min(28,fSz-2));content_div.style.fontSize=fSz+'px';},false);
   var btnAp=makeBtn('A+',function(){fSz=Math.max(12,Math.min(28,fSz+2));content_div.style.fontSize=fSz+'px';},false);
   var btnSans=makeBtn('Sans',function(){fFam='sans';content_div.style.fontFamily='system-ui,sans-serif';setActive(btnSans);setInactive(btnSerif);},fFam==='sans');

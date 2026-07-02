@@ -965,6 +965,8 @@ async function handleUpload(isDraft) {
       document.getElementById('up-scripture').value = '';
       document.getElementById('file-name').textContent = '';
       if (wrap) setTimeout(() => wrap.style.display = 'none', 1000);
+      // Refresh My Sermons list
+      setTimeout(() => loadSermons(), 500);
     } else {
       const errMsg = data.error || 'Upload failed. Make sure you are a verified pastor.';
       showAlert('upload-error', errMsg);
@@ -1051,8 +1053,10 @@ async function loadAnalytics(period, btn) {
   }
   try {
     const data = await api(`/api/admin/analytics?period=${period}`);
-    document.getElementById('an-views').textContent = (data?.total_views || 0).toLocaleString();
-    document.getElementById('an-sermons').textContent = data?.live_sermons || 0;
+    document.getElementById('an-views').textContent = (data?.period_views || 0).toLocaleString();
+    const allTimeEl = document.getElementById('an-views-alltime');
+    if(allTimeEl) allTimeEl.textContent = 'All time: ' + (data?.total_views || 0).toLocaleString();
+    document.getElementById('an-sermons').textContent = data?.live_sermons || data?.total_sermons || 0;
     const top = document.getElementById('top-sermons');
     if (data?.top_sermons?.length) {
       top.innerHTML = data.top_sermons.map((s, i) => `
@@ -2356,7 +2360,7 @@ async function viewSermon(id) {
               <div class="vs-text" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;">${s.transcript}</div>
             </div>
           </div>
-        </div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>'}
+        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
           <button onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
           <button onclick="deleteSermon('${s.id}','${(s.title||'').replace(/'/g,"\\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
