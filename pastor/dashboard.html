@@ -833,8 +833,8 @@
         <button class="period-tab" onclick="loadAnalytics(90,this)">90 Days</button>
       </div>
       <div class="stats-grid" id="analytics-stats">
-        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👁️</div><div class="stat-value" id="an-views">—</div><div class="stat-label" id="an-views-label" data-i18n="views">Views (7 days)</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="an-views-alltime"></div></div>
-        <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">🎧</div><div class="stat-value" id="an-sermons">—</div><div class="stat-label" data-i18n="my_sermons">Sermons</div></div>
+        <div class="stat-card" onclick="showPage('sermons')" style="cursor:pointer;" title="Click to view sermons"><div class="stat-icon">👁️</div><div class="stat-value" id="an-views">—</div><div class="stat-label" id="an-views-label" data-i18n="views">Views (7 days)</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="an-views-alltime"></div><div style="font-size:10px;color:var(--gold);margin-top:4px;">↗ Click to explore</div></div>
+        <div class="stat-card" onclick="showPage('sermons')" style="cursor:pointer;" title="Click to view your sermons"><div class="stat-icon">🎧</div><div class="stat-value" id="an-sermons">—</div><div class="stat-label" data-i18n="my_sermons">Sermons</div><div style="font-size:10px;color:var(--gold);margin-top:4px;">↗ Click to view</div></div>
         <div class="stat-card" style="cursor:pointer;"><div class="stat-icon">👥</div><div class="stat-icon">—</div><div class="stat-label" data-i18n="new_followers">New Followers</div></div>
       </div>
       <div style="margin-top:20px;">
@@ -1137,7 +1137,10 @@
           <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="confirm_new_pwd">Confirm New Password</label>
           <input type="password" class="form-input" id="cp-confirm" placeholder="Confirm new password"/>
         </div>
-        <button onclick="handleChangePassword()" class="btn btn-gold" style="width:100%;padding:14px;">Update Password</button>
+        <div style="display:flex;gap:10px;">
+          <button onclick="showPage('profile')" class="btn btn-ghost" style="flex:1;padding:14px;">← Cancel</button>
+          <button onclick="handleChangePassword()" class="btn btn-gold" style="flex:2;padding:14px;">Update Password</button>
+        </div>
       </div>
     </div>
 

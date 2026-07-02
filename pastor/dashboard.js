@@ -172,7 +172,7 @@ async function loadExplore() {
   el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);" data-i18n="loading">Loading...</div>';
   try {
     const data = await api('/api/sermons?limit=100');
-    exploreAllSermons = data?.sermons || data || [];
+    exploreAllSermons = (data?.sermons || data || []).sort((a,b) => (b.views_count||0)-(a.views_count||0));
     exploreRender();
   } catch(e) {
     el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Could not load sermons.</div>';
@@ -1010,7 +1010,7 @@ async function loadStreams() {
       </div>
       ${s.stream_key && s.status !== 'ended' ? `<div style="margin-bottom:12px;"><span class="section-label" data-i18n="stream_key">Stream Key</span><div class="stream-key-box">${s.stream_key}</div><p style="color:var(--text-muted);font-size:11px;">Use this key in OBS or your streaming software (RTMP)</p></div>` : ''}
       <div style="display:flex;gap:6px;margin-top:8px;">
-      <button onclick="event.stopPropagation();openEditSermon(s.id,s.title,s.description)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||''  ).replace(/"/g,'&quot;')}" data-desc="${(s.description||''  ).replace(/"/g,'&quot;')}" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
       <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
@@ -1068,7 +1068,7 @@ async function loadAnalytics(period, btn) {
           <div style="color:var(--text-muted);font-size:15px;font-weight:600;">👁 ${parseInt(s.views_count||0).toLocaleString()}</div>
         </div>
         <div style="display:flex;gap:6px;margin-top:8px;">
-      <button onclick="event.stopPropagation();openEditSermon(s.id,s.title,s.description)" class="btn btn-ghost btn-sm">✏ Edit</button>
+      <button onclick="event.stopPropagation();openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||''  ).replace(/"/g,'&quot;')}" data-desc="${(s.description||''  ).replace(/"/g,'&quot;')}" class="btn btn-ghost btn-sm">✏ Edit</button>
       <button onclick="event.stopPropagation();deleteSermon(s.id,s.title)" class="btn btn-ghost btn-sm" style="color:var(--error);">🗑 Delete</button>
       <button onclick="event.stopPropagation();navigator.clipboard.writeText('https://trinitarian.app/?sermon='+s.id).then(function(){showToast('Link copied!');});" class="btn btn-ghost btn-sm" title="Copy link">🔗 Copy Link</button>
     </div>
@@ -1098,7 +1098,7 @@ async function deleteNotification(id) {
 async function pdOpenNotifSermon(sermonId) {
   try {
     const sermon = await api('/api/sermons/' + sermonId);
-    if (sermon && sermon.id) viewSermon(sermon);
+    if (sermon && sermon.id) viewSermon(sermon.id);
     else showToast('Sermon not found', 'error');
   } catch(e) { showToast('Failed to open sermon', 'error'); }
 }
@@ -1426,10 +1426,20 @@ function vsToggleFont(btn) {
   btn.textContent = isSans ? 'Sans' : 'Serif';
 }
 function vsToggleExpand(btn) {
+  // Try vs-reading-area first, then walk up to find the overlay content div
   var w = document.getElementById('vs-reading-area');
+  if (!w) {
+    // Fallback: find the nearest ancestor with max-width style
+    var el = btn;
+    while (el && el !== document.body) {
+      el = el.parentElement;
+      if (el && el.style && el.style.maxWidth && el.id !== 'sermon-view-overlay') { w = el; break; }
+    }
+  }
   if (!w) return;
   var expanded = w.style.maxWidth === '100%';
-  w.style.maxWidth = expanded ? 'min(1100px,90vw)' : '100%';
+  w.style.maxWidth = expanded ? 'min(1200px,92vw)' : '100%';
+  w.style.padding = expanded ? '48px 64px' : '48px 32px';
   btn.textContent = expanded ? '⟺ Expand' : '⟺ Compress';
 }
 
@@ -1450,6 +1460,76 @@ document.getElementById('apply-statement').addEventListener('input', function() 
 document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
 
 // ── Init ──
+// ── Settings Functions ──
+function setLang(lang, btn) {
+  document.querySelectorAll('.lang-setting-btn').forEach(b => {
+    b.classList.remove('active-lang');
+    b.style.background = 'transparent';
+    b.style.borderColor = 'var(--border)';
+    b.querySelector('div').style.color = 'var(--text-sec)';
+  });
+  if (btn) {
+    btn.classList.add('active-lang');
+    btn.style.background = 'var(--gold-light)';
+    btn.style.borderColor = 'var(--gold-border)';
+    btn.querySelector('div').style.color = 'var(--gold)';
+  }
+  pdCurrentLang = lang;
+  localStorage.setItem('trinitarian_pd_lang', lang);
+  pdApplyTranslations(lang);
+  showToast('Language updated');
+}
+
+function setFontSize(delta) {
+  const els = document.querySelectorAll('.page-content, .sermon-card, .notif-item');
+  const current = parseInt(localStorage.getItem('pd_font_size') || 14);
+  const next = Math.max(12, Math.min(20, current + delta));
+  localStorage.setItem('pd_font_size', next);
+  document.documentElement.style.setProperty('--body-font-size', next + 'px');
+  showToast('Font size updated');
+}
+
+function toggleNotifSetting(type, el) {
+  const key = 'pd_notif_' + type;
+  const current = localStorage.getItem(key) !== 'off';
+  localStorage.setItem(key, current ? 'off' : 'on');
+  if (el) {
+    el.textContent = current ? 'Off' : 'On';
+    el.style.background = current ? 'var(--navy2)' : 'var(--gold)';
+    el.style.color = current ? 'var(--text-muted)' : '#071528';
+  }
+  showToast('Notification preference saved');
+}
+
+// ── Message Open Function ──
+async function openMessage(id) {
+  try {
+    const data = await api('/api/admin/inbox/' + id);
+    const msg = data?.message || data;
+    if (!msg) return showToast('Message not found', 'error');
+    // Mark as read
+    api('/api/admin/inbox/' + id + '/read', 'PUT').catch(() => {});
+    // Show in modal
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `<div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:520px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          <div style="color:var(--white);font-size:16px;font-weight:700;">\${msg.subject || 'Message'}</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">From: \${msg.sender_name || msg.from_name || 'User'} · \${msg.created_at ? new Date(msg.created_at).toLocaleDateString() : ''}</div>
+        </div>
+        <button onclick="this.closest('div[style]').remove()" style="background:transparent;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;">✕</button>
+      </div>
+      <div style="color:var(--text-sec);font-size:14px;line-height:1.8;white-space:pre-wrap;background:#071528;padding:16px;border-radius:10px;">\${msg.body || msg.content || msg.message || 'No content'}</div>
+    </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+  } catch(e) {
+    showToast('Could not open message', 'error');
+  }
+}
+
+
 async function init() {
   // Apply saved language immediately before anything else
   const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
@@ -2381,7 +2461,7 @@ async function viewSermon(id) {
             <button onclick="vsToggleFont(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">Sans</button>
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
-          <div id="vs-reading-area" style="width:100%;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease;">
+          <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;">
             <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:48px 64px;">${s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
