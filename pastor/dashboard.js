@@ -172,7 +172,7 @@ async function loadExplore() {
   el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);" data-i18n="loading">Loading...</div>';
   try {
     const data = await api('/api/sermons?limit=100');
-    exploreAllSermons = (data?.sermons || data || []).sort((a,b) => (b.views_count||0)-(a.views_count||0));
+    exploreAllSermons = (data?.sermons || data || []).sort((a,b) => new Date(b.published_at||b.created_at).getTime() - new Date(a.published_at||a.created_at).getTime());
     exploreRender();
   } catch(e) {
     el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Could not load sermons.</div>';
@@ -384,7 +384,7 @@ async function handleLogin() {
       // Fetch fresh role from server
       try {
         const fresh = await api('/api/auth/me');
-        if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); }
+        if (fresh?.id) { const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4}; if((roleOrder[fresh.role]||0) >= (roleOrder[user?.role]||0)) { user = fresh; } else { fresh.role = user.role; user = fresh; } localStorage.setItem('pastor_user', JSON.stringify(user)); }
       } catch(e) {}
       const role = user?.role || 'listener';
       if (role === 'listener') {
@@ -575,7 +575,7 @@ async function handleApply() {
         // Auto-verified - reload user and go to dashboard
         try {
           const fresh = await api('/api/auth/me');
-          if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); }
+          if (fresh?.id) { const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4}; if((roleOrder[fresh.role]||0) >= (roleOrder[user?.role]||0)) { user = fresh; } else { fresh.role = user.role; user = fresh; } localStorage.setItem('pastor_user', JSON.stringify(user)); }
         } catch(e) {}
         showAlert('apply-success', '🎉 Congratulations! You are now a Verified Pastor. Loading your dashboard...', 'success');
         setTimeout(() => initDashboard(), 1500);
@@ -702,7 +702,7 @@ async function loadOverview() {
       api('/api/admin/analytics?period=30')
     ]);
     const list = Array.isArray(sermons) ? sermons : [];
-    document.getElementById('stat-sermons').textContent = list.length;
+    document.getElementById('stat-sermons').textContent = list.length || allSermonsCache?.length || 0;
     document.getElementById('stat-views').textContent = list.reduce((a, s) => a + (parseInt(s.views_count) || 0), 0).toLocaleString();
     document.getElementById('stat-followers').textContent = analytics?.total_users || '—';
     document.getElementById('stat-streams').textContent = '—';
@@ -1061,7 +1061,7 @@ async function loadAnalytics(period, btn) {
     document.getElementById('an-sermons').textContent = data?.live_sermons || data?.total_sermons || 0;
     const top = document.getElementById('top-sermons');
     if (data?.top_sermons?.length) {
-      top.innerHTML = data.top_sermons.map((s, i) => `
+      top.innerHTML = '<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:8px;">💡 Click any sermon to view or edit it</p>' + data.top_sermons.map((s, i) => `
         <div class="top-sermon-item">
           <div class="rank">#${i+1}</div>
           <div style="flex:1;min-width:0;"><div style="color:var(--white);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.title}</div></div>
@@ -1667,9 +1667,12 @@ let allSermonsCache = [];
 async function loadSermons() {
   try {
     const data = await api('/api/sermons/my/sermons');
-    allSermonsCache = Array.isArray(data) ? data : [];
+    allSermonsCache = Array.isArray(data) ? data : (data?.sermons || []);
     renderFilteredSermons(allSermonsCache);
-  } catch(e) { document.getElementById('all-sermons').innerHTML = '<p style="color:var(--text-muted);padding:20px;" data-i18n="failed_load">Failed to load</p>'; }
+  } catch(e) {
+    const el = document.getElementById('all-sermons');
+    if(el) el.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center;">Could not load sermons. Please refresh the page.</p>';
+  }
 }
 function filterSermons() {
   const q = document.getElementById('sermon-search').value.toLowerCase();
@@ -2564,10 +2567,10 @@ async function viewSermon(id) {
             <button onclick="vsToggleFont(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">Sans</button>
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
-          <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;">
+          <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
             <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${s.transcript}</div>
           </div>
-        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:500px;border:none;border-radius:8px;" title="Sermon document"></iframe></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
+        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:70vh;max-height:80vh;border:none;border-radius:8px;display:block;" title="Sermon document"></iframe><div style="text-align:center;margin-top:8px;"><a href="${s.media_url}" target="_blank" style="color:var(--gold);font-size:12px;">⬆ Open in full page</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
           <button onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
           <button onclick="deleteSermon('${s.id}','${(s.title||'').replace(/'/g,"\\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
