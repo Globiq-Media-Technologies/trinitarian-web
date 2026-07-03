@@ -1589,7 +1589,21 @@ function openResetInApp(){
   window.location.href = 'trinitarian://reset-password?token=' + encodeURIComponent(t);
 }
 
-function openSermonById(id){const s=window.lhSermonMap&&window.lhSermonMap[id];if(s)openSermon(s);}
+function openSermonById(id){
+  const s=window.lhSermonMap&&window.lhSermonMap[id];
+  if(s&&(s.type==='video'||s.type==='audio')){
+    openSermon(s);
+    return;
+  }
+  // For text/article always fetch full data to ensure transcript is complete
+  fetch(API+'/api/sermons/'+id,{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(full){
+      if(full&&full.id){window.lhSermonMap=window.lhSermonMap||{};window.lhSermonMap[full.id]=full;openSermon(full);}
+      else if(s){openSermon(s);}
+    })
+    .catch(function(){if(s)openSermon(s);});
+}
 
 function openSermon(s){
   currentSermon=s;
@@ -2103,13 +2117,16 @@ function rdBookmark(){
 function rdToggleWidth(btn){
   var w=document.getElementById('reading-wrap');
   if(!w)return;
-  if(w.style.maxWidth==='100%'){
-    w.style.maxWidth='min(1100px,90vw)';w.style.overflowX='hidden';
+  var expanded=w.dataset.expanded==='true';
+  if(expanded){
+    w.style.maxWidth='min(1100px,90vw)';
     w.style.padding='48px 64px';
+    w.dataset.expanded='false';
     if(btn)btn.textContent='⟺ Expand';
   } else {
     w.style.maxWidth='100%';
     w.style.padding='40px 32px';
+    w.dataset.expanded='true';
     if(btn)btn.textContent='⟺ Compress';
   }
 }

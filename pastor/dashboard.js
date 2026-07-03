@@ -1426,21 +1426,27 @@ function vsToggleFont(btn) {
   btn.textContent = isSans ? 'Sans' : 'Serif';
 }
 function vsToggleExpand(btn) {
-  // Try vs-reading-area first, then walk up to find the overlay content div
   var w = document.getElementById('vs-reading-area');
   if (!w) {
-    // Fallback: find the nearest ancestor with max-width style
     var el = btn;
     while (el && el !== document.body) {
       el = el.parentElement;
-      if (el && el.style && el.style.maxWidth && el.id !== 'sermon-view-overlay') { w = el; break; }
+      if (el && el.style && el.id !== 'sermon-view-overlay') { w = el; break; }
     }
   }
   if (!w) return;
-  var expanded = w.style.maxWidth === '100%';
-  w.style.maxWidth = expanded ? 'min(1200px,92vw)' : '100%';
-  w.style.padding = expanded ? '48px 64px' : '48px 32px';
-  btn.textContent = expanded ? '⟺ Expand' : '⟺ Compress';
+  var expanded = w.dataset.expanded === 'true';
+  if (expanded) {
+    w.style.maxWidth = 'min(1200px,92vw)';
+    w.style.padding = '48px 64px';
+    w.dataset.expanded = 'false';
+    btn.textContent = '⟺ Expand';
+  } else {
+    w.style.maxWidth = '100%';
+    w.style.padding = '48px 32px';
+    w.dataset.expanded = 'true';
+    btn.textContent = '⟺ Compress';
+  }
 }
 
 
