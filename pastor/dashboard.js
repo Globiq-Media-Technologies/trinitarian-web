@@ -976,7 +976,8 @@ async function handleUpload(isDraft) {
     }
   } catch(e) {
     clearInterval(progressInterval);
-    showAlert('upload-error', 'Connection failed. Please try again.');
+    console.error('Upload error:', e);
+    showAlert('upload-error', 'Connection failed: ' + (e?.message || e));
     showAlert('upload-error-bottom', 'Connection failed. Please try again.');
     if (wrap) wrap.style.display = 'none';
   } finally {
@@ -1452,19 +1453,19 @@ function vsToggleExpand(btn) {
 
 
 // ── Denomination Other ──
-document.getElementById('apply-denom').addEventListener('change', function() {
+document.getElementById('apply-denom')?.addEventListener('change', function() {
   document.getElementById('denom-other-wrap').style.display = this.value === 'Other' ? 'block' : 'none';
 });
 
 // ── Word Count ──
-document.getElementById('apply-statement').addEventListener('input', function() {
+document.getElementById('apply-statement')?.addEventListener('input', function() {
   const count = this.value.trim().split(/\s+/).filter(Boolean).length;
   document.getElementById('word-count').textContent = `${count} words`;
   document.getElementById('word-count').style.color = count >= 100 ? 'var(--success)' : 'var(--text-muted)';
 });
 
 // ── Enter Key Login ──
-document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+document.getElementById('login-password')?.addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
 
 // ── Init ──
 // ── Settings Functions ──
