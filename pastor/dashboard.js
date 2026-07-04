@@ -945,7 +945,7 @@ async function handleUpload(isDraft) {
         title,
         description: document.getElementById('up-desc').value.trim(),
         transcript: document.getElementById('up-transcript').value.trim(),
-        type: uploadType,
+        type: type || uploadType,
         language: uploadLang,
         category_id: document.getElementById('up-category').value || undefined,
         scripture_reference: document.getElementById('up-scripture').value.trim()
@@ -965,6 +965,9 @@ async function handleUpload(isDraft) {
       document.getElementById('up-transcript').value = '';
       document.getElementById('up-scripture').value = '';
       document.getElementById('file-name').textContent = '';
+      const fileInput = document.getElementById('file-input');
+      if (fileInput) fileInput.value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (wrap) setTimeout(() => wrap.style.display = 'none', 1000);
       // Refresh My Sermons list
       setTimeout(() => loadSermons(), 500);
@@ -977,8 +980,9 @@ async function handleUpload(isDraft) {
   } catch(e) {
     clearInterval(progressInterval);
     console.error('Upload error:', e);
-    showAlert('upload-error', 'Connection failed: ' + (e?.message || e));
-    showAlert('upload-error-bottom', 'Connection failed. Please try again.');
+    const msg = e?.message && !e.message.includes('Failed to fetch') ? e.message : 'Connection failed. Please try again.';
+    showAlert('upload-error', msg);
+    showAlert('upload-error-bottom', msg);
     if (wrap) wrap.style.display = 'none';
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Publish Sermon'; }
@@ -1534,22 +1538,36 @@ function setFont(font) {
 }
 
 function saveNotifPref() {
-  const prefs = {
-    sermons: document.getElementById('notif-sermons')?.checked,
-    live: document.getElementById('notif-live')?.checked,
-    comments: document.getElementById('notif-comments')?.checked,
-    followers: document.getElementById('notif-followers')?.checked,
-  };
-  Object.entries(prefs).forEach(([k, v]) => {
-    if (v !== undefined) localStorage.setItem('pd_notif_' + k, v ? 'on' : 'off');
+  const keys = ['sermons', 'live', 'comments', 'followers'];
+  keys.forEach(k => {
+    const cb = document.getElementById('notif-' + k);
+    if (!cb) return;
+    localStorage.setItem('pd_notif_' + k, cb.checked ? 'on' : 'off');
+    // Update visual toggle - find the background span (first span sibling)
+    const label = cb.closest('label');
+    if (label) {
+      const bg = label.querySelector('span:first-of-type');
+      const knob = label.querySelector('span:last-of-type');
+      if (bg) bg.style.background = cb.checked ? 'var(--gold)' : 'var(--border, #2a3a55)';
+      if (knob) knob.style.left = cb.checked ? '22px' : '3px';
+    }
   });
   showToast('Notification preferences saved');
 }
 
 function loadNotifPrefs() {
-  ['sermons','live','comments','followers'].forEach(k => {
-    const el = document.getElementById('notif-' + k);
-    if (el) el.checked = localStorage.getItem('pd_notif_' + k) !== 'off';
+  ['sermons', 'live', 'comments', 'followers'].forEach(k => {
+    const cb = document.getElementById('notif-' + k);
+    if (!cb) return;
+    const isOn = localStorage.getItem('pd_notif_' + k) !== 'off';
+    cb.checked = isOn;
+    const label = cb.closest('label');
+    if (label) {
+      const bg = label.querySelector('span:first-of-type');
+      const knob = label.querySelector('span:last-of-type');
+      if (bg) bg.style.background = isOn ? 'var(--gold)' : 'var(--border, #2a3a55)';
+      if (knob) knob.style.left = isOn ? '22px' : '3px';
+    }
   });
 }
 
