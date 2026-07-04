@@ -343,6 +343,7 @@ function showPage(name) {
   // Apply translations after all content loads
   setTimeout(() => pdApplyTranslations(pdCurrentLang), 400);
   if (name === 'settings') {
+    loadNotifPrefs();
     if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
     if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
     if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
@@ -898,8 +899,8 @@ async function handleUpload(isDraft) {
   if ((type === 'video' || type === 'audio') && !mediaFile) {
     return showAlert('upload-error', `Please select a ${type} file to upload`);
   }
-  if ((type === 'text' || type === 'article') && !transcript) {
-    return showAlert('upload-error', 'Please enter your sermon content before uploading');
+  if ((type === 'text' || type === 'article') && !transcript && !mediaFile) {
+    return showAlert('upload-error', 'Please enter sermon content or upload a document file');
   }
   hideAlert('upload-error');
   // Show progress
@@ -1529,6 +1530,26 @@ function setFont(font) {
   const active = document.getElementById('ff-' + font);
   if (active) { active.style.background = 'var(--gold-light)'; active.style.color = 'var(--gold)'; active.style.borderColor = 'var(--gold-border)'; }
   showToast('Font style updated');
+}
+
+function saveNotifPref() {
+  const prefs = {
+    sermons: document.getElementById('notif-sermons')?.checked,
+    live: document.getElementById('notif-live')?.checked,
+    comments: document.getElementById('notif-comments')?.checked,
+    followers: document.getElementById('notif-followers')?.checked,
+  };
+  Object.entries(prefs).forEach(([k, v]) => {
+    if (v !== undefined) localStorage.setItem('pd_notif_' + k, v ? 'on' : 'off');
+  });
+  showToast('Notification preferences saved');
+}
+
+function loadNotifPrefs() {
+  ['sermons','live','comments','followers'].forEach(k => {
+    const el = document.getElementById('notif-' + k);
+    if (el) el.checked = localStorage.getItem('pd_notif_' + k) !== 'off';
+  });
 }
 
 function toggleNotifSetting(type, el) {
