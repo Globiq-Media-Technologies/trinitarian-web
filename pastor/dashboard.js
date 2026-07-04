@@ -1538,19 +1538,16 @@ function setFont(font) {
 }
 
 function saveNotifPref() {
-  const keys = ['sermons', 'live', 'comments', 'followers'];
-  keys.forEach(k => {
+  ['sermons', 'live', 'comments', 'followers'].forEach(k => {
     const cb = document.getElementById('notif-' + k);
     if (!cb) return;
     localStorage.setItem('pd_notif_' + k, cb.checked ? 'on' : 'off');
-    // Update visual toggle - find the background span (first span sibling)
-    const label = cb.closest('label');
-    if (label) {
-      const bg = label.querySelector('span:first-of-type');
-      const knob = label.querySelector('span:last-of-type');
-      if (bg) bg.style.background = cb.checked ? 'var(--gold)' : 'var(--border, #2a3a55)';
-      if (knob) knob.style.left = cb.checked ? '22px' : '3px';
-    }
+    const knob = document.getElementById('notif-' + k + '-knob');
+    const label = cb.closest ? cb.closest('label') : cb.parentElement;
+    const spans = label ? label.querySelectorAll('span') : [];
+    const bgSpan = spans[0];
+    if (bgSpan) bgSpan.style.background = cb.checked ? 'var(--gold)' : '#2a3a55';
+    if (knob) knob.style.left = cb.checked ? '22px' : '3px';
   });
   showToast('Notification preferences saved');
 }
@@ -1561,13 +1558,12 @@ function loadNotifPrefs() {
     if (!cb) return;
     const isOn = localStorage.getItem('pd_notif_' + k) !== 'off';
     cb.checked = isOn;
-    const label = cb.closest('label');
-    if (label) {
-      const bg = label.querySelector('span:first-of-type');
-      const knob = label.querySelector('span:last-of-type');
-      if (bg) bg.style.background = isOn ? 'var(--gold)' : 'var(--border, #2a3a55)';
-      if (knob) knob.style.left = isOn ? '22px' : '3px';
-    }
+    const knob = document.getElementById('notif-' + k + '-knob');
+    const label = cb.closest ? cb.closest('label') : cb.parentElement;
+    const spans = label ? label.querySelectorAll('span') : [];
+    const bgSpan = spans[0];
+    if (bgSpan) bgSpan.style.background = isOn ? 'var(--gold)' : '#2a3a55';
+    if (knob) knob.style.left = isOn ? '22px' : '3px';
   });
 }
 
