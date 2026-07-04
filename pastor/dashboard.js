@@ -2603,7 +2603,7 @@ async function viewSermon(id) {
     
     const overlay = document.createElement('div');
     overlay.id = 'sermon-view-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;flex-direction:column;overflow-y:auto;';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;overflow-y:auto;';
     
     let mediaHtml = '';
     if (s.media_url && s.type === 'video') {
@@ -2615,7 +2615,7 @@ async function viewSermon(id) {
     }
     
     overlay.innerHTML = `
-      <div style="background:#0d2142;min-height:100%;max-width:min(1100px,92vw);margin:0 auto;width:100%;padding:24px;">
+      <div style="background:#0d2142;min-height:100%;width:100%;padding:24px;box-sizing:border-box;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <h2 style="color:#fff;font-size:18px;flex:1;padding-right:16px;">${s.title}</h2>
           <button onclick="document.getElementById('sermon-view-overlay').remove()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;flex-shrink:0;">✕ Close</button>
@@ -2636,7 +2636,7 @@ async function viewSermon(id) {
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
           <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
-            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${(s.transcript||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').split('\n\n').map(p=>p.trim()?'<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>':'').join('')||s.transcript}</div>
+            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;font-family:Georgia,serif;padding:16px 0;">${(s.transcript||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').split('\n\n').map(p=>p.trim()?'<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>':'').join('')||s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;height:70vh;min-height:400px;max-height:80vh;border:none;border-radius:0;display:block;" title="Sermon document"></iframe><div style="text-align:center;margin-top:8px;"><a href="${s.media_url}" target="_blank" style="color:var(--gold);font-size:12px;">⬆ Open in full page</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">

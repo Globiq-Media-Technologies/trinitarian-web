@@ -679,8 +679,8 @@ function lhSendChat() {
         <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
       <!-- A4-width reading area -->
-      <div id="reading-wrap" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:16px;padding:48px 64px;min-height:500px;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease,padding 0.3s ease;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word;">
-        <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;white-space:pre-wrap;display:none;"></div>
+      <div id="reading-wrap" style="background:transparent;border:none;padding:24px 0;min-height:500px;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word;">
+        <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;display:none;"></div>
         <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
     </div>
@@ -1648,8 +1648,16 @@ function openSermon(s){
   const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_saved:(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_save;}
   loadComments(s.id);setTimeout(loadRecommended,500);
-  if(['text','article'].includes(s.type)){setTimeout(function(){playerShowTab('reading',null);},50);}
-  else{playerShowTab('info',null);}
+  if(['text','article'].includes(s.type)){
+    // Hide media player for text/article - not needed
+    var pm=document.getElementById('player-media');
+    if(pm)pm.style.display='none';
+    setTimeout(function(){playerShowTab('reading',null);},50);
+  } else {
+    var pm=document.getElementById('player-media');
+    if(pm)pm.style.display='block';
+    playerShowTab('info',null);
+  }
 }
 
 function playerShowTab(tab,evt){
@@ -2140,6 +2148,9 @@ function loadReadingMode(){
   var mediaUrl=currentSermon.media_url||'';
   var isPdf=mediaUrl && (mediaUrl.toLowerCase().includes('.pdf') || currentSermon.type==='text' || currentSermon.type==='article');
 
+  // Restore reading-wrap style for content
+  var rw=document.getElementById('reading-wrap');
+  if(rw){rw.style.background='#0d2142';rw.style.border='1px solid rgba(212,175,55,0.1)';rw.style.borderRadius='12px';rw.style.padding='32px 48px';}
   if(txt){
     // Convert plain text to readable paragraphs
     var formatted = txt
