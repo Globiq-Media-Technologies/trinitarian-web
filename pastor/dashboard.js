@@ -168,10 +168,9 @@ let exploreSearchQ = '';
 async function loadExplore() {
   const el = document.getElementById('explore-sermons');
   if (!el) return;
-  if (exploreAllSermons.length) { exploreRender(); return; }
   el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);" data-i18n="loading">Loading...</div>';
   try {
-    const data = await api('/api/sermons?limit=100');
+    const data = await api('/api/sermons?limit=100&sort=recent');
     exploreAllSermons = (data?.sermons || data || []).sort((a,b) => new Date(b.published_at||b.created_at).getTime() - new Date(a.published_at||a.created_at).getTime());
     exploreRender();
   } catch(e) {
@@ -1538,32 +1537,51 @@ function setFont(font) {
 }
 
 function saveNotifPref() {
-  ['sermons', 'live', 'comments', 'followers'].forEach(k => {
+  // Find all checkboxes in the notification settings section
+  const notifSection = document.getElementById('notif-settings-section') ||
+                       document.querySelector('[data-section="notifications"]') ||
+                       document.querySelector('.notif-settings');
+  
+  // Try specific IDs first, then fall back to all checkboxes in settings
+  const knownKeys = ['sermons', 'live', 'stream', 'comments', 'followers', 'messages', 'inbox', 'new_sermon', 'live_stream'];
+  knownKeys.forEach(k => {
     const cb = document.getElementById('notif-' + k);
     if (!cb) return;
     localStorage.setItem('pd_notif_' + k, cb.checked ? 'on' : 'off');
-    const knob = document.getElementById('notif-' + k + '-knob');
-    const label = cb.closest ? cb.closest('label') : cb.parentElement;
-    const spans = label ? label.querySelectorAll('span') : [];
-    const bgSpan = spans[0];
-    if (bgSpan) bgSpan.style.background = cb.checked ? 'var(--gold)' : '#2a3a55';
-    if (knob) knob.style.left = cb.checked ? '22px' : '3px';
+    updateToggleVisual(cb);
   });
+  
+  // Also handle any checkbox with id starting with notif-
+  document.querySelectorAll('input[type="checkbox"][id^="notif-"]').forEach(cb => {
+    const key = cb.id.replace('notif-', '');
+    localStorage.setItem('pd_notif_' + key, cb.checked ? 'on' : 'off');
+    updateToggleVisual(cb);
+  });
+  
   showToast('Notification preferences saved');
 }
 
+function updateToggleVisual(cb) {
+  const isOn = cb.checked;
+  // Try knob by convention ID
+  const knobId = cb.id + '-knob';
+  const knob = document.getElementById(knobId);
+  if (knob) knob.style.left = isOn ? '22px' : '3px';
+  // Find background span via parent label
+  const label = cb.closest ? cb.closest('label') : cb.parentElement;
+  if (label) {
+    const spans = label.querySelectorAll('span');
+    if (spans[0]) spans[0].style.background = isOn ? 'var(--gold)' : '#2a3a55';
+    if (spans[1] && !knob) spans[1].style.left = isOn ? '22px' : '3px';
+  }
+}
+
 function loadNotifPrefs() {
-  ['sermons', 'live', 'comments', 'followers'].forEach(k => {
-    const cb = document.getElementById('notif-' + k);
-    if (!cb) return;
-    const isOn = localStorage.getItem('pd_notif_' + k) !== 'off';
+  document.querySelectorAll('input[type="checkbox"][id^="notif-"]').forEach(cb => {
+    const key = cb.id.replace('notif-', '');
+    const isOn = localStorage.getItem('pd_notif_' + key) !== 'off';
     cb.checked = isOn;
-    const knob = document.getElementById('notif-' + k + '-knob');
-    const label = cb.closest ? cb.closest('label') : cb.parentElement;
-    const spans = label ? label.querySelectorAll('span') : [];
-    const bgSpan = spans[0];
-    if (bgSpan) bgSpan.style.background = isOn ? 'var(--gold)' : '#2a3a55';
-    if (knob) knob.style.left = isOn ? '22px' : '3px';
+    updateToggleVisual(cb);
   });
 }
 
@@ -1713,7 +1731,7 @@ let allSermonsCache = [];
 async function loadSermons() {
   try {
     const data = await api('/api/sermons/my/sermons');
-    allSermonsCache = Array.isArray(data) ? data : (data?.sermons || []);
+    allSermonsCache = (Array.isArray(data) ? data : (data?.sermons || [])).sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     renderFilteredSermons(allSermonsCache);
   } catch(e) {
     const el = document.getElementById('all-sermons');
@@ -2614,7 +2632,7 @@ async function viewSermon(id) {
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
           </div>
           <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
-            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${s.transcript}</div>
+            <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${(s.transcript||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').split('\n\n').map(p=>p.trim()?'<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>':'').join('')||s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:70vh;max-height:80vh;border:none;border-radius:8px;display:block;" title="Sermon document"></iframe><div style="text-align:center;margin-top:8px;"><a href="${s.media_url}" target="_blank" style="color:var(--gold);font-size:12px;">⬆ Open in full page</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">

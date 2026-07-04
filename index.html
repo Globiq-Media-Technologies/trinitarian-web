@@ -2140,7 +2140,16 @@ function loadReadingMode(){
   var isPdf=mediaUrl && (mediaUrl.toLowerCase().includes('.pdf') || currentSermon.type==='text' || currentSermon.type==='article');
 
   if(txt){
-    t.innerHTML=txt;
+    // Convert plain text to readable paragraphs
+    var formatted = txt
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+      .replace(/\n{3,}/g,'\n\n')
+      .split('\n\n')
+      .map(function(p){ return p.trim() ? '<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>' : ''; })
+      .join('');
+    t.innerHTML=formatted || txt;
+    t.style.whiteSpace='normal';
     t.style.display='block';
     e.style.display='none';
   } else if(isPdf && mediaUrl){
