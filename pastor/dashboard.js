@@ -1422,14 +1422,18 @@ function vsAdjFont(btn, delta) {
   var sz = parseInt(t.style.fontSize || 16) + delta;
   sz = Math.max(12, Math.min(28, sz));
   t.style.fontSize = sz + 'px';
+  t.querySelectorAll('p').forEach(function(p) { p.style.fontSize = sz + 'px'; });
 }
 function vsToggleFont(btn) {
   var t = document.getElementById('vs-text-content');
   if (!t) return;
   var isSans = t.style.fontFamily.includes('system-ui') || t.style.fontFamily.includes('sans');
-  t.style.fontFamily = isSans ? 'Georgia,serif' : 'system-ui,sans-serif';
+  var ff = isSans ? 'Georgia,serif' : 'system-ui,sans-serif';
+  t.style.fontFamily = ff;
+  t.querySelectorAll('p').forEach(function(p) { p.style.fontFamily = ff; });
   btn.textContent = isSans ? 'Sans' : 'Serif';
 }
+
 function vsToggleExpand(btn) {
   var w = document.getElementById('vs-reading-area');
   if (!w) {
@@ -2611,7 +2615,7 @@ async function viewSermon(id) {
     }
     
     overlay.innerHTML = `
-      <div style="background:#0d2142;min-height:100%;max-width:700px;margin:0 auto;width:100%;padding:24px;">
+      <div style="background:#0d2142;min-height:100%;max-width:min(1100px,92vw);margin:0 auto;width:100%;padding:24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <h2 style="color:#fff;font-size:18px;flex:1;padding-right:16px;">${s.title}</h2>
           <button onclick="document.getElementById('sermon-view-overlay').remove()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;flex-shrink:0;">✕ Close</button>
@@ -2634,7 +2638,7 @@ async function viewSermon(id) {
           <div id="vs-reading-area" style="width:100%;max-width:min(1200px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
             <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif;padding:16px 0;">${(s.transcript||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').split('\n\n').map(p=>p.trim()?'<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>':'').join('')||s.transcript}</div>
           </div>
-        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;min-height:70vh;max-height:80vh;border:none;border-radius:8px;display:block;" title="Sermon document"></iframe><div style="text-align:center;margin-top:8px;"><a href="${s.media_url}" target="_blank" style="color:var(--gold);font-size:12px;">⬆ Open in full page</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
+        </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;"><div style="text-align:center;margin-bottom:12px;"><a href="${s.media_url}" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="${s.media_url.toLowerCase().includes('.pdf')?s.media_url:'https://docs.google.com/viewer?url='+encodeURIComponent(s.media_url)+'&embedded=true'}" style="width:100%;height:70vh;min-height:400px;max-height:80vh;border:none;border-radius:0;display:block;" title="Sermon document"></iframe><div style="text-align:center;margin-top:8px;"><a href="${s.media_url}" target="_blank" style="color:var(--gold);font-size:12px;">⬆ Open in full page</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
           <button onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
           <button onclick="deleteSermon('${s.id}','${(s.title||'').replace(/'/g,"\\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
