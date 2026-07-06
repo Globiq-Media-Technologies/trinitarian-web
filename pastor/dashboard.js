@@ -31,7 +31,7 @@ async function loadUsers() {
 }
 
 function filterUsers() {
-  const q = (document.getElementById('user-search')?.value || '').toLowerCase();
+  const q = (document.getElementById('users-search')?.value || '').toLowerCase();
   renderUsers(q ? allUsersCache.filter(u => (u.display_name+u.email+u.username).toLowerCase().includes(q)) : allUsersCache);
 }
 
@@ -79,7 +79,7 @@ async function suspendUser(id, name, isSuspended) {
 }
 
 async function changeUserRole(id, name, currentRole) {
-  const roles = ['listener', 'pastor', 'moderator', ...(user?.role === 'owner' ? ['admin', 'owner'] : [])];
+  const roles = ['listener', 'pastor', 'moderator', ...(user?.role === 'owner' ? ['admin'] : [])];
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   const inner = document.createElement('div');
@@ -111,6 +111,122 @@ async function changeUserRole(id, name, currentRole) {
       err.style.display = 'block';
     }
   };
+}
+
+// ── Ownership Transfer (owner only) ──
+async function openTransferOwnershipModal() {
+  if (user?.role !== 'owner') return;
+  let candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
+  if (!candidates.length) {
+    try {
+      const data = await api('/api/admin/users?limit=100');
+      allUsersCache = data?.users || data || [];
+      candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
+    } catch(e) {}
+  }
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:440px;max-height:85vh;overflow-y:auto;';
+  inner.innerHTML = '<h3 style="color:#e05555;margin-bottom:8px;">⚠️ Transfer Ownership</h3>'
+    + '<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">This will make the selected user the sole Owner and demote you to Admin. This cannot be undone by you.</p>'
+    + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Select new owner</label>'
+    + '<select id="transfer-user-select" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:14px;">'
+    + '<option value="">-- Choose a user --</option>'
+    + candidates.map(u => `<option value="${u.id}">${(u.display_name||u.username||'User').replace(/</g,'')} (${u.role||'listener'})</option>`).join('')
+    + '</select>'
+    + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Your password</label>'
+    + '<div style="position:relative;margin-bottom:14px;">'
+    + '<input type="password" id="transfer-password" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;padding-right:60px;color:var(--white);box-sizing:border-box;" />'
+    + '<span onclick="const i=document.getElementById(\'transfer-password\');i.type=i.type===\'password\'?\'text\':\'password\';this.textContent=i.type===\'password\'?\'SHOW\':\'HIDE\';" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;">SHOW</span>'
+    + '</div>'
+    + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Type TRANSFER OWNERSHIP to confirm</label>'
+    + '<div style="position:relative;margin-bottom:14px;">'
+    + '<input type="password" id="transfer-confirm" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;padding-right:60px;color:var(--white);box-sizing:border-box;text-transform:uppercase;" />'
+    + '<span onclick="const i=document.getElementById(\'transfer-confirm\');i.type=i.type===\'password\'?\'text\':\'password\';this.textContent=i.type===\'password\'?\'SHOW\':\'HIDE\';" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;">SHOW</span>'
+    + '</div>'
+    + '<div id="transfer-err" style="display:none;color:#e05555;font-size:13px;margin-bottom:12px;"></div>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button id="transfer-cancel" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:10px;padding:10px;cursor:pointer;">Cancel</button>'
+    + '<button id="transfer-save" style="flex:1;background:#e05555;color:#fff;border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:700;">Transfer</button>'
+    + '</div>';
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+  inner.querySelector('#transfer-cancel').onclick = function() { modal.remove(); };
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  inner.querySelector('#transfer-save').onclick = async function() {
+    const newOwnerId = inner.querySelector('#transfer-user-select').value;
+    const password = inner.querySelector('#transfer-password').value;
+    const confirmationText = inner.querySelector('#transfer-confirm').value;
+    const err = inner.querySelector('#transfer-err');
+    if (!newOwnerId) { err.textContent = 'Please select a user.'; err.style.display = 'block'; return; }
+    if (confirmationText !== 'TRANSFER OWNERSHIP') { err.textContent = 'Confirmation text does not match.'; err.style.display = 'block'; return; }
+    try {
+      const res = await api('/api/admin/users/transfer-ownership', 'POST', { newOwnerId, password, confirmationText });
+      if (res?.success) {
+        modal.remove();
+        alert('Ownership transferred. You are now an Admin. Please log in again.');
+        localStorage.removeItem('pastor_token');
+        localStorage.removeItem('pastor_user');
+        location.reload();
+      } else {
+        err.textContent = res?.error || 'Transfer failed';
+        err.style.display = 'block';
+      }
+    } catch(e) {
+      err.textContent = e.message || 'Transfer failed';
+      err.style.display = 'block';
+    }
+  };
+}
+
+// ── Audit Log (owner only) ──
+async function loadAuditLog() {
+  const el = document.getElementById('audit-list');
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const data = await api('/api/admin/audit/role-changes');
+    renderAuditLog(data?.logs || []);
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><h3>Failed to load audit log</h3></div>';
+  }
+}
+
+function renderAuditLog(logs) {
+  const el = document.getElementById('audit-list');
+  if (!logs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><h3>No role changes yet</h3></div>'; return; }
+  el.innerHTML = `<div class="sermon-list">${logs.map(log => `
+    <div class="sermon-card">
+      <div class="sermon-info">
+        <div class="sermon-title" style="font-size:13px;font-weight:400;">
+          <strong>${log.actor_name||'Someone'}</strong> changed <strong>${log.target_name||'a user'}</strong>'s role from
+          <span style="color:var(--gold);">${log.old_role}</span> to <span style="color:var(--gold);">${log.new_role}</span>
+        </div>
+        <div class="sermon-meta"><span>${log.changed_at ? new Date(log.changed_at).toLocaleString() : ''}</span></div>
+      </div>
+      <div style="display:flex;flex-shrink:0;">
+        <button class="btn btn-sm" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;" onclick="deleteAuditEntry(${log.id})">🗑</button>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+async function deleteAuditEntry(id) {
+  if (!confirm('Delete this audit log entry?')) return;
+  try {
+    await api('/api/admin/audit/role-changes/' + id, 'DELETE');
+    loadAuditLog();
+  } catch(e) { showToast('Failed to delete entry', 'error'); }
+}
+
+async function clearAuditLog() {
+  if (!confirm('Delete ALL audit log entries? This cannot be undone.')) return;
+  try {
+    await api('/api/admin/audit/role-changes', 'DELETE');
+    loadAuditLog();
+  } catch(e) { showToast('Failed to clear audit log', 'error'); }
 }
 
 // ── Pastors ──
@@ -339,6 +455,7 @@ function showPage(name) {
   if (name === 'explore') loadExplore();
   if (name === 'users') loadUsers();
   if (name === 'pastors') loadPastorsList();
+  if (name === 'audit') loadAuditLog();
   // Apply translations after all content loads
   setTimeout(() => pdApplyTranslations(pdCurrentLang), 400);
   if (name === 'settings') {
@@ -632,6 +749,10 @@ function initDashboard() {
     if(document.getElementById('users-nav')) document.getElementById('users-nav').style.display = 'flex';
     if(document.getElementById('pastors-nav')) document.getElementById('pastors-nav').style.display = 'flex';
   }
+  if (user?.role === 'owner') {
+    if(document.getElementById('audit-nav')) document.getElementById('audit-nav').style.display = 'flex';
+    if(document.getElementById('transfer-ownership-btn')) document.getElementById('transfer-ownership-btn').style.display = 'inline-block';
+  }
   // Verify role - if listener somehow got here, redirect
   if(user?.role === 'listener'){
     showAlert('login-error', 'Your account does not have pastor access. Apply for verification first.');
@@ -648,6 +769,7 @@ function initDashboard() {
   // Hide admin items unless admin/moderator/owner
   const isAdmin = ['admin', 'owner'].includes(user?.role);
   const isModerator = user?.role === 'moderator';
+  const isOwner = user?.role === 'owner';
   ['admin-nav'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=(isAdmin||isModerator)?'flex':'none';
@@ -656,6 +778,10 @@ function initDashboard() {
     const el=document.getElementById(id);
     if(el) el.style.display=(isAdmin||isModerator)?'flex':'none';
   });
+  const auditNavEl = document.getElementById('audit-nav');
+  if (auditNavEl) auditNavEl.style.display = isOwner ? 'flex' : 'none';
+  const transferBtnEl = document.getElementById('transfer-ownership-btn');
+  if (transferBtnEl) transferBtnEl.style.display = isOwner ? 'inline-block' : 'none';
   const supportTab=document.getElementById('tab-support');
   if(supportTab) supportTab.style.display=(isAdmin||isModerator)?'block':'none';
   // Show escalations tab for admins, mod-escalate for moderators
@@ -2584,6 +2710,10 @@ document.addEventListener('visibilitychange', async function() {
         // Show/hide admin nav
         const adminNav = document.getElementById('admin-nav');
         if (adminNav) adminNav.style.display = ['admin','moderator','owner'].includes(user.role) ? 'flex' : 'none';
+        const auditNav = document.getElementById('audit-nav');
+        if (auditNav) auditNav.style.display = user.role === 'owner' ? 'flex' : 'none';
+        const transferBtn = document.getElementById('transfer-ownership-btn');
+        if (transferBtn) transferBtn.style.display = user.role === 'owner' ? 'inline-block' : 'none';
       }
     } catch(e) {}
   }
