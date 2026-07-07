@@ -546,6 +546,9 @@
       <div class="nav-item" id="pastors-nav" style="display:none;" onclick="showPage('pastors')">
         <span class="nav-icon">✝️</span><span data-i18n="pastors">Pastors</span>
       </div>
+      <div class="nav-item" id="audit-nav" style="display:none;" onclick="showPage('audit')">
+        <span class="nav-icon">📜</span><span>Audit Log</span>
+      </div>
       <div class="nav-item" id="inbox-nav" onclick="showPage('inbox')">
         <span class="nav-icon">📬</span><span data-i18n="nav_messages">Messages</span>
         <span id="inbox-badge" style="display:none;background:#e05555;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:auto;">0</span>
@@ -1177,9 +1180,12 @@
 
     <!-- USERS -->
     <div id="page-users" class="page">
-      <div class="page-header">
-        <h1 class="page-title" data-i18n="all_users">All Users</h1>
-        <p class="page-sub" data-i18n="manage_users">Manage platform users</p>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h1 class="page-title" data-i18n="all_users">All Users</h1>
+          <p class="page-sub" data-i18n="manage_users">Manage platform users</p>
+        </div>
+        <button id="transfer-ownership-btn" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;" onclick="openTransferOwnershipModal()">🔑 Transfer Ownership</button>
       </div>
       <div style="margin-bottom:16px;position:relative;max-width:400px;">
         <input type="text" id="users-search" placeholder="🔍 Search users..." oninput="filterUsers();document.getElementById('users-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;" data-i18n-ph="search_users_ph"/>
@@ -1200,13 +1206,25 @@
       </div>
       <div id="pastors-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
+
+    <!-- AUDIT LOG -->
+    <div id="page-audit" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h1 class="page-title">Audit Log</h1>
+          <p class="page-sub">Role change history (Owner only)</p>
+        </div>
+        <button class="btn btn-sm" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;" onclick="clearAuditLog()">🗑 Clear All</button>
+      </div>
+      <div id="audit-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+    </div>
   </main>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js"></script>
+<script src="/pastor/dashboard.js?v=2"></script>
 
 
 <!-- Cookie Consent Banner -->
