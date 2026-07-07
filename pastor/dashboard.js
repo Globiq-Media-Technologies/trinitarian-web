@@ -6,15 +6,40 @@
 let allUsersCache = [];
 
 
-async function sendMessageToUser(userId, displayName) {
-  const subject = prompt(`Message subject to ${displayName} (optional):`) ?? '';
-  const body = prompt(`Message to ${displayName}:`);
-  if (!body || !body.trim()) return;
-  try {
-    const data = await api('/api/admin/message', 'POST', { to_user_id: userId, subject: subject.trim() || null, body: body.trim() });
-    if (data.error) showToast(data.error, 'error');
-    else showToast(`✉ Message sent to ${displayName}`);
-  } catch(e) { showToast('Failed to send message', 'error'); }
+function sendMessageToUser(userId, displayName) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:440px;';
+  inner.innerHTML = '<h3 style="color:var(--white);margin-bottom:16px;">Message ' + (displayName||'User').replace(/</g,'') + '</h3>'
+    + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Subject (optional)</label>'
+    + '<input type="text" id="dm-subject" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:14px;box-sizing:border-box;" />'
+    + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Message</label>'
+    + '<textarea id="dm-body" rows="5" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:14px;box-sizing:border-box;resize:vertical;"></textarea>'
+    + '<div id="dm-err" style="display:none;color:#e05555;font-size:13px;margin-bottom:12px;"></div>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button id="dm-cancel" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:10px;padding:10px;cursor:pointer;">Cancel</button>'
+    + '<button id="dm-send" style="flex:1;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:700;">Send</button>'
+    + '</div>';
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+  inner.querySelector('#dm-cancel').onclick = function() { modal.remove(); };
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  inner.querySelector('#dm-send').onclick = async function() {
+    const subject = inner.querySelector('#dm-subject').value.trim();
+    const body = inner.querySelector('#dm-body').value.trim();
+    const err = inner.querySelector('#dm-err');
+    if (!body) { err.textContent = 'Please enter a message.'; err.style.display = 'block'; return; }
+    try {
+      const data = await api('/api/admin/message', 'POST', { to_user_id: userId, subject: subject || null, body });
+      if (data.error) { err.textContent = data.error; err.style.display = 'block'; return; }
+      modal.remove();
+      showToast(`✉ Message sent to ${displayName}`);
+    } catch(e) {
+      err.textContent = e.message || 'Failed to send message';
+      err.style.display = 'block';
+    }
+  };
 }
 
 async function loadUsers() {
@@ -116,14 +141,18 @@ async function changeUserRole(id, name, currentRole) {
 // ── Ownership Transfer (owner only) ──
 async function openTransferOwnershipModal() {
   if (user?.role !== 'owner') return;
-  let candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
-  if (!candidates.length) {
-    try {
-      const data = await api('/api/admin/users?limit=100');
-      allUsersCache = data?.users || data || [];
-      candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
-    } catch(e) {}
+
+  // Always fetch a fresh list rather than trusting a possibly-stale cache
+  let candidates = [];
+  try {
+    const data = await api('/api/admin/users?limit=100');
+    allUsersCache = data?.users || data || [];
+    candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
+  } catch(e) {
+    candidates = allUsersCache.filter(u => u.id !== user.id && u.is_active !== false);
   }
+
+  let selectedId = null;
 
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
@@ -132,10 +161,9 @@ async function openTransferOwnershipModal() {
   inner.innerHTML = '<h3 style="color:#e05555;margin-bottom:8px;">⚠️ Transfer Ownership</h3>'
     + '<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">This will make the selected user the sole Owner and demote you to Admin. This cannot be undone by you.</p>'
     + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Select new owner</label>'
-    + '<select id="transfer-user-select" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:14px;">'
-    + '<option value="">-- Choose a user --</option>'
-    + candidates.map(u => `<option value="${u.id}">${(u.display_name||u.username||'User').replace(/</g,'')} (${u.role||'listener'})</option>`).join('')
-    + '</select>'
+    + '<input type="text" id="transfer-user-search" placeholder="🔍 Search by name or username..." style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);margin-bottom:8px;box-sizing:border-box;" />'
+    + '<div id="transfer-user-list" style="max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;"></div>'
+    + '<div id="transfer-selected-label" style="color:var(--gold);font-size:12px;margin-bottom:14px;display:none;"></div>'
     + '<label style="color:var(--white);font-size:13px;display:block;margin-bottom:6px;">Your password</label>'
     + '<div style="position:relative;margin-bottom:14px;">'
     + '<input type="password" id="transfer-password" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:10px;padding-right:60px;color:var(--white);box-sizing:border-box;" />'
@@ -153,10 +181,40 @@ async function openTransferOwnershipModal() {
     + '</div>';
   modal.appendChild(inner);
   document.body.appendChild(modal);
+
+  function renderCandidateList(filterText) {
+    const listEl = inner.querySelector('#transfer-user-list');
+    const q = (filterText || '').toLowerCase();
+    const filtered = candidates.filter(u =>
+      !q || (u.display_name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q)
+    );
+    if (!filtered.length) {
+      listEl.innerHTML = '<div style="padding:14px;color:var(--text-muted);font-size:13px;text-align:center;">No matching users</div>';
+      return;
+    }
+    listEl.innerHTML = filtered.map(u => `
+      <div class="transfer-user-row" data-id="${u.id}" style="padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--border);background:${selectedId===u.id?'rgba(212,175,55,0.12)':'transparent'};color:var(--white);font-size:13px;">
+        ${(u.display_name||u.username||'User').replace(/</g,'')} <span style="color:var(--text-muted);">· ${u.role||'listener'}</span>
+      </div>
+    `).join('');
+    listEl.querySelectorAll('.transfer-user-row').forEach(row => {
+      row.onclick = function() {
+        selectedId = row.getAttribute('data-id');
+        const u = candidates.find(c => c.id === selectedId);
+        const label = inner.querySelector('#transfer-selected-label');
+        label.style.display = 'block';
+        label.textContent = 'Selected: ' + (u?.display_name || u?.username || 'User');
+        renderCandidateList(inner.querySelector('#transfer-user-search').value);
+      };
+    });
+  }
+  renderCandidateList('');
+  inner.querySelector('#transfer-user-search').oninput = function() { renderCandidateList(this.value); };
+
   inner.querySelector('#transfer-cancel').onclick = function() { modal.remove(); };
   modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
   inner.querySelector('#transfer-save').onclick = async function() {
-    const newOwnerId = inner.querySelector('#transfer-user-select').value;
+    const newOwnerId = selectedId;
     const password = inner.querySelector('#transfer-password').value;
     const confirmationText = inner.querySelector('#transfer-confirm').value;
     const err = inner.querySelector('#transfer-err');
