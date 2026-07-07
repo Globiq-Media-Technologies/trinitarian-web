@@ -522,7 +522,7 @@ function showPage(name) {
     if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
     if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
     if(document.getElementById('set-denom')) document.getElementById('set-denom').textContent = user?.denomination || localStorage.getItem('pastor_denom') || '—';
-    if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;document.getElementById('set-role').textContent=user?.role==='admin'?(_tt.admin_label||'ADMIN'):(_tt.pastor_label||'PASTOR');}
+    if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;const _roleLabels={owner:'OWNER',admin:(_tt.admin_label||'ADMIN'),moderator:'MODERATOR',pastor:(_tt.pastor_label||'PASTOR'),listener:'LISTENER'};document.getElementById('set-role').textContent=_roleLabels[user?.role]||(_tt.pastor_label||'PASTOR');}
     loadFontSettings();
     loadNotifPrefs();
   }
@@ -823,7 +823,7 @@ function initDashboard() {
   // Populate settings
   if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
   if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
-  if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;document.getElementById('set-role').textContent=user?.role==='admin'?(_tt.admin_label||'ADMIN'):(_tt.pastor_label||'PASTOR');}
+  if(document.getElementById('set-role')){const _tt=PD_TRANS[pdCurrentLang]||PD_TRANS.en;const _roleLabels={owner:'OWNER',admin:(_tt.admin_label||'ADMIN'),moderator:'MODERATOR',pastor:(_tt.pastor_label||'PASTOR'),listener:'LISTENER'};document.getElementById('set-role').textContent=_roleLabels[user?.role]||(_tt.pastor_label||'PASTOR');}
   // Hide admin items unless admin/moderator/owner
   const isAdmin = ['admin', 'owner'].includes(user?.role);
   const isModerator = user?.role === 'moderator';
@@ -1893,7 +1893,14 @@ async function init() {
   if (token && user) {
     try {
       const fresh = await api('/api/auth/me');
-      if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); initDashboard(); return; }
+      if (fresh?.id) {
+        const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
+        if ((roleOrder[fresh.role]||0) < (roleOrder[user?.role]||0)) { fresh.role = user.role; }
+        user = fresh;
+        localStorage.setItem('pastor_user', JSON.stringify(user));
+        initDashboard();
+        return;
+      }
     } catch(e) {}
   }
   showScreen('login');
@@ -2758,6 +2765,8 @@ document.addEventListener('visibilitychange', async function() {
     try {
       const fresh = await api('/api/auth/me');
       if (fresh?.id) {
+        const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
+        if ((roleOrder[fresh.role]||0) < (roleOrder[user?.role]||0)) { fresh.role = user.role; }
         user = fresh;
         localStorage.setItem('pastor_user', JSON.stringify(user));
         // Update role display without full re-init
