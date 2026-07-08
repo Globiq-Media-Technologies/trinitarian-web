@@ -936,12 +936,14 @@ async function openEditSermon(id, title, description){
   modal.id = 'edit-sermon-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   modal.innerHTML = `
-    <div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:480px;">
+    <div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;">
       <h3 style="color:var(--white);margin-bottom:20px;">Edit Sermon</h3>
       <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Title</label>
       <input id="edit-sermon-title" type="text" value="${(title||'').replace(/"/g,'&quot;')}" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:16px;margin-bottom:16px;box-sizing:border-box;"/>
       <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Description</label>
-      <textarea id="edit-sermon-description" rows="3" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:16px;margin-bottom:20px;box-sizing:border-box;resize:vertical;">${description||''}</textarea>
+      <textarea id="edit-sermon-description" rows="3" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:16px;margin-bottom:16px;box-sizing:border-box;resize:vertical;">${description||''}</textarea>
+      <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Transcript</label>
+      <textarea id="edit-sermon-transcript" rows="10" placeholder="Loading current transcript…" style="width:100%;background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--white);font-size:14px;line-height:1.6;margin-bottom:20px;box-sizing:border-box;resize:vertical;"></textarea>
       <div style="display:flex;gap:10px;">
         <button onclick="document.getElementById('edit-sermon-modal').remove()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-sec);cursor:pointer;">Cancel</button>
         <button onclick="saveEditSermon('${id}')" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--gold);color:#071528;font-weight:700;cursor:pointer;">Save Changes</button>
@@ -950,14 +952,28 @@ async function openEditSermon(id, title, description){
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
   document.body.appendChild(modal);
   document.getElementById('edit-sermon-title').focus();
+
+  // Fetch the current transcript fresh, since callers only pass title/description
+  try {
+    const sermon = await api('/api/sermons/' + id);
+    const ta = document.getElementById('edit-sermon-transcript');
+    if (ta) {
+      ta.value = sermon?.transcript || '';
+      ta.placeholder = 'No transcript yet — paste or type the full sermon text here…';
+    }
+  } catch (e) {
+    const ta = document.getElementById('edit-sermon-transcript');
+    if (ta) ta.placeholder = 'Could not load existing transcript. You can still type or paste one here.';
+  }
 }
 
 async function saveEditSermon(id){
   const title = document.getElementById('edit-sermon-title').value.trim();
   const description = document.getElementById('edit-sermon-description').value.trim();
+  const transcript = document.getElementById('edit-sermon-transcript').value.trim();
   if (!title) return showToast('Title cannot be empty');
   try {
-    await api('/api/sermons/'+id, 'PUT', { title, description });
+    await api('/api/sermons/'+id, 'PUT', { title, description, transcript });
     document.getElementById('edit-sermon-modal').remove();
     loadSermons();
     showToast('Sermon updated successfully');
@@ -2823,7 +2839,7 @@ async function viewSermon(id) {
           👁 ${parseInt(s.views_count||0).toLocaleString()} views
         </div>
         ${mediaHtml}
-        ${s.description ? `<div style="color:#b0c4d8;font-size:14px;line-height:1.7;margin-top:16px;padding:16px;background:#071528;border-radius:8px;">${s.description}</div>` : ''}
+        ${s.description ? `<div style="color:#b0c4d8;font-size:14px;line-height:1.7;margin-top:16px;padding:16px;background:#071528;border-radius:8px;">${s.description.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
         ${s.transcript ? `<div style="margin-top:20px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:10px;padding:10px;background:#071528;border-radius:10px;">
             <span style="color:#D4AF37;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-right:8px;">READING</span>

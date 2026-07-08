@@ -1661,13 +1661,14 @@ function openSermon(s){
 }
 
 function playerShowTab(tab,evt){
+  saveReadingPosition();
   ['info','transcript','reading','comments'].forEach(t=>{const el=document.getElementById('ptab-'+t);if(el)el.style.display=t===tab?'block':'none';});
   document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
   if(tab==='reading'){loadReadingMode();setTimeout(restoreReadingPosition,400);}
 }
 
-let rdFontSz=16,rdIsNight=false,rdFont='serif';
+let rdFontSz=parseInt(localStorage.getItem('rd_font_size')||'16',10),rdIsNight=(localStorage.getItem('rd_night')==='true'),rdFont=localStorage.getItem('rd_font')||'serif';
 
 
 function playerFullscreen(){
@@ -2049,6 +2050,7 @@ function showRdToast(msg){
 
 function rdFontSize(d){
   rdFontSz=Math.max(12,Math.min(28,rdFontSz+(d*2)));
+  localStorage.setItem('rd_font_size',rdFontSz);
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
   if(t){t.style.fontSize=rdFontSz+'px';t.querySelectorAll('p').forEach(function(p){p.style.fontSize=rdFontSz+'px';});}
@@ -2057,6 +2059,7 @@ function rdFontSize(d){
 
 function rdSetFont(f){
   rdFont=f;
+  localStorage.setItem('rd_font',f);
   var ff=f==='sans'?'system-ui,sans-serif':'Georgia,serif';
   var t=document.getElementById('rd-text');
   if(t){t.style.fontFamily=ff;t.querySelectorAll('p').forEach(function(p){p.style.fontFamily=ff;});}
@@ -2068,12 +2071,13 @@ function rdSetFont(f){
 
 function rdToggleNight(){
   rdIsNight=!rdIsNight;
+  localStorage.setItem('rd_night',rdIsNight);
   var w=document.getElementById('reading-wrap');
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
   var n=document.getElementById('rd-night-btn');
-  if(w)w.style.background=rdIsNight?'#1a1a2e':'#0d2142';
-  if(t)t.style.color=rdIsNight?'#e0e0e0':'#e8e8e8';
+  if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
+  if(t)t.style.color=rdIsNight?'#e0e0e0':'#222';
   if(e)e.style.color=rdIsNight?'#aaa':'#8fa3c0';
   if(n){n.textContent=rdIsNight?'☀ Day':'🌙 Night';n.style.background=rdIsNight?'#333':'#e8e8e8';n.style.color=rdIsNight?'#fff':'#333';}
   var buttons=['rd-font-sans','rd-font-serif','rd-bookmark-btn'];
@@ -2193,6 +2197,19 @@ function loadReadingMode(){
   var w=document.getElementById('reading-wrap');
   if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
   t.style.color=rdIsNight?'#e0e0e0':'#222';
+
+  // Wire up scroll-position saving — this was previously never attached, so the
+  // "resume where you left off" feature silently did nothing. Bind once per
+  // element via a dataset flag so we don't stack duplicate listeners each time
+  // reading mode reloads.
+  if(t && !t.dataset.scrollBound){
+    t.dataset.scrollBound='true';
+    var rdSaveTimer=null;
+    t.addEventListener('scroll',function(){
+      if(rdSaveTimer)clearTimeout(rdSaveTimer);
+      rdSaveTimer=setTimeout(saveReadingPosition,400);
+    });
+  }
 }
 
 
