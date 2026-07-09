@@ -679,7 +679,7 @@ function lhSendChat() {
         <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
       <!-- A4-width reading area -->
-      <div id="reading-wrap" style="background:transparent;border:none;padding:24px 0;min-height:500px;max-width:min(1100px,90vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word;">
+      <div id="reading-wrap" style="background:transparent;border:none;padding:20px 16px;min-height:500px;max-width:min(760px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word;">
         <div id="rd-text"  style="font-size:16px;line-height:1.9;color:#e8e8e8;font-family:Georgia,serif;display:none;"></div>
         <p   id="rd-empty" style="font-size:16px;color:#8fa3c0;text-align:center;padding:20px;display:none;">No transcript available for this sermon.</p>
       </div>
@@ -1729,7 +1729,7 @@ function _playerFullscreenOverlay(){
     body.innerHTML=mediaHtml
       +'<h2 style="color:#fff;font-size:18px;margin-bottom:8px;line-height:1.4;">'+s.title+'</h2>'
       +'<p style="color:#D4AF37;font-size:13px;margin-bottom:12px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
-      +(s.description?'<p style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;">'+s.description+'</p>':'')
+      +(s.description?'<p style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;">'+s.description.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>':'')
       +'<div style="color:#8fa3c0;font-size:12px;">👁 '+parseInt(s.views_count||0).toLocaleString()+' views &nbsp;·&nbsp; '+(s.type||'').toUpperCase()+'</div>';
     overlay.appendChild(body);
     document.body.appendChild(overlay);
@@ -1753,7 +1753,7 @@ function _playerFullscreenOverlay(){
   header.appendChild(titleEl);header.appendChild(closeBtn);
   overlay.appendChild(header);
   var body=document.createElement('div');
-  body.style.cssText='width:100%;padding:16px;box-sizing:border-box;';
+  body.style.cssText='width:100%;max-width:min(760px,92vw);margin:0 auto;padding:16px;box-sizing:border-box;';
   var pastor=document.createElement('p');
   pastor.style.cssText='color:#D4AF37;font-size:13px;margin-bottom:16px;';
   pastor.textContent='✝ '+(s.pastor_name||s.display_name||'Verified Pastor');
@@ -1777,11 +1777,16 @@ function _playerFullscreenOverlay(){
   var mediaUrl=s.media_url||'';
   var isPdf=mediaUrl&&(mediaUrl.toLowerCase().includes('.pdf')||(s.type==='text'||s.type==='article'));
   if(s.transcript){
-    content_div.innerHTML=s.transcript;
+    var escapedTranscript=s.transcript.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    content_div.innerHTML=escapedTranscript;
   } else if(isPdf&&mediaUrl){
-    var isPdfFile=mediaUrl.toLowerCase().includes('.pdf');
-    var viewerSrc=isPdfFile?mediaUrl:'https://docs.google.com/viewer?url='+encodeURIComponent(mediaUrl)+'&embedded=true';
-    content_div.innerHTML='<div style="text-align:center;margin-bottom:16px;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open / Download Document</a></div><iframe src="'+viewerSrc+'" style="width:100%;min-height:70vh;border:none;border-radius:8px;" title="Sermon document"></iframe>';
+    content_div.innerHTML='<div style="text-align:center;padding:40px 0;">'
+      +'<div style="font-size:40px;margin-bottom:16px;">'+(s.type==='article'?'📰':'📄')+'</div>'
+      +'<p style="color:#8fa3c0;font-size:14px;margin-bottom:20px;">This sermon was uploaded as a document.</p>'
+      +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
+      +'<a href="'+mediaUrl+'" target="_blank" rel="noopener" style="background:#D4AF37;color:#071528;padding:11px 26px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⛶ Open</a>'
+      +'<a href="'+mediaUrl+'" download style="background:transparent;color:#D4AF37;padding:11px 26px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(212,175,55,0.3);">⬇ Download</a>'
+      +'</div></div>';
   } else {
     content_div.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No transcript available for this sermon.</p>';
   }
@@ -2132,15 +2137,18 @@ function rdToggleWidth(btn){
   if(!w)return;
   var expanded=w.dataset.expanded==='true';
   if(expanded){
-    w.style.maxWidth='min(1100px,90vw)';
-    w.style.padding='48px 64px';
+    w.style.maxWidth='min(760px,92vw)';
+    w.style.padding='20px 16px';
     w.dataset.expanded='false';
-    if(btn)btn.textContent='⟺ Expand';
+    if(btn)btn.textContent='⟺ Wider';
   } else {
-    w.style.maxWidth='100%';
-    w.style.padding='40px 32px';
+    // Capped well within a comfortable reading line-length (not full width) —
+    // "Expand" previously went to 100vw, which produced uncomfortably long
+    // lines on wide screens.
+    w.style.maxWidth='min(920px,94vw)';
+    w.style.padding='20px 16px';
     w.dataset.expanded='true';
-    if(btn)btn.textContent='⟺ Compress';
+    if(btn)btn.textContent='⟺ Narrower';
   }
 }
 
@@ -2154,7 +2162,7 @@ function loadReadingMode(){
 
   // Restore reading-wrap style for content
   var rw=document.getElementById('reading-wrap');
-  if(rw){rw.style.background='#0d2142';rw.style.border='1px solid rgba(212,175,55,0.1)';rw.style.borderRadius='12px';rw.style.padding='32px 48px';}
+  if(rw){rw.style.background='#0d2142';rw.style.border='1px solid rgba(212,175,55,0.1)';rw.style.borderRadius='12px';rw.style.padding='24px 20px';}
   if(txt){
     // Convert plain text to readable paragraphs
     var formatted = txt
@@ -2162,19 +2170,28 @@ function loadReadingMode(){
       .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
       .replace(/\n{3,}/g,'\n\n')
       .split('\n\n')
-      .map(function(p){ return p.trim() ? '<p style="margin-bottom:1.2em;">'+p.replace(/\n/g,'<br>')+'</p>' : ''; })
+      .map(function(p){ return p.trim() ? '<p style="margin-bottom:1em;">'+p.replace(/\n/g,'<br>')+'</p>' : ''; })
       .join('');
     t.innerHTML=formatted || txt;
     t.style.whiteSpace='normal';
     t.style.display='block';
     e.style.display='none';
   } else if(isPdf && mediaUrl){
-    // PDF or document uploaded as media_url — show embedded viewer + download link
-    var isPdfFile2=mediaUrl.toLowerCase().includes('.pdf');
-    var viewerSrc2=isPdfFile2?mediaUrl:'https://docs.google.com/viewer?url='+encodeURIComponent(mediaUrl)+'&embedded=true';
+    // Document uploaded as media_url with no extracted transcript. No iframe —
+    // unreliable across file types and forces some browsers into a download
+    // prompt just for viewing. Instead: a plain "Open" link (browser handles
+    // display however it natively would) and a separate explicit "Download"
+    // link (forces save via the download attribute), so the two actions are
+    // unambiguous and distinct.
     var wrap=document.getElementById('reading-wrap');
-    if(wrap){wrap.style.border='none';wrap.style.background='transparent';wrap.style.padding='0';}
-    t.innerHTML='<div style="text-align:center;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><a href="'+mediaUrl+'" target="_blank" style="background:#D4AF37;color:#071528;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⬇ Open Document</a><a href="'+viewerSrc2+'" target="_blank" style="background:transparent;color:#D4AF37;padding:10px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(212,175,55,0.3);">⛶ Open Full Page</a></div><iframe src="'+viewerSrc2+'" style="width:100%;height:75vh;min-height:500px;border:none;border-radius:0;display:block;" title="Sermon document"></iframe>';
+    if(wrap){wrap.style.border='1px solid rgba(212,175,55,0.15)';wrap.style.background='#0d2142';wrap.style.padding='40px 20px';}
+    t.innerHTML='<div style="text-align:center;">'
+      +'<div style="font-size:40px;margin-bottom:16px;">'+(currentSermon.type==='article'?'📰':'📄')+'</div>'
+      +'<p style="color:#8fa3c0;font-size:14px;margin-bottom:20px;">This sermon was uploaded as a document.</p>'
+      +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
+      +'<a href="'+mediaUrl+'" target="_blank" rel="noopener" style="background:#D4AF37;color:#071528;padding:11px 26px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">⛶ Open</a>'
+      +'<a href="'+mediaUrl+'" download style="background:transparent;color:#D4AF37;padding:11px 26px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(212,175,55,0.3);">⬇ Download</a>'
+      +'</div></div>';
     t.style.display='block';
     e.style.display='none';
   } else {
