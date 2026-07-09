@@ -756,7 +756,7 @@ async function handleApply() {
         setTimeout(() => initDashboard(), 1500);
       } else {
         showAlert('apply-success',
-          '✅ Application submitted! We will review it within 3–5 business days and notify you by email at the address you registered with. Once approved, simply sign in here to access your Pastor Dashboard.',
+          '✅ Application submitted! We will review it within 1–2 business days and notify you by email at the address you registered with. Once approved, simply sign in here to access your Pastor Dashboard.',
           'success');
       }
     } else {
