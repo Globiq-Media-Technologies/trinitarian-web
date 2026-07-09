@@ -1475,10 +1475,17 @@ async function filterApps(status, btn) {
     b.style.background='transparent';b.style.color='var(--text-muted)';b.style.borderColor='var(--border)';
   });
   if(btn){
-    const colors={pending:'rgba(240,165,0,0.1)',approved:'rgba(64,201,106,0.1)',rejected:'rgba(224,85,85,0.1)',all:'rgba(212,175,55,0.1)'};
-    const textColors={pending:'var(--warning)',approved:'var(--success)',rejected:'var(--error)',all:'var(--gold)'};
+    const colors={pending:'rgba(240,165,0,0.1)',approved:'rgba(64,201,106,0.1)',rejected:'rgba(224,85,85,0.1)',all:'rgba(212,175,55,0.1)','auto-approval':'rgba(100,150,255,0.1)'};
+    const textColors={pending:'var(--warning)',approved:'var(--success)',rejected:'var(--error)',all:'var(--gold)','auto-approval':'#6496ff'};
     btn.style.background=colors[status]||colors.all;
     btn.style.color=textColors[status]||textColors.all;
+  }
+  if (status === 'auto-approval') {
+    try {
+      const data = await api('/api/pastors/applications/pending-auto-approval');
+      renderAutoApprovalQueue(data?.applications || []);
+    } catch(e) {}
+    return;
   }
   const url = status==='all' ? '/api/pastors/applications' : '/api/pastors/applications?status='+status;
   try {
@@ -1486,6 +1493,45 @@ async function filterApps(status, btn) {
     const applications = apps?.applications || [];
     renderApplications(applications);
   } catch(e) {}
+}
+
+function renderAutoApprovalQueue(applications) {
+  const el = document.getElementById('admin-applications');
+  if (!applications.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⏱</div><h3>Nothing currently counting down</h3><p style="color:var(--text-muted);">Applications appear here once auto-verification schedules them for approval.</p></div>';
+    return;
+  }
+  el.innerHTML = applications.map(a => {
+    const hoursLeft = Math.max(0, Math.round((new Date(a.auto_approve_at).getTime() - Date.now()) / 3600000));
+    return `
+    <div class="sermon-card" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;gap:10px;">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+        <div>
+          <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
+          <div style="color:var(--text-muted);font-size:13px;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}</div>
+        </div>
+        <span class="status-badge" style="background:rgba(100,150,255,0.15);color:#6496ff;">⏱ ~${hoursLeft}h left</span>
+      </div>
+      ${a.verification_score !== null && a.verification_score !== undefined ? `<div style="color:#6496ff;font-size:12px;">Verification score: ${a.verification_score}/100</div>` : ''}
+      ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement.substring(0,200)}…</div>` : ''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve Now</button>
+        <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
+        <button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.4);color:#6496ff;" onclick="cancelAutoApproval('${a.id}','${a.full_name}')">⏸ Pause Auto-Approval</button>
+      </div>
+    </div>
+  `;}).join('');
+}
+
+async function cancelAutoApproval(id, name) {
+  if (!confirm(`Pause auto-approval for ${name}? This application will then require manual review.`)) return;
+  try {
+    await api(`/api/pastors/applications/${id}/cancel-auto-approval`, 'PUT');
+    showToast('Auto-approval paused — now requires manual review');
+    filterApps('auto-approval', document.querySelector('.app-filter-btn[onclick*="auto-approval"]'));
+  } catch(e) {
+    showToast('Failed to pause auto-approval', 'error');
+  }
 }
 
 async function loadAdmin() {
