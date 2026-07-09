@@ -1062,9 +1062,21 @@ function selectLang(el, lang) {
 function handleFileSelect(input) {
   const file = input.files[0];
   const nameEl = document.getElementById('file-name');
-  if (file) {
-    nameEl.innerHTML = `📎 ${file.name} <span onclick="removeMediaFile(event)" style="color:#e05555;cursor:pointer;margin-left:8px;font-size:12px;">✕ Remove</span>`;
+  if (!file) return;
+  const name = file.name.toLowerCase();
+  // Matches the mobile app's upload restriction: video/audio always allowed,
+  // but documents are limited to .docx/.txt since those are the only formats
+  // that extract cleanly to readable text. PDF and legacy .doc can't be
+  // reliably converted, so they're excluded for consistency across platforms.
+  const isMedia = file.type.startsWith('video/') || file.type.startsWith('audio/');
+  const isValidDoc = name.endsWith('.docx') || name.endsWith('.txt');
+  if (!isMedia && !isValidDoc) {
+    alert('Please select a video, audio, .docx, or .txt file. PDF and legacy .doc are not supported.');
+    input.value = '';
+    if (nameEl) nameEl.innerHTML = '';
+    return;
   }
+  nameEl.innerHTML = `📎 ${file.name} <span onclick="removeMediaFile(event)" style="color:#e05555;cursor:pointer;margin-left:8px;font-size:12px;">✕ Remove</span>`;
 }
 
 function removeMediaFile(e) {
