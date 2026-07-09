@@ -1823,7 +1823,7 @@ async function openMessage(id) {
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
           <div style="color:var(--white);font-size:16px;font-weight:700;">\${msg.subject || 'Message'}</div>
-          <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">From: \${msg.sender_name || msg.from_name || 'User'} · \${msg.created_at ? new Date(msg.created_at).toLocaleDateString() : ''}</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">From: \${msg.sender_name || msg.from_name || 'User'} · \${msg.created_at ? new Date(msg.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</div>
         </div>
         <button onclick="this.closest('div[style]').remove()" style="background:transparent;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;">✕</button>
       </div>
@@ -2051,7 +2051,7 @@ async function loadInbox() {
           <div style="font-size:20px;flex-shrink:0;">💬</div>
           <div style="flex:1;">
             <div style="color:#e8e8e8;font-size:14px;font-weight:600;">${m.subject||'Support Request'} ${!m.is_read?'<span style=\"background:#e05555;color:#fff;font-size:9px;padding:2px 6px;border-radius:10px;margin-left:6px;\">NEW</span>':''}</div>
-            <div style="color:#8fa3c0;font-size:12px;">From: ${m.display_name||m.email||'Listener'} · ${new Date(m.created_at).toLocaleDateString('en-GB')}</div>
+            <div style="color:#8fa3c0;font-size:12px;">From: ${m.display_name||m.email||'Listener'} · ${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
           </div>
         </div>`).join('');
       if (msgs.length || notifs.length) html += '<div style="height:1px;background:rgba(212,175,55,0.1);margin:16px 0;"></div>';
@@ -2065,7 +2065,7 @@ async function loadInbox() {
           <div style="font-size:20px;flex-shrink:0;">📬</div>
           <div style="flex:1;">
             <div style="color:#e8e8e8;font-size:14px;font-weight:600;">${m.subject||'Message'}</div>
-            <div style="color:#8fa3c0;font-size:12px;">To: ${m.to_name||m.to_email||'User'} · ${new Date(m.created_at).toLocaleDateString('en-GB')}</div>
+            <div style="color:#8fa3c0;font-size:12px;">To: ${m.to_name||m.to_email||'User'} · ${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
           </div>
         </div>`).join('');
       if (notifs.length) html += '<div style="height:1px;background:rgba(212,175,55,0.1);margin:16px 0;"></div>';
