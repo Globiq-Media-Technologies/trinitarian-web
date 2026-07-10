@@ -569,6 +569,9 @@ function lhSendChat() {
   </div>
 
   
+  <!-- Pastors matching search (hidden unless a search query returns matches) -->
+  <div id="lh-pastor-results" style="display:none;padding:0 24px 20px;"></div>
+
   <!-- Sermons grid -->
   <div id="lh-sermons" style="padding:0 24px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
     <div style="grid-column:1/-1;text-align:center;padding:40px;color:#8fa3c0;">Loading sermons...</div>
@@ -1444,7 +1447,12 @@ function lhRender(){
   }
   if(lhCurrentType!=='all')list=list.filter(s=>s.type===lhCurrentType);
   if(lhCurrentCat){const synonyms={'faith':['faith','believe','trust','confidence'],'salvation':['salvation','saved','born again','redemption','grace','repent'],'healing':['healing','heal','miracle','restoration'],'prosperity':['prosperity','prosper','blessing','abundance','wealth'],'prophecy':['prophecy','prophetic','vision','revelation'],'marriage':['marriage','family','husband','wife','relationship'],'leadership':['leadership','leader','pastor','ministry','church'],'bible':['bible','scripture','word','study','verse','gospel'],'prayer':['prayer','pray','intercession','fasting']};const words=synonyms[lhCurrentCat]||[lhCurrentCat];list=list.filter(s=>{const text=(s.title+' '+(s.description||'')+' '+(s.category_name||'')).toLowerCase();return words.some(w=>text.includes(w));});}
-  if(q)list=list.filter(s=>(s.title+' '+(s.description||'')+' '+(s.pastor_name||'')).toLowerCase().includes(q));
+  // Topic-only, matching the backend's search behavior: title + description
+  // only. Previously included pastor_name, meaning any pastor whose name
+  // happened to contain the search term would pull in unrelated sermons —
+  // same root problem as the backend had. Pastor search is now a separate,
+  // dedicated lookup (see lhSearchPastors) rather than blended in here.
+  if(q)list=list.filter(s=>(s.title+' '+(s.description||'')).toLowerCase().includes(q));
   const el=document.getElementById('lh-sermons');
   if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
@@ -1495,7 +1503,36 @@ function showShareToast(msg){
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
   document.body.appendChild(t);setTimeout(function(){t.remove();},2500);
 }
-function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-search-clear').style.display=q?'block':'none';lhRender();}
+function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-search-clear').style.display=q?'block':'none';lhRender();lhSearchPastors(q);}
+
+let lhPastorSearchTimer=null;
+function lhSearchPastors(q){
+  clearTimeout(lhPastorSearchTimer);
+  const container=document.getElementById('lh-pastor-results');
+  if(!container)return;
+  if(!q||q.trim().length<2){container.style.display='none';container.innerHTML='';return;}
+  lhPastorSearchTimer=setTimeout(async function(){
+    try{
+      const res=await fetch(API+'/api/pastors?q='+encodeURIComponent(q)+'&limit=6');
+      const pastors=await res.json();
+      if(!Array.isArray(pastors)||!pastors.length){container.style.display='none';container.innerHTML='';return;}
+      container.style.display='block';
+      container.innerHTML='<div style="color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Pastors</div>'
+        +'<div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:4px;">'
+        +pastors.map(function(p){
+          const initial=(p.display_name||'P').charAt(0);
+          const avatar=p.avatar_url
+            ? '<img src="'+p.avatar_url+'" style="width:56px;height:56px;border-radius:28px;object-fit:cover;">'
+            : '<div style="width:56px;height:56px;border-radius:28px;background:#1a4080;display:flex;align-items:center;justify-content:center;color:#D4AF37;font-size:20px;font-weight:700;">'+initial+'</div>';
+          return '<div onclick="openPastorProfile(\''+p.id+'\')" style="flex-shrink:0;width:76px;text-align:center;cursor:pointer;">'
+            +avatar
+            +'<div style="color:#e8e8e8;font-size:11px;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.display_name||'')+'</div>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    }catch(e){container.style.display='none';container.innerHTML='';}
+  },300);
+}
 function lhClearSearch(){document.getElementById('lh-search').value='';document.getElementById('lh-clear').style.display='none';lhRender();}
 
 function lhSetCategory(cat){
