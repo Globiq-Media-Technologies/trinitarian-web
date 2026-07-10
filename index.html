@@ -20,6 +20,17 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{background:#071528;color:#e8e8e8;font-family:Georgia,serif;min-height:100vh;}
 
+    /* Fullscreen player — the video was constrained to a small max-height by
+       default (280px), so entering fullscreen just centered that small size
+       inside the fullscreen black backdrop rather than actually filling the
+       screen vertically — hence the "floats halfway" look. */
+    #player-media:fullscreen{width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;background:#000;}
+    #player-media:-webkit-full-screen{width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;background:#000;}
+    #player-media:fullscreen #lh-video-wrap{flex:1;display:flex!important;align-items:center;justify-content:center;max-height:none!important;}
+    #player-media:-webkit-full-screen #lh-video-wrap{flex:1;display:flex!important;align-items:center;justify-content:center;max-height:none!important;}
+    #player-media:fullscreen #lh-video-player{max-height:100%!important;width:100%!important;object-fit:contain;}
+    #player-media:-webkit-full-screen #lh-video-player{max-height:100%!important;width:100%!important;object-fit:contain;}
+
     /* Pages */
     .page{display:none;}
     .page{display:none;}.page.active{display:block;}
@@ -1756,16 +1767,24 @@ function cpSeekClick(evt){
 
 function cpSkip(deltaSec){
   if(!cpEl)return;
+  // Some browsers briefly pause a <video>/<audio> element while seeking
+  // (especially if it needs to re-buffer at the new position), and nothing
+  // automatically resumes playback afterward — that's what was causing +15/
+  // -15 to silently stop playback instead of just skipping.
+  const wasPlaying=!cpEl.paused;
   cpEl.currentTime=Math.max(0,Math.min((cpEl.duration||0),cpEl.currentTime+deltaSec));
+  if(wasPlaying){cpEl.play().catch(function(){});}
 }
 
 function cpCycleSpeed(){
   if(!cpEl)return;
+  const wasPlaying=!cpEl.paused;
   const idx=CP_RATES.indexOf(cpRate);
   cpRate=CP_RATES[(idx+1)%CP_RATES.length];
   cpEl.playbackRate=cpRate;
   const btn=document.getElementById('cp-speed');
   if(btn)btn.textContent=cpRate+'x';
+  if(wasPlaying){cpEl.play().catch(function(){});}
 }
 
 function cpSaveProgress(seconds,completed){
