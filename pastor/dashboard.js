@@ -2873,9 +2873,13 @@ async function viewSermon(id) {
     
     let mediaHtml = '';
     if (s.media_url && s.type === 'video') {
-      mediaHtml = `<video controls style="width:100%;max-height:400px;background:#000;border-radius:8px;" src="${s.media_url}">Your browser does not support video.</video>`;
+      mediaHtml = `<video controls style="width:100%;max-height:560px;background:#000;border-radius:8px;" src="${s.media_url}">Your browser does not support video.</video>`;
     } else if (s.media_url && s.type === 'audio') {
-      mediaHtml = `<audio controls style="width:100%;margin:16px 0;accent-color:#D4AF37;" src="${s.media_url}">Your browser does not support audio.</audio>`;
+      mediaHtml = `
+        <div style="position:relative;border-radius:8px;overflow:hidden;background:#000;margin-bottom:16px;">
+          ${s.thumbnail_url ? `<img src="${s.thumbnail_url}" style="width:100%;height:220px;object-fit:cover;opacity:0.5;display:block;">` : `<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d2142,#071528);"><span style="font-size:56px;">🎧</span></div>`}
+          <audio controls style="width:100%;position:absolute;bottom:0;left:0;accent-color:#D4AF37;background:rgba(7,21,40,0.9);" src="${s.media_url}">Your browser does not support audio.</audio>
+        </div>`;
     } else if (!s.media_url) {
       mediaHtml = `<div style="background:#071528;border-radius:8px;padding:20px;text-align:center;color:#8fa3c0;font-size:13px;">No media file for this sermon.</div>`;
     }

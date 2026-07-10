@@ -584,28 +584,41 @@ function lhSendChat() {
   </div>
 
   <div style="max-width:100%;margin:0 auto;padding:0;">
-    <!-- HTML5 Media Player -->
+    <!-- Custom Media Player -->
     <div id="player-media" style="background:#000;margin-bottom:0;">
-      <!-- Video player -->
-      <video id="lh-video-player" controls playsinline
-        style="width:100%;max-height:200px;display:none;background:#000;object-fit:contain;"
-        onplay="document.getElementById('player-icon').textContent='▶';"
-        onpause="document.getElementById('player-icon').textContent='⏸';"
-        onended="document.getElementById('player-icon').textContent='🎬';">
-        Your browser does not support video playback.
-      </video>
-      <!-- Audio player -->
-      <div id="lh-audio-wrap" style="display:none;padding:16px 20px;">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+      <!-- Video player (custom controls, no native chrome) -->
+      <div id="lh-video-wrap" style="display:none;position:relative;background:#000;">
+        <video id="lh-video-player" playsinline style="width:100%;max-height:280px;display:block;background:#000;object-fit:contain;"></video>
+        <div onclick="cpTogglePlay()" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <div id="cp-center-btn" style="width:56px;height:56px;border-radius:50%;background:rgba(212,175,55,0.9);display:flex;align-items:center;justify-content:center;color:#071528;font-size:22px;transition:opacity 0.2s;">▶</div>
+        </div>
+      </div>
+      <!-- Audio player (fully custom, no native <audio controls>) -->
+      <div id="lh-audio-wrap" style="display:none;padding:16px 20px 4px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;">
           <div id="player-icon" style="font-size:36px;">🎧</div>
           <div style="flex:1;min-width:0;">
             <div id="player-media-title" style="color:#fff;font-size:14px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
             <div id="player-media-pastor" style="color:#D4AF37;font-size:12px;"></div>
           </div>
         </div>
-        <audio id="lh-audio-player" controls controlsList="nodownload" style="width:100%;height:40px;accent-color:#D4AF37;">
-          Your browser does not support audio playback.
-        </audio>
+        <audio id="lh-audio-player" style="display:none;"></audio>
+      </div>
+      <!-- Shared custom control bar, used for both video and audio -->
+      <div id="cp-controls" style="display:none;padding:14px 20px;background:#0d2142;">
+        <div id="cp-progress-bar" onclick="cpSeekClick(event)" style="height:5px;background:rgba(255,255,255,0.15);border-radius:3px;margin-bottom:8px;cursor:pointer;position:relative;">
+          <div id="cp-progress-fill" style="height:100%;width:0%;background:#D4AF37;border-radius:3px;pointer-events:none;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <span id="cp-time-current" style="color:#8fa3c0;font-size:11px;">0:00</span>
+          <span id="cp-time-duration" style="color:#8fa3c0;font-size:11px;">0:00</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;">
+          <button onclick="cpSkip(-15)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(212,175,55,0.15);color:#e8e8e8;border-radius:18px;width:44px;height:36px;font-size:11px;font-weight:700;cursor:pointer;">-15</button>
+          <button id="cp-playpause" onclick="cpTogglePlay()" style="width:48px;height:48px;border-radius:50%;background:#D4AF37;border:none;color:#071528;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">▶</button>
+          <button onclick="cpSkip(15)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(212,175,55,0.15);color:#e8e8e8;border-radius:18px;width:44px;height:36px;font-size:11px;font-weight:700;cursor:pointer;">+15</button>
+          <button id="cp-speed" onclick="cpCycleSpeed()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(212,175,55,0.15);color:#D4AF37;border-radius:16px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;margin-left:6px;">1x</button>
+        </div>
       </div>
       <!-- No media placeholder -->
       <div id="lh-no-media" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
@@ -1220,6 +1233,13 @@ function goTo(page){
   if(page==='pastor'){window.open('https://trinitarian.app/pastor','_blank');return;}
   if(page==='privacy'){window.location.href='https://trinitarian.app/privacy';return;}
   if(page==='terms'){window.location.href='https://trinitarian.app/terms';return;}
+  // Leaving the player page — pause playback and save final progress, so
+  // audio doesn't keep playing in the background and progress isn't lost.
+  const playerPageEl=document.getElementById('page-player');
+  if(page!=='player' && playerPageEl && playerPageEl.classList.contains('active') && cpEl){
+    cpEl.pause();
+    if(cpEl.currentTime>0)cpSaveProgress(cpEl.currentTime,false);
+  }
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
@@ -1605,6 +1625,117 @@ function openSermonById(id){
     .catch(function(){if(s)openSermon(s);});
 }
 
+// ── CUSTOM MEDIA PLAYER ──────────────────────────────────────────────────────
+// Replaces raw native <video controls>/<audio controls> with custom-styled
+// controls matching the site theme, and adds real watch-progress tracking
+// (previously there was NO progress saving anywhere on this page at all —
+// "resume where you left off" for video/audio never worked).
+let cpEl=null, cpSermon=null, cpRate=1, cpSaveTimer=null, cpLastSaved=0, cpHasResumed=false;
+const CP_RATES=[1,1.25,1.5,2];
+
+function cpFormatTime(sec){
+  if(!isFinite(sec)||sec<0)sec=0;
+  const m=Math.floor(sec/60), s=Math.floor(sec%60);
+  return m+':'+String(s).padStart(2,'0');
+}
+
+function cpInit(sermon, el){
+  cpEl=el; cpSermon=sermon; cpRate=1; cpHasResumed=false; cpLastSaved=0;
+  el.src=sermon.media_url;
+  el.playbackRate=1;
+  const speedBtn=document.getElementById('cp-speed');
+  if(speedBtn)speedBtn.textContent='1x';
+  const fill=document.getElementById('cp-progress-fill');
+  if(fill)fill.style.width='0%';
+  document.getElementById('cp-time-current').textContent='0:00';
+  document.getElementById('cp-time-duration').textContent='0:00';
+  cpSetPlayIcon(false);
+
+  el.onloadedmetadata=function(){
+    document.getElementById('cp-time-duration').textContent=cpFormatTime(el.duration);
+    // Resume from saved position, if the server has one and it isn't already
+    // marked complete, and there's meaningfully more than a few seconds left.
+    if(!cpHasResumed && sermon.progress_seconds && !sermon.history_completed){
+      const resumeSec=sermon.progress_seconds;
+      if(resumeSec>10 && (!el.duration || resumeSec<el.duration-10)){
+        el.currentTime=resumeSec;
+      }
+      cpHasResumed=true;
+    }
+  };
+  el.ontimeupdate=function(){
+    const pct=el.duration?Math.min(100,(el.currentTime/el.duration)*100):0;
+    const fillEl=document.getElementById('cp-progress-fill');
+    if(fillEl)fillEl.style.width=pct+'%';
+    document.getElementById('cp-time-current').textContent=cpFormatTime(el.currentTime);
+    // Periodic save, throttled to roughly every 15s of actual playback progress.
+    if(el.currentTime-cpLastSaved>15){
+      cpLastSaved=el.currentTime;
+      cpSaveProgress(el.currentTime,false);
+    }
+  };
+  el.onplay=function(){ cpSetPlayIcon(true); };
+  el.onpause=function(){ cpSetPlayIcon(false); cpSaveProgress(el.currentTime,false); };
+  el.onended=function(){
+    cpSetPlayIcon(false);
+    cpSaveProgress(el.duration||el.currentTime,true);
+  };
+}
+
+function cpSetPlayIcon(isPlaying){
+  const btn=document.getElementById('cp-playpause');
+  if(btn)btn.textContent=isPlaying?'⏸':'▶';
+  const centerBtn=document.getElementById('cp-center-btn');
+  if(centerBtn)centerBtn.style.opacity=isPlaying?'0':'1';
+  document.querySelectorAll('#player-icon').forEach(function(el){
+    if(cpSermon)el.textContent=isPlaying?'⏸':(cpSermon.type==='video'?'🎬':'🎧');
+  });
+}
+
+function cpTogglePlay(){
+  if(!cpEl)return;
+  if(cpEl.paused){
+    cpEl.play().catch(function(){});
+    // Record view + history on first meaningful play
+    if(cpEl.currentTime<5 && cpSermon&&cpSermon.id){
+      fetch(API+'/api/library/history/'+cpSermon.id,{method:'PUT',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||''),'Content-Type':'application/json'},body:JSON.stringify({progress_seconds:Math.floor(cpEl.currentTime),completed:false})}).catch(function(){});
+    }
+  } else {
+    cpEl.pause();
+  }
+}
+
+function cpSeekClick(evt){
+  if(!cpEl||!cpEl.duration)return;
+  const bar=document.getElementById('cp-progress-bar');
+  const rect=bar.getBoundingClientRect();
+  const pct=(evt.clientX-rect.left)/rect.width;
+  cpEl.currentTime=Math.max(0,Math.min(1,pct))*cpEl.duration;
+}
+
+function cpSkip(deltaSec){
+  if(!cpEl)return;
+  cpEl.currentTime=Math.max(0,Math.min((cpEl.duration||0),cpEl.currentTime+deltaSec));
+}
+
+function cpCycleSpeed(){
+  if(!cpEl)return;
+  const idx=CP_RATES.indexOf(cpRate);
+  cpRate=CP_RATES[(idx+1)%CP_RATES.length];
+  cpEl.playbackRate=cpRate;
+  const btn=document.getElementById('cp-speed');
+  if(btn)btn.textContent=cpRate+'x';
+}
+
+function cpSaveProgress(seconds,completed){
+  if(!cpSermon||!cpSermon.id)return;
+  fetch(API+'/api/library/history/'+cpSermon.id,{
+    method:'PUT',
+    headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||''),'Content-Type':'application/json'},
+    body:JSON.stringify({progress_seconds:Math.floor(seconds||0),completed:!!completed})
+  }).catch(function(){});
+}
+
 function openSermon(s){
   currentSermon=s;
   // Increment view count
@@ -1615,21 +1746,27 @@ function openSermon(s){
   document.querySelectorAll('#player-media-title').forEach(function(el){el.textContent=sanitizeInput(s.title||'');});
   document.querySelectorAll('#player-media-pastor').forEach(function(el){el.textContent=s.pastor_name||s.display_name||'';});
   // Initialize media player
+  const videoWrap=document.getElementById('lh-video-wrap');
   const videoEl=document.getElementById('lh-video-player');
   const audioWrap=document.getElementById('lh-audio-wrap');
   const audioEl=document.getElementById('lh-audio-player');
+  const cpControls=document.getElementById('cp-controls');
   const noMedia=document.getElementById('lh-no-media');
   const mediaUrl=s.media_url||null;
-  if(videoEl)videoEl.style.display='none';
+  if(videoWrap)videoWrap.style.display='none';
   if(audioWrap)audioWrap.style.display='none';
+  if(cpControls)cpControls.style.display='none';
   if(noMedia)noMedia.style.display='none';
   if(mediaUrl&&(s.type==='video')){
-    if(videoEl){videoEl.src=mediaUrl;videoEl.style.display='block';}
+    if(videoWrap)videoWrap.style.display='block';
+    if(cpControls)cpControls.style.display='block';
     document.querySelectorAll('#player-icon').forEach(function(el){el.textContent='🎬';});
+    cpInit(s, videoEl);
   } else if(mediaUrl&&(s.type==='audio')){
-    if(audioEl)audioEl.src=mediaUrl;
     if(audioWrap)audioWrap.style.display='block';
+    if(cpControls)cpControls.style.display='block';
     document.querySelectorAll('#player-icon').forEach(function(el){el.textContent='🎧';});
+    cpInit(s, audioEl);
   } else {
     if(noMedia)noMedia.style.display='flex';
     const icon=s.type==='video'?'🎬':s.type==='audio'?'🎧':s.type==='article'?'📰':'📄';
@@ -1673,15 +1810,16 @@ let rdFontSz=parseInt(localStorage.getItem('rd_font_size')||'16',10),rdIsNight=(
 
 function playerFullscreen(){
   if(!currentSermon)return;
-  // For video/audio - use native fullscreen on the video element
+  // For video/audio — fullscreen the whole player-media container (video/audio
+  // element + our custom control bar together), not just the bare media
+  // element. Native `controls` was removed in favor of the custom control
+  // bar, so fullscreening just the raw element would show video with no way
+  // to pause, seek, skip, or change speed at all.
   if(currentSermon.type==='video'||currentSermon.type==='audio'){
-    const v=document.getElementById('lh-video-player');
-    const a=document.getElementById('lh-audio-wrap');
-    const el=v&&v.style.display!=='none'?v:(a&&a.style.display!=='none'?a:null);
-    if(el){
-      if(el.requestFullscreen)el.requestFullscreen();
-      else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
-      else if(el.webkitEnterFullscreen)el.webkitEnterFullscreen();
+    const container=document.getElementById('player-media');
+    if(container){
+      if(container.requestFullscreen)container.requestFullscreen();
+      else if(container.webkitRequestFullscreen)container.webkitRequestFullscreen();
       return;
     }
   }
