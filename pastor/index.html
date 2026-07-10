@@ -30,7 +30,7 @@
     .back-arrow { position:fixed; top:20px; left:20px; display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.4); color:#D4AF37; padding:8px 16px; border-radius:20px; cursor:pointer; font-size:13px; text-decoration:none; z-index:1000; box-shadow:0 2px 12px rgba(0,0,0,0.3); }
     .back-arrow:hover { background:rgba(212,175,55,0.2); }
     /* ── AUTH SCREENS ── */
-    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 60%); position:relative; }
+    .auth-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 60%); position:relative; overflow-y:auto; }
     .auth-box { width:100%; max-width:420px; background:var(--navy2); border:1px solid var(--gold-border); border-radius:20px; padding:40px 36px; }
     .auth-logo { text-align:center; margin-bottom:32px; }
     .auth-logo img { width:180px; height:auto; }
@@ -282,7 +282,7 @@
 
     <div style="margin-bottom:14px;">
       <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;" data-i18n="choose_username">Choose a Username</label>
-      <input type="text" class="form-input" id="reg-username" placeholder="e.g. pastorjohn" autocomplete="username"/>
+      <input type="text" class="form-input" id="reg-username" placeholder="e.g. pastorjohn" autocomplete="off"/>
       <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="no_spaces">No spaces. Letters and numbers only.</p>
     </div>
 
@@ -1225,7 +1225,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=11"></script>
+<script src="/pastor/dashboard.js?v=12"></script>
 
 
 <!-- Cookie Consent Banner -->

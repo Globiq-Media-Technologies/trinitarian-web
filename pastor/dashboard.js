@@ -490,6 +490,13 @@ function showScreen(name) {
     el.style.display = 'flex';
     if (el.classList.contains('dash-wrap')) el.classList.add('active');
   }
+  // Explicitly clear the username field every time the registration screen
+  // opens — some browsers ignore autocomplete="off" and kept persistently
+  // offering/filling a previously-entered username here.
+  if (name === 'register') {
+    const u = document.getElementById('reg-username');
+    if (u) u.value = '';
+  }
 }
 
 function showPage(name) {
