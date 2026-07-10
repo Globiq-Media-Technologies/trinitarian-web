@@ -20,17 +20,6 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{background:#071528;color:#e8e8e8;font-family:Georgia,serif;min-height:100vh;}
 
-    /* Fullscreen player — the video was constrained to a small max-height by
-       default (280px), so entering fullscreen just centered that small size
-       inside the fullscreen black backdrop rather than actually filling the
-       screen vertically — hence the "floats halfway" look. */
-    #player-media:fullscreen{width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;background:#000;}
-    #player-media:-webkit-full-screen{width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;background:#000;}
-    #player-media:fullscreen #lh-video-wrap{flex:1;display:flex!important;align-items:center;justify-content:center;max-height:none!important;}
-    #player-media:-webkit-full-screen #lh-video-wrap{flex:1;display:flex!important;align-items:center;justify-content:center;max-height:none!important;}
-    #player-media:fullscreen #lh-video-player{max-height:100%!important;width:100%!important;object-fit:contain;}
-    #player-media:-webkit-full-screen #lh-video-player{max-height:100%!important;width:100%!important;object-fit:contain;}
-
     /* Pages */
     .page{display:none;}
     .page{display:none;}.page.active{display:block;}
@@ -1870,22 +1859,41 @@ let rdFontSz=parseInt(localStorage.getItem('rd_font_size')||'16',10),rdIsNight=(
 
 function playerFullscreen(){
   if(!currentSermon)return;
-  // For video/audio — fullscreen the whole player-media container (video/audio
-  // element + our custom control bar together), not just the bare media
-  // element. Native `controls` was removed in favor of the custom control
-  // bar, so fullscreening just the raw element would show video with no way
-  // to pause, seek, skip, or change speed at all.
-  if(currentSermon.type==='video'||currentSermon.type==='audio'){
-    const container=document.getElementById('player-media');
-    if(container){
-      if(container.requestFullscreen)container.requestFullscreen();
-      else if(container.webkitRequestFullscreen)container.webkitRequestFullscreen();
+  // Fullscreen the <video> element itself directly, not the surrounding
+  // container. Browsers handle video fullscreen sizing natively and
+  // reliably (correct aspect ratio, fills the screen properly) — trying to
+  // fullscreen the wrapping div and override its CSS kept leaving the video
+  // "floating" at its normal small size instead of actually filling the
+  // screen. Native controls are temporarily enabled during fullscreen only,
+  // since our custom control bar lives outside the video element and won't
+  // be part of what's fullscreened.
+  if(currentSermon.type==='video'){
+    const v=document.getElementById('lh-video-player');
+    if(v){
+      v.controls=true;
+      if(v.requestFullscreen)v.requestFullscreen();
+      else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();
+      else if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();
       return;
     }
   }
-  // For text/article - use UI overlay fullscreen
+  // Audio has no video frame to fill, so fullscreen doesn't apply the same
+  // way — use the reading-style overlay instead, same as text/article.
   _playerFullscreenOverlay();
 }
+
+document.addEventListener('fullscreenchange',function(){
+  if(!document.fullscreenElement){
+    const v=document.getElementById('lh-video-player');
+    if(v)v.controls=false; // revert to our custom control bar outside fullscreen
+  }
+});
+document.addEventListener('webkitfullscreenchange',function(){
+  if(!document.webkitFullscreenElement){
+    const v=document.getElementById('lh-video-player');
+    if(v)v.controls=false;
+  }
+});
 
 function _playerFullscreenOverlay(){
   var s=currentSermon;
