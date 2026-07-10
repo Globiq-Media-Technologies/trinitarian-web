@@ -1763,8 +1763,12 @@ function cpInit(sermon, el){
 function cpSetPlayIcon(isPlaying){
   const btn=document.getElementById('cp-playpause');
   if(btn)btn.textContent=isPlaying?'⏸':'▶';
+  // Was opacity:0, which can leave the button faintly visible (and still
+  // clickable) depending on browser/timing — display:none is a hard
+  // guarantee it's actually gone, not just faded, so only one play control
+  // (the control bar's) is ever visible while playing.
   const centerBtn=document.getElementById('cp-center-btn');
-  if(centerBtn)centerBtn.style.opacity=isPlaying?'0':'1';
+  if(centerBtn)centerBtn.style.display=isPlaying?'none':'flex';
   document.querySelectorAll('#player-icon').forEach(function(el){
     if(cpSermon)el.textContent=isPlaying?'⏸':(cpSermon.type==='video'?'🎬':'🎧');
   });
