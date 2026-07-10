@@ -490,12 +490,16 @@ function showScreen(name) {
     el.style.display = 'flex';
     if (el.classList.contains('dash-wrap')) el.classList.add('active');
   }
-  // Explicitly clear the username field every time the registration screen
-  // opens — some browsers ignore autocomplete="off" and kept persistently
-  // offering/filling a previously-entered username here.
+  // Explicitly clear the username and password fields every time the
+  // registration screen opens — some browsers ignore autocomplete hints and
+  // kept persistently offering/filling previously-entered values here.
   if (name === 'register') {
     const u = document.getElementById('reg-username');
     if (u) u.value = '';
+    const p = document.getElementById('reg-password');
+    if (p) p.value = '';
+    const c = document.getElementById('reg-confirm');
+    if (c) c.value = '';
   }
 }
 
@@ -508,6 +512,13 @@ function showPage(name) {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(name)) n.classList.add('active');
   });
   if (name === 'overview') loadOverview();
+  if (name === 'changepass') {
+    // Same fix as registration — clear stale autofilled password values
+    // every time this page opens.
+    const cur = document.getElementById('cp-current'); if (cur) cur.value = '';
+    const nw = document.getElementById('cp-new'); if (nw) nw.value = '';
+    const cf = document.getElementById('cp-confirm'); if (cf) cf.value = '';
+  }
   if (name === 'live') initLivePage();
   if (name === 'live') pdInitLiveUI();
   if (name === 'sermons') loadSermons();
