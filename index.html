@@ -20,6 +20,13 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{background:#071528;color:#e8e8e8;font-family:Georgia,serif;min-height:100vh;}
 
+    /* Reinforces aspect-ratio-preserving scaling specifically while the
+       video is in true fullscreen — some browsers handle fullscreen video
+       sizing differently than normal layout and were stretching/zooming
+       instead of respecting object-fit:contain. */
+    #lh-video-player:fullscreen{object-fit:contain!important;width:100%!important;height:100%!important;background:#000;}
+    #lh-video-player:-webkit-full-screen{object-fit:contain!important;width:100%!important;height:100%!important;background:#000;}
+
     /* Pages */
     .page{display:none;}
     .page{display:none;}.page.active{display:block;}
