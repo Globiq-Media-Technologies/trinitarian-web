@@ -684,7 +684,7 @@ function lhSendChat() {
         <button id="rd-font-serif" onclick="rdSetFont('serif')" style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#071528;font-family:Georgia,serif;">Serif</button>
         <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
         <button id="rd-night-btn"  onclick="rdToggleNight()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🌙 Night</button>
-        <button                    onclick="rdHighlight()"      style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🖊 Highlight</button>
+        <button id="rd-highlight-btn" onclick="rdToggleHighlightMode()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🖊 Highlight</button>
         <button onclick="downloadTranscript()"                  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⬇ Save</button>
         <button id="rd-bookmark-btn" onclick="rdBookmark()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🔖 Bookmark</button>
         <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
@@ -1915,8 +1915,19 @@ function _playerFullscreenOverlay(){
   var mediaUrl=s.media_url||'';
   var isPdf=mediaUrl&&(mediaUrl.toLowerCase().includes('.pdf')||(s.type==='text'||s.type==='article'));
   if(s.transcript){
-    var escapedTranscript=s.transcript.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    content_div.innerHTML=escapedTranscript;
+    rdLoadHighlights(); // shares the same per-sermon storage as the main reading view
+    var paraIdx2=0;
+    content_div.innerHTML=s.transcript
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+      .replace(/\n{3,}/g,'\n\n')
+      .split('\n\n')
+      .map(function(p){
+        if(!p.trim())return '';
+        var idx=paraIdx2++;
+        var isHl=rdHighlightedParagraphs.indexOf(idx)>-1;
+        return '<p data-para-idx="'+idx+'" onclick="rdToggleParagraphHighlight('+idx+');rdApplyHighlights(document.getElementById(\'fs-overlay\'));" style="margin-bottom:1em;cursor:default;transition:background 0.15s;background:'+(isHl?'rgba(255,215,0,0.4)':'transparent')+';border-radius:6px;padding:'+(isHl?'2px 6px':'0')+';">'+p.replace(/\n/g,'<br>')+'</p>';
+      }).join('');
   } else if(isPdf&&mediaUrl){
     content_div.innerHTML='<div style="text-align:center;padding:40px 0;">'
       +'<div style="font-size:40px;margin-bottom:16px;">'+(s.type==='article'?'📰':'📄')+'</div>'
@@ -1933,7 +1944,11 @@ function _playerFullscreenOverlay(){
   var btnSans=makeBtn('Sans',function(){fFam='sans';content_div.style.fontFamily='system-ui,sans-serif';setActive(btnSans);setInactive(btnSerif);},fFam==='sans');
   var btnSerif=makeBtn('Serif',function(){fFam='serif';content_div.style.fontFamily='Georgia,serif';setActive(btnSerif);setInactive(btnSans);},fFam==='serif');
   var btnNight=makeBtn(fNight?'☀ Day':'🌙 Night',function(){fNight=!fNight;content_div.style.background=fNight?'#1a1a2e':'#fff';content_div.style.color=fNight?'#e0e0e0':'#222';btnNight.textContent=fNight?'☀ Day':'🌙 Night';if(fNight){setActive(btnNight);}else{setInactive(btnNight);}},fNight);
-  var btnHL=makeBtn('🖊 Highlight',function(){var sel=window.getSelection();if(!sel||!sel.toString()){var hls=content_div.querySelectorAll('.rd-hl');hls.forEach(function(sp){var p=sp.parentNode;while(sp.firstChild)p.insertBefore(sp.firstChild,sp);p.removeChild(sp);});content_div.normalize();return;}try{var range=sel.getRangeAt(0);var span=document.createElement('span');span.className='rd-hl';span.style.background='#FFD700';span.style.color='#000';span.style.cursor='pointer';span.onclick=function(){var p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();};range.surroundContents(span);sel.removeAllRanges();}catch(e){}},false);
+  var btnHL=makeBtn(rdHighlightMode?'🖊 Tap to Mark':'🖊 Highlight',function(){
+    rdToggleHighlightMode();
+    btnHL.textContent=rdHighlightMode?'🖊 Tap to Mark':'🖊 Highlight';
+    if(rdHighlightMode){setActive(btnHL);}else{setInactive(btnHL);}
+  },rdHighlightMode);
   var btnBM=makeBtn(bookmarks.includes(s.id)?'🔖 Saved':'🔖 Bookmark',function(){var idx=bookmarks.indexOf(s.id);if(idx>-1){bookmarks.splice(idx,1);}else{bookmarks.push(s.id);}localStorage.setItem('lh_bookmarks',JSON.stringify(bookmarks));var bm=bookmarks.includes(s.id);btnBM.textContent=bm?'🔖 Saved':'🔖 Bookmark';if(bm){setActive(btnBM);}else{setInactive(btnBM);}},bookmarks.includes(s.id));
   [btnAm,btnAp,btnSans,btnSerif,btnNight,btnHL,btnBM].forEach(function(b){toolbar.appendChild(b);});
   body.appendChild(toolbar);body.appendChild(content_div);
@@ -2230,34 +2245,71 @@ function rdToggleNight(){
   }
 }
 
-function rdHighlight(){
-  var sel=window.getSelection();
-  if(!sel||sel.toString().length===0){
-    var c=document.getElementById('rd-text');
-    if(!c)return;
-    var hls=c.querySelectorAll('.rd-hl');
-    if(hls.length){
-      for(var i=hls.length-1;i>=0;i--){
-        var sp=hls[i],p=sp.parentNode;
-        while(sp.firstChild)p.insertBefore(sp.firstChild,sp);
-        p.removeChild(sp);
-      }
-      c.normalize();
-      alert('All highlights cleared');
-    }else{alert('Select text first, then tap Highlight');}
-    return;
-  }
+// ── HIGHLIGHTING ──────────────────────────────────────────────────────────
+// Rebuilt to match mobile's approach: whole-paragraph tap-to-toggle, persisted
+// per sermon via localStorage. Previously this used browser text selection +
+// range.surroundContents(), which threw an error on any multi-paragraph
+// selection and never persisted anything — reload the sermon and every
+// highlight was gone. Paragraph-level is coarser but robust and consistent
+// with the mobile app.
+let rdHighlightMode=false;
+let rdHighlightedParagraphs=[];
+
+function rdHighlightStorageKey(){
+  return currentSermon&&currentSermon.id ? 'rd_highlights_'+currentSermon.id : null;
+}
+
+function rdLoadHighlights(){
+  const key=rdHighlightStorageKey();
+  if(!key){rdHighlightedParagraphs=[];return;}
   try{
-    var range=sel.getRangeAt(0);
-    var span=document.createElement('span');
-    span.className='rd-hl';
-    span.style.background='#FFD700';
-    span.style.color='#000';
-    span.style.cursor='pointer';
-    span.setAttribute('onclick','var p=this.parentNode;while(this.firstChild)p.insertBefore(this.firstChild,this);p.removeChild(this);p.normalize();alert("Highlight removed");');
-    range.surroundContents(span);
-    sel.removeAllRanges();
-  }catch(e){alert('Select a single block of text to highlight');}
+    const saved=localStorage.getItem(key);
+    rdHighlightedParagraphs=saved?JSON.parse(saved):[];
+  }catch(e){rdHighlightedParagraphs=[];}
+}
+
+function rdSaveHighlights(){
+  const key=rdHighlightStorageKey();
+  if(!key)return;
+  localStorage.setItem(key,JSON.stringify(rdHighlightedParagraphs));
+}
+
+function rdToggleHighlightMode(){
+  rdHighlightMode=!rdHighlightMode;
+  const btn=document.getElementById('rd-highlight-btn');
+  if(btn){
+    btn.style.background=rdHighlightMode?'#D4AF37':'rgba(212,175,55,0.1)';
+    btn.style.color=rdHighlightMode?'#071528':'#D4AF37';
+    btn.textContent=rdHighlightMode?'🖊 Tap to Mark':'🖊 Highlight';
+  }
+  const container=document.getElementById('rd-text');
+  if(container){
+    container.querySelectorAll('[data-para-idx]').forEach(function(p){
+      p.style.cursor=rdHighlightMode?'pointer':'default';
+    });
+  }
+}
+
+function rdToggleParagraphHighlight(idx){
+  if(!rdHighlightMode)return;
+  const pos=rdHighlightedParagraphs.indexOf(idx);
+  if(pos>-1)rdHighlightedParagraphs.splice(pos,1);
+  else rdHighlightedParagraphs.push(idx);
+  rdSaveHighlights();
+  rdApplyHighlights();
+}
+
+function rdApplyHighlights(root){
+  const container=root||document.getElementById('rd-text');
+  if(!container)return;
+  container.querySelectorAll('[data-para-idx]').forEach(function(p){
+    const idx=parseInt(p.getAttribute('data-para-idx'),10);
+    const isHighlighted=rdHighlightedParagraphs.indexOf(idx)>-1;
+    p.style.background=isHighlighted?'rgba(255,215,0,0.4)':'transparent';
+    p.style.borderRadius=isHighlighted?'6px':'0';
+    p.style.padding=isHighlighted?'2px 6px':'0';
+    p.style.margin=isHighlighted?'0 -6px 1em -6px':'0 0 1em 0';
+  });
 }
 
 function rdBookmark(){
@@ -2303,17 +2355,24 @@ function loadReadingMode(){
   if(rw){rw.style.background='#0d2142';rw.style.border='1px solid rgba(212,175,55,0.1)';rw.style.borderRadius='12px';rw.style.padding='24px 20px';}
   if(txt){
     // Convert plain text to readable paragraphs
+    var paraIdx=0;
     var formatted = txt
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
       .replace(/\n{3,}/g,'\n\n')
       .split('\n\n')
-      .map(function(p){ return p.trim() ? '<p style="margin-bottom:1em;">'+p.replace(/\n/g,'<br>')+'</p>' : ''; })
+      .map(function(p){
+        if(!p.trim())return '';
+        var idx=paraIdx++;
+        return '<p data-para-idx="'+idx+'" onclick="rdToggleParagraphHighlight('+idx+')" style="margin-bottom:1em;cursor:'+(rdHighlightMode?'pointer':'default')+';transition:background 0.15s;">'+p.replace(/\n/g,'<br>')+'</p>';
+      })
       .join('');
     t.innerHTML=formatted || txt;
     t.style.whiteSpace='normal';
     t.style.display='block';
     e.style.display='none';
+    rdLoadHighlights();
+    rdApplyHighlights();
   } else if(isPdf && mediaUrl){
     // Document uploaded as media_url with no extracted transcript. No iframe —
     // unreliable across file types and forces some browsers into a download
