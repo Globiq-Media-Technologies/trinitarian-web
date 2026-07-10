@@ -1239,6 +1239,26 @@ function showMsg(id,msg,success=false){
 function togglePwd(id,btn){const el=document.getElementById(id);if(el){el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}}
 function showFMsg(msg,type){const el=document.getElementById('ll-fmsg');if(el){el.textContent=msg;el.style.background=type==='success'?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)';el.style.border=type==='success'?'1px solid rgba(64,201,106,0.3)':'1px solid rgba(224,85,85,0.3)';el.style.color=type==='success'?'#40c96a':'#e05555';el.style.display='block';}}
 
+// Clears the given field ids immediately, then again after short delays —
+// Chrome's saved-password autofill often injects its value AFTER page
+// scripts finish running (deliberately, so pages can't strip it out), so a
+// single immediate clear isn't always enough. This isn't a guaranteed fix
+// (browsers intentionally make autofill hard for scripts to fight), but
+// catches most real-world timing cases as a defensive backup on top of
+// removing the saved credential from the browser's own password manager.
+function deferredClear(ids){
+  const doClear=function(){
+    ids.forEach(function(id){
+      const el=document.getElementById(id);
+      if(el) el.value='';
+    });
+  };
+  doClear();
+  setTimeout(doClear,150);
+  setTimeout(doClear,400);
+  setTimeout(doClear,900);
+}
+
 function goTo(page){
   if(page==='pastor'){window.open('https://trinitarian.app/pastor','_blank');return;}
   if(page==='privacy'){window.location.href='https://trinitarian.app/privacy';return;}
@@ -1257,17 +1277,13 @@ function goTo(page){
   // since autofill there is desired (returning users want their saved
   // password offered).
   if(page==='listener'){
-    const u=document.getElementById('ll-rusername'); if(u) u.value='';
-    const p=document.getElementById('ll-rpass'); if(p) p.value='';
-    const c=document.getElementById('ll-rconfirm'); if(c) c.value='';
+    deferredClear(['ll-rusername','ll-rpass','ll-rconfirm']);
   }
   if(page==='lh-profile'){
-    const np=document.getElementById('lh-new-pwd'); if(np) np.value='';
-    const cp=document.getElementById('lh-confirm-pwd'); if(cp) cp.value='';
+    deferredClear(['lh-new-pwd','lh-confirm-pwd']);
   }
   if(page==='reset'){
-    const rp=document.getElementById('reset-pass'); if(rp) rp.value='';
-    const rc=document.getElementById('reset-confirm'); if(rc) rc.value='';
+    deferredClear(['reset-pass','reset-confirm']);
   }
   const el=document.getElementById('page-'+page);
   if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}

@@ -480,6 +480,24 @@ async function api(endpoint, method = 'GET', body = null) {
 }
 
 // ── Screen Management ──
+// Clears the given field ids immediately, then again after short delays —
+// Chrome's saved-password autofill often injects its value AFTER page
+// scripts finish running, so a single immediate clear isn't always enough.
+// Defensive backup on top of removing the saved credential from the
+// browser's own password manager, which is the real fix.
+function deferredClear(ids) {
+  const doClear = function() {
+    ids.forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  };
+  doClear();
+  setTimeout(doClear, 150);
+  setTimeout(doClear, 400);
+  setTimeout(doClear, 900);
+}
+
 function showScreen(name) {
   document.querySelectorAll('.auth-wrap, .dash-wrap').forEach(el => {
     el.style.display = 'none';
@@ -494,12 +512,7 @@ function showScreen(name) {
   // registration screen opens — some browsers ignore autocomplete hints and
   // kept persistently offering/filling previously-entered values here.
   if (name === 'register') {
-    const u = document.getElementById('reg-username');
-    if (u) u.value = '';
-    const p = document.getElementById('reg-password');
-    if (p) p.value = '';
-    const c = document.getElementById('reg-confirm');
-    if (c) c.value = '';
+    deferredClear(['reg-username', 'reg-password', 'reg-confirm']);
   }
 }
 
@@ -514,10 +527,8 @@ function showPage(name) {
   if (name === 'overview') loadOverview();
   if (name === 'changepass') {
     // Same fix as registration — clear stale autofilled password values
-    // every time this page opens.
-    const cur = document.getElementById('cp-current'); if (cur) cur.value = '';
-    const nw = document.getElementById('cp-new'); if (nw) nw.value = '';
-    const cf = document.getElementById('cp-confirm'); if (cf) cf.value = '';
+    // every time this page opens, including delayed re-clears.
+    deferredClear(['cp-current', 'cp-new', 'cp-confirm']);
   }
   if (name === 'live') initLivePage();
   if (name === 'live') pdInitLiveUI();
