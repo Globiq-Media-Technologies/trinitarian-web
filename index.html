@@ -1180,7 +1180,7 @@ async function llLogin(){
       // page specifically — previously this form let them authenticate
       // successfully (storing a real session on the listener site) and
       // just redirected afterward, rather than blocking it outright.
-      if(['admin','moderator','pastor'].includes(role)){
+      if(['admin','moderator','pastor','owner'].includes(role)){
         showMsg('ll-err','Pastor and staff accounts must sign in through Pastor Login, not here.',false);
         const pastorLink=document.createElement('a');
         pastorLink.href='https://trinitarian.app/pastor/index.html';
@@ -1445,9 +1445,9 @@ window.addEventListener('load',async()=>{
   // Only auto-redirect if user was previously on a logged-in page
   const wasLoggedIn=hash&&['listener','listener-home','player','settings','notifications'].includes(hash);
   if(token&&wasLoggedIn){
-    try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor'].includes(role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}}catch(e){}
+    try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor','owner'].includes(role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}}catch(e){}
     const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-    if(user){if(['admin','moderator','pastor'].includes(user?.role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}
+    if(user){if(['admin','moderator','pastor','owner'].includes(user?.role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}
   }
   if(hash&&['listener','listener-home','player'].includes(hash))goTo(hash);
 });
@@ -3127,7 +3127,7 @@ function checkVerificationBanner(){
   try{
     const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');
     if(!u.id)return;
-    if(u.role&&['admin','moderator','pastor'].includes(u.role))return;
+    if(u.role&&['admin','moderator','pastor','owner'].includes(u.role))return;
     if(u.email_verified)return;
     if(document.getElementById('verify-banner'))return;
     const banner=document.createElement('div');
