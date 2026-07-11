@@ -1389,7 +1389,10 @@ async function loadNotifications() {
     el.innerHTML = notifs.map(n => {
       let sermonId = null;
       try { const d = typeof n.data === 'string' ? JSON.parse(n.data) : n.data; sermonId = d && (d.sermon_id || d.id); } catch(e) {}
-      const clickAttr = sermonId ? `onclick="pdOpenNotifSermon('${sermonId}')" style="cursor:pointer;"` : '';
+      let clickAttr = '';
+      if (sermonId && n.type === 'new_sermon') clickAttr = `onclick="pdOpenNotifSermon('${sermonId}')" style="cursor:pointer;"`;
+      else if (n.type === 'live_stream') clickAttr = `onclick="showPage('live')" style="cursor:pointer;"`;
+      else if (n.type === 'admin_message') clickAttr = `onclick="showPage('inbox')" style="cursor:pointer;"`;
       return `
       <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}" ${clickAttr}>
         <div class="notif-icon">${ICONS[n.type] || '🔔'}</div>
@@ -2185,13 +2188,19 @@ async function loadInbox() {
       let nData = null; try { nData = typeof n.data === 'string' ? JSON.parse(n.data) : n.data; } catch(e) {}
       const nSermonId = nData?.sermon_id || nData?.id || null;
       const nHasSermon = nSermonId && n.type === 'new_sermon';
+      const nIsLiveStream = n.type === 'live_stream';
+      const nIsMessage = n.type === 'admin_message';
+      const nTimestamp = n.created_at ? new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
       return `
       <div class="notif-item ${!n.is_read?'notif-unread':''}" onclick="markRead('${n.id}')">
         <div class="notif-icon">${ICONS[n.type]||'🔔'}</div>
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
           ${n.body?`<div style="color:var(--text-muted);font-size:13px;margin-bottom:6px;">${n.body}</div>`:''}
+          ${nTimestamp?`<div style="color:var(--text-muted);font-size:11px;margin-bottom:6px;">${nTimestamp}</div>`:''}
           ${nHasSermon ? `<button onclick="event.stopPropagation();viewSermon('${nSermonId}')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>` : ''}
+          ${nIsLiveStream ? `<button onclick="event.stopPropagation();showPage('live')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">📡 View Live</button>` : ''}
+          ${nIsMessage ? `<button onclick="event.stopPropagation();showPage('inbox')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">📬 View Message</button>` : ''}
         </div>
         ${!n.is_read?'<div class="notif-dot"></div>':''}
       </div>`;
@@ -2426,6 +2435,7 @@ function showToast(msg, type){
 
 let _recognition = null;
 let _transcribing = false;
+let _userStoppedDictation = false;
 
 function toggleTranscription(){
   const btn=document.getElementById('transcribe-btn');
@@ -2439,10 +2449,12 @@ function toggleTranscription(){
   }
   if(_transcribing){
     // Stop
+    _userStoppedDictation=true;
     if(_recognition)_recognition.stop();
     return;
   }
   // Start
+  _userStoppedDictation=false;
   _recognition = new SR();
   _recognition.continuous = true;
   _recognition.interimResults = true;
@@ -2475,9 +2487,25 @@ function toggleTranscription(){
     if(ta){ta.value=baseText+interim;ta.scrollTop=ta.scrollHeight;}
   };
   _recognition.onerror=function(e){
+    // Fatal errors (permission denied, no microphone, etc.) must NOT
+    // auto-restart — that would just fail again immediately in a loop.
+    // Only transient issues (network hiccups, brief no-speech timeouts)
+    // should be allowed to auto-restart via onend below.
+    if(['not-allowed','service-not-allowed','audio-capture'].includes(e.error)){
+      _userStoppedDictation=true;
+    }
     if(status)status.textContent='Dictation error: '+e.error+(e.error==='not-allowed'?' (please allow microphone access)':'');
   };
   _recognition.onend=function(){
+    // Chrome's SpeechRecognition can silently end on its own even with
+    // continuous=true — after a brief silence, or a hiccup reaching its
+    // cloud speech service — which is exactly what "stops after ~2 seconds"
+    // was. Previously any end was treated as the user wanting to stop.
+    // Now: only actually stop if the user explicitly clicked Stop; otherwise
+    // restart automatically so dictation keeps going seamlessly.
+    if(!_userStoppedDictation){
+      try{_recognition.start();return;}catch(e){}
+    }
     const wasTranscribing=_transcribing;
     _transcribing=false;
     _recognition=null; // Reset so a new instance is created on next start
