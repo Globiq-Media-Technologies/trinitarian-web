@@ -2316,7 +2316,15 @@ async function loadLhNotifications(){const el=document.getElementById('lh-notifs
   else if(n.type==='live_stream'){clickHandler="goTo('lh-live')";tapLabel='Tap to join →';}
   else if(n.type==='admin_message'){clickHandler="goTo('lh-inbox')";tapLabel='Tap to view →';}
   var clickable=!!clickHandler;
-  var icon=n.type==='new_sermon'?'🎧':n.type==='live_stream'?'📡':n.type==='application_update'?'🛡️':n.type==='follow'?'👤':'🔔';
+  // Previously every new_sermon notification showed the same fixed icon
+  // regardless of whether the sermon was video, audio, text, or article.
+  var icon='🔔';
+  if(n.type==='new_sermon'){
+    var st=data&&data.sermon_type;
+    icon=st==='video'?'🎬':st==='audio'?'🎧':st==='text'?'📄':st==='article'?'📰':'🎧';
+  } else if(n.type==='live_stream'){icon='📡';}
+  else if(n.type==='application_update'){icon='🛡️';}
+  else if(n.type==='follow'){icon='👤';}
   return '<div '+(clickable?'onclick="'+clickHandler+'"':'')+' style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'" ><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(n.created_at?'<div style="color:#c3d4e8;font-size:11px;margin-top:4px;">'+new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">'+tapLabel+'</div>':'')+'</div></div>';
 }).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}

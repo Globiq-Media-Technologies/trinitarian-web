@@ -1403,15 +1403,22 @@ async function loadNotifications() {
       return;
     }
     el.innerHTML = notifs.map(n => {
-      let sermonId = null;
-      try { const d = typeof n.data === 'string' ? JSON.parse(n.data) : n.data; sermonId = d && (d.sermon_id || d.id); } catch(e) {}
+      let d = null;
+      try { d = typeof n.data === 'string' ? JSON.parse(n.data) : n.data; } catch(e) {}
+      const sermonId = d && (d.sermon_id || d.id);
       let clickAttr = '';
       if (sermonId && n.type === 'new_sermon') clickAttr = `onclick="pdOpenNotifSermon('${sermonId}')" style="cursor:pointer;"`;
       else if (n.type === 'live_stream') clickAttr = `onclick="showPage('live')" style="cursor:pointer;"`;
       else if (n.type === 'admin_message') clickAttr = `onclick="showPage('inbox')" style="cursor:pointer;"`;
+      // Previously every new_sermon notification showed the same fixed icon
+      // regardless of the sermon's actual type.
+      let icon = ICONS[n.type] || '🔔';
+      if (n.type === 'new_sermon' && d?.sermon_type) {
+        icon = { video:'🎬', audio:'🎧', text:'📄', article:'📰' }[d.sermon_type] || icon;
+      }
       return `
       <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}" ${clickAttr}>
-        <div class="notif-icon">${ICONS[n.type] || '🔔'}</div>
+        <div class="notif-icon">${icon}</div>
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
           ${n.body ? `<div style="color:var(--text-muted);font-size:12px;line-height:1.6;">${n.body}</div>` : ''}
@@ -2207,9 +2214,15 @@ async function loadInbox() {
       const nIsLiveStream = n.type === 'live_stream';
       const nIsMessage = n.type === 'admin_message';
       const nTimestamp = n.created_at ? new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+      // Previously every new_sermon notification showed the same fixed icon
+      // regardless of the sermon's actual type.
+      let nIcon = ICONS[n.type] || '🔔';
+      if (n.type === 'new_sermon' && nData?.sermon_type) {
+        nIcon = { video:'🎬', audio:'🎧', text:'📄', article:'📰' }[nData.sermon_type] || nIcon;
+      }
       return `
       <div class="notif-item ${!n.is_read?'notif-unread':''}" onclick="markRead('${n.id}')">
-        <div class="notif-icon">${ICONS[n.type]||'🔔'}</div>
+        <div class="notif-icon">${nIcon}</div>
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
           ${n.body?`<div style="color:var(--text-muted);font-size:13px;margin-bottom:6px;">${n.body}</div>`:''}
