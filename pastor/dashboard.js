@@ -1118,10 +1118,26 @@ function handleFileSelect(input) {
   // but documents are limited to .docx/.txt since those are the only formats
   // that extract cleanly to readable text. PDF and legacy .doc can't be
   // reliably converted, so they're excluded for consistency across platforms.
-  const isMedia = file.type.startsWith('video/') || file.type.startsWith('audio/');
+  const isVideo = file.type.startsWith('video/');
+  const isAudio = file.type.startsWith('audio/');
   const isValidDoc = name.endsWith('.docx') || name.endsWith('.txt');
-  if (!isMedia && !isValidDoc) {
+  if (!isVideo && !isAudio && !isValidDoc) {
     alert('Please select a video, audio, .docx, or .txt file. PDF and legacy .doc are not supported.');
+    input.value = '';
+    if (nameEl) nameEl.innerHTML = '';
+    return;
+  }
+  // Cross-check against the selected Content Type — previously this was
+  // never checked, so selecting "Video" and uploading an audio file (or any
+  // other mismatched combination) was silently accepted.
+  const selectedType = document.getElementById('up-type')?.value;
+  const typeMismatch =
+    (selectedType === 'video' && !isVideo) ||
+    (selectedType === 'audio' && !isAudio) ||
+    ((selectedType === 'text' || selectedType === 'article') && !isValidDoc);
+  if (typeMismatch) {
+    const expected = selectedType === 'video' ? 'a video file' : selectedType === 'audio' ? 'an audio file' : 'a .docx or .txt file';
+    alert(`You selected "${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}" as the content type, but this file doesn't match — please upload ${expected}, or change the content type above.`);
     input.value = '';
     if (nameEl) nameEl.innerHTML = '';
     return;
@@ -2197,7 +2213,7 @@ async function loadInbox() {
         <div style="flex:1;">
           <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
           ${n.body?`<div style="color:var(--text-muted);font-size:13px;margin-bottom:6px;">${n.body}</div>`:''}
-          ${nTimestamp?`<div style="color:var(--text-muted);font-size:11px;margin-bottom:6px;">${nTimestamp}</div>`:''}
+          ${nTimestamp?`<div style="color:#c3d4e8;font-size:11px;margin-bottom:6px;">${nTimestamp}</div>`:''}
           ${nHasSermon ? `<button onclick="event.stopPropagation();viewSermon('${nSermonId}')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>` : ''}
           ${nIsLiveStream ? `<button onclick="event.stopPropagation();showPage('live')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">📡 View Live</button>` : ''}
           ${nIsMessage ? `<button onclick="event.stopPropagation();showPage('inbox')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">📬 View Message</button>` : ''}

@@ -1573,7 +1573,7 @@ function lhRender(){
   if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.published_at&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span>${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`).join('');
+  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="font-size:36px;margin-bottom:10px;position:relative;display:inline-block;">${ICONS[s.type]||'🎧'}${s.published_at&&!lhIsSermonSeen(s.id)&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span style="color:#c3d4e8;">${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`).join('');
 }
 
 async function lhClearAllNotifications() {
@@ -1762,7 +1762,27 @@ function openResetInApp(){
   window.location.href = 'trinitarian://reset-password?token=' + encodeURIComponent(t);
 }
 
+// Tracks which sermons have been opened, so the "NEW" badge can disappear
+// once viewed instead of only going away after the fixed 48h window.
+function lhMarkSermonSeen(id){
+  try{
+    var seen=JSON.parse(localStorage.getItem('lh_seen_sermons')||'[]');
+    if(!seen.includes(id)){
+      seen.push(id);
+      if(seen.length>300)seen=seen.slice(-300); // cap growth
+      localStorage.setItem('lh_seen_sermons',JSON.stringify(seen));
+    }
+  }catch(e){}
+}
+function lhIsSermonSeen(id){
+  try{
+    var seen=JSON.parse(localStorage.getItem('lh_seen_sermons')||'[]');
+    return seen.includes(id);
+  }catch(e){return false;}
+}
+
 function openSermonById(id){
+  lhMarkSermonSeen(id);
   const s=window.lhSermonMap&&window.lhSermonMap[id];
   if(s&&(s.type==='video'||s.type==='audio')){
     openSermon(s);
@@ -2252,7 +2272,13 @@ function lhSetLang(lang,btn){document.querySelectorAll('.lh-lang-btn').forEach(b
 
 function updateNotifCount(){
   try{
-    fetch(API+'/api/notifications?unread=true',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}})
+    const tkn=localStorage.getItem('trinitarian_token');
+    if(!tkn)return;
+    // Was ?unread=true, but the backend actually expects ?unread_only=true —
+    // the wrong param name meant this always fetched everything instead of
+    // filtering server-side (client-side filter below still worked as a
+    // fallback, so this wasn't the full explanation on its own).
+    fetch(API+'/api/notifications?unread_only=true',{headers:{'Authorization':'Bearer '+tkn}})
     .then(function(r){return r.json();})
     .then(function(data){
       var count=(data?.notifications||[]).filter(function(n){return !n.is_read;}).length;
@@ -2263,6 +2289,11 @@ function updateNotifCount(){
     }).catch(function(){});
   }catch(e){}
 }
+// Previously only ever called once, at initial page load, and never again —
+// meaning the badge went stale immediately and never reflected anything
+// that happened afterward. Now polls periodically, same pattern as the
+// live-stream alert check.
+setInterval(updateNotifCount,30000);
 
 async function loadLhNotifications(){const el=document.getElementById('lh-notifs-list');if(!el)return;try{const res=await fetch(API+'/api/notifications',{headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});const data=await res.json();const notifs=data?.notifications||[];
   // Mark all as read and clear badge
@@ -2286,7 +2317,7 @@ async function loadLhNotifications(){const el=document.getElementById('lh-notifs
   else if(n.type==='admin_message'){clickHandler="goTo('lh-inbox')";tapLabel='Tap to view →';}
   var clickable=!!clickHandler;
   var icon=n.type==='new_sermon'?'🎧':n.type==='live_stream'?'📡':n.type==='application_update'?'🛡️':n.type==='follow'?'👤':'🔔';
-  return '<div '+(clickable?'onclick="'+clickHandler+'"':'')+' style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'" ><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(n.created_at?'<div style="color:#6b7d99;font-size:11px;margin-top:4px;">'+new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">'+tapLabel+'</div>':'')+'</div></div>';
+  return '<div '+(clickable?'onclick="'+clickHandler+'"':'')+' style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);'+(clickable?'cursor:pointer;':'')+'" ><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(n.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+n.title+'</div>'+(n.body?'<div style="color:#8fa3c0;font-size:12px;">'+n.body+'</div>':'')+(n.created_at?'<div style="color:#c3d4e8;font-size:11px;margin-top:4px;">'+new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(clickable?'<div style="color:#D4AF37;font-size:11px;margin-top:4px;">'+tapLabel+'</div>':'')+'</div></div>';
 }).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load notifications</p>';}}
 
@@ -2295,7 +2326,7 @@ async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');i
   var sermonId=data&&(data.sermon_id||data.id)||null;
   var hasSermon=sermonId&&(m.type==='new_sermon'||m.type==='admin_message');
   var icon=m.type==='new_sermon'?'🎧':m.type==='live_stream'?'📡':m.type==='application_update'?'🛡️':m.type==='admin_message'?'📬':m.type==='follow'?'👤':'📬';
-  return '<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;margin-bottom:6px;">'+m.body+'</div>':'')+(m.created_at?'<div style="color:#6b7d99;font-size:11px;margin-bottom:6px;">'+new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(sermonId?'<button onclick="lhOpenNotifSermon(\''+sermonId+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>':'')+'</div></div>';
+  return '<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;margin-bottom:6px;">'+m.body+'</div>':'')+(m.created_at?'<div style="color:#c3d4e8;font-size:11px;margin-bottom:6px;">'+new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(sermonId?'<button onclick="lhOpenNotifSermon(\''+sermonId+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>':'')+'</div></div>';
 }).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load messages</p>';}}
 async function sendLhInboxMsg(){
