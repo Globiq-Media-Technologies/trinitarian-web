@@ -581,18 +581,22 @@ async function handleLogin() {
   try {
     const data = await api('/api/auth/login', 'POST', { email: email.toLowerCase(), password });
     if (data.token) {
-      token = data.token;
-      user = data.user;
-      localStorage.setItem('pastor_token', token);
-      localStorage.setItem('pastor_user', JSON.stringify(user));
-      // Fetch fresh role from server
+      // Fetch fresh role from server BEFORE storing anything — previously
+      // pastor_token/pastor_user were stored immediately, before the role
+      // check below ran. If anything else ever restored a session from
+      // localStorage without re-checking role, a listener-role account
+      // could have slipped through without this validation running again.
+      let freshUser = data.user;
       try {
-        const fresh = await api('/api/auth/me');
-        if (fresh?.id) { const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4}; if((roleOrder[fresh.role]||0) >= (roleOrder[user?.role]||0)) { user = fresh; } else { fresh.role = user.role; user = fresh; } localStorage.setItem('pastor_user', JSON.stringify(user)); }
+        const meRes = await fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + data.token } });
+        const fresh = await meRes.json();
+        if (fresh?.id) {
+          const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
+          freshUser = (roleOrder[fresh.role]||0) >= (roleOrder[data.user?.role]||0) ? fresh : { ...fresh, role: data.user.role };
+        }
       } catch(e) {}
-      const role = user?.role || 'listener';
+      const role = freshUser?.role || 'listener';
       if (role === 'listener') {
-        // Check if they have a pending application
         showAlert('login-error',
           'Your account is awaiting pastor verification. If you have not applied yet, <a onclick="showScreen(\'apply\')" style="color:#D4AF37;cursor:pointer;text-decoration:underline;">click here to apply</a>. Otherwise please wait for admin approval.',
           false, true);
@@ -606,6 +610,10 @@ async function handleLogin() {
         showAlert('login-error', 'Your account does not have pastor access.');
         return;
       }
+      token = data.token;
+      user = freshUser;
+      localStorage.setItem('pastor_token', token);
+      localStorage.setItem('pastor_user', JSON.stringify(user));
       initDashboard();
     } else {
       showAlert('login-error', data.error || 'Invalid credentials');

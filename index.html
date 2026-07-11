@@ -1175,12 +1175,26 @@ async function llLogin(){
     const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass})});
     const data=await res.json();
     if(data.token){
+      const role=data.user?.role||'listener';
+      // Pastors/admins/moderators must sign in through the Pastor Login
+      // page specifically — previously this form let them authenticate
+      // successfully (storing a real session on the listener site) and
+      // just redirected afterward, rather than blocking it outright.
+      if(['admin','moderator','pastor'].includes(role)){
+        showMsg('ll-err','Pastor and staff accounts must sign in through Pastor Login, not here.',false);
+        const pastorLink=document.createElement('a');
+        pastorLink.href='https://trinitarian.app/pastor/index.html';
+        pastorLink.target='_blank';
+        pastorLink.textContent='Go to Pastor Login →';
+        pastorLink.style.cssText='display:block;text-align:center;color:#D4AF37;font-size:13px;margin-top:8px;';
+        const errEl=document.getElementById('ll-err');
+        if(errEl&&errEl.parentNode)errEl.parentNode.appendChild(pastorLink);
+        return;
+      }
       localStorage.setItem('trinitarian_token',data.token);
       try{const meRes=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+data.token}});const fresh=await meRes.json();if(fresh?.id)data.user=fresh;}catch(e){}
       localStorage.setItem('trinitarian_user',JSON.stringify(data.user));
-      const role=data.user?.role||'listener';
-      if(['admin','moderator','pastor'].includes(role)){window.open('https://trinitarian.app/pastor/index.html','_blank');showMsg('ll-err','Welcome! Pastor Dashboard opened in a new tab.',true);}
-      else{goTo('listener-home');}
+      goTo('listener-home');
     }else{
       let msg=data.error||(data.errors&&data.errors[0]&&data.errors[0].msg)||'Sign in failed.';
       if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('password')||msg.toLowerCase().includes('incorrect'))msg='Incorrect email or password. Please try again.';
