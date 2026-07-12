@@ -420,13 +420,13 @@
     <!-- Optional documents -->
     <div style="margin-bottom:20px;">
       <label style="display:block;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">
-        Ordination Certificate * <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(PDF, JPG or PNG)</span>
+        Ordination Certificate <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional — PDF, JPG or PNG)</span>
       </label>
       <div style="background:var(--navy2);border:2px dashed rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;" onclick="document.getElementById('cert-file').click()">
         <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="updateCertLabel(this)"/>
         <div id="cert-label" style="color:var(--text-muted);font-size:13px;">📎 Click to attach document</div>
       </div>
-      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="cert_note">An ordination certificate is required to apply.</p>
+      <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="cert_note">Uploading a certificate speeds up verification but is not required.</p>
     </div>
 
     <!-- Declaration -->
@@ -1225,7 +1225,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=20"></script>
+<script src="/pastor/dashboard.js?v=22"></script>
 
 
 <!-- Cookie Consent Banner -->
