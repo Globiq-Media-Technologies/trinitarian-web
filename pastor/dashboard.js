@@ -2906,7 +2906,7 @@ function toggleCamera() {
 async function loadPastStreams() {
   try {
     const token = localStorage.getItem('pastor_token');
-    const r = await fetch(API_BASE+'/live/history', {headers:{'Authorization':'Bearer '+token}});
+    const r = await fetch(API+'/live/history', {headers:{'Authorization':'Bearer '+token}});
     const data = await r.json();
     const container = document.getElementById('past-streams-list');
     if (!data.streams || !data.streams.length) {
