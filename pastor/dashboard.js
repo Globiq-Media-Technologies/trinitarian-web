@@ -965,7 +965,7 @@ function renderSermonList(sermons, containerId) {
         <div class="sermon-title">${s.title}</div>
         <div class="sermon-meta">
           <span>👁 ${parseInt(s.views_count || 0).toLocaleString()} views</span>
-          <span>${new Date(s.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}</span>
+          <span>${s.published_at?new Date(s.published_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}):''}</span>
         </div>
       </div>
       <div class="sermon-actions">
@@ -2072,7 +2072,7 @@ async function downloadAllSermons() {
     const data = await api('/api/sermons/my/sermons');
     const list = Array.isArray(data) ? data : [];
     if (!list.length) { alert('No sermons to download.'); return; }
-    const text = list.map(s => `Title: ${s.title}\nType: ${s.type}\nViews: ${s.views_count||0}\nDate: ${new Date(s.created_at).toLocaleDateString()}\nTranscript: ${s.transcript||'N/A'}\n\n---\n`).join('\n');
+    const text = list.map(s => `Title: ${s.title}\nType: ${s.type}\nViews: ${s.views_count||0}\nDate: ${s.published_at?new Date(s.published_at).toLocaleDateString():'N/A'}\nTranscript: ${s.transcript||'N/A'}\n\n---\n`).join('\n');
     const blob = new Blob([text], {type:'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download='my-sermons.txt'; a.click();
@@ -2084,7 +2084,7 @@ let allSermonsCache = [];
 async function loadSermons() {
   try {
     const data = await api('/api/sermons/my/sermons');
-    allSermonsCache = (Array.isArray(data) ? data : (data?.sermons || [])).sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    allSermonsCache = (Array.isArray(data) ? data : (data?.sermons || [])).sort((a,b) => new Date(b.published_at||b.created_at||0).getTime() - new Date(a.published_at||a.created_at||0).getTime());
     renderFilteredSermons(allSermonsCache);
   } catch(e) {
     const el = document.getElementById('all-sermons');
