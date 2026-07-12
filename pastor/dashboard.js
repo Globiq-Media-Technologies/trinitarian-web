@@ -393,7 +393,7 @@ function exploreRender() {
     card.innerHTML = '<div style="font-size:32px;margin-bottom:10px;">' + (ICONS[s.type]||'🎧') + '</div>'
       + '<div style="color:var(--white);font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">' + s.title + '</div>'
       + '<div style="color:var(--text-muted);font-size:12px;margin-bottom:4px;">✝ ' + (s.pastor_name||'Pastor') + '</div>'
-      + '<div style="color:var(--text-muted);font-size:11px;">👁 ' + parseInt(s.views_count||0).toLocaleString() + ' · ' + (s.type||'').toUpperCase() + '</div>';
+      + '<div style="color:var(--text-muted);font-size:11px;">👁 ' + parseInt(s.views_count||0).toLocaleString() + ' · ' + (s.type||'').toUpperCase() + (s.published_at ? ' · <span style="color:#c3d4e8;">' + new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) + '</span>' : '') + '</div>';
     el.appendChild(card);
   });
 }
