@@ -1924,7 +1924,12 @@ function cpSaveProgress(seconds,completed){
 function openSermon(s){
   currentSermon=s;
   // Increment view count
-  if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});}const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
+  if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});
+    // Mark any notification about this sermon as read — previously this
+    // only happened when tapping the notification directly, not when
+    // opening the same sermon via any other route.
+    fetch(API+'/api/notifications/by-sermon/'+s.id+'/read',{method:'PUT',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});
+  }const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='none';
   goTo('player');
   document.getElementById('player-title').textContent=sanitizeInput(s.title||'');
   // Set title/pastor in all possible elements
