@@ -927,14 +927,25 @@ async function updateBadges() {
 // ── Overview ──
 async function loadOverview() {
   try {
-    const [sermons, analytics] = await Promise.all([
+    // Previously Promise.all — if the admin-only analytics call failed (as
+    // it always would for a regular pastor without admin/moderator access),
+    // the WHOLE thing failed, even though the sermon data would have loaded
+    // fine on its own. Promise.allSettled lets each succeed or fail
+    // independently.
+    const [sermonsResult, profileResult] = await Promise.allSettled([
       api('/api/sermons/my/sermons'),
-      api('/api/admin/analytics?period=30')
+      user?.id ? api('/api/pastors/' + user.id) : Promise.resolve(null)
     ]);
+    const sermons = sermonsResult.status === 'fulfilled' ? sermonsResult.value : null;
+    const profile = profileResult.status === 'fulfilled' ? profileResult.value : null;
     const list = Array.isArray(sermons) ? sermons : [];
     document.getElementById('stat-sermons').textContent = list.length || allSermonsCache?.length || 0;
     document.getElementById('stat-views').textContent = list.reduce((a, s) => a + (parseInt(s.views_count) || 0), 0).toLocaleString();
-    document.getElementById('stat-followers').textContent = analytics?.total_users || '—';
+    // Was pulling analytics.total_users — the platform-wide user count from
+    // an admin-only endpoint that regular pastors can't even access, and
+    // not this pastor's own follower count even when it did load. Now uses
+    // the pastor's own profile data.
+    document.getElementById('stat-followers').textContent = (profile?.pastor?.followers_count ?? '—');
     document.getElementById('stat-streams').textContent = '—';
     renderSermonList(list.slice(0, 5), 'recent-sermons');
   } catch(e) {
