@@ -925,6 +925,18 @@ async function updateBadges() {
 
 
 // ── Overview ──
+function scrollToPastStreams() {
+  showPage('live');
+  // Give the page a moment to render before scrolling — differentiates this
+  // from the sidebar's Live Stream link, which lands at the studio controls.
+  // This lands directly on stream history instead, since that's what the
+  // Overview card is actually about.
+  setTimeout(() => {
+    const el = document.getElementById('past-streams-list');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 150);
+}
+
 async function loadOverview() {
   try {
     // Previously Promise.all — if the admin-only analytics call failed (as
@@ -932,12 +944,14 @@ async function loadOverview() {
     // the WHOLE thing failed, even though the sermon data would have loaded
     // fine on its own. Promise.allSettled lets each succeed or fail
     // independently.
-    const [sermonsResult, profileResult] = await Promise.allSettled([
+    const [sermonsResult, profileResult, streamsResult] = await Promise.allSettled([
       api('/api/sermons/my/sermons'),
-      user?.id ? api('/api/pastors/' + user.id) : Promise.resolve(null)
+      user?.id ? api('/api/pastors/' + user.id) : Promise.resolve(null),
+      fetch(API + '/api/streams/history', { headers: { 'Authorization': 'Bearer ' + (user ? localStorage.getItem('pastor_token') : '') } }).then(r => r.json())
     ]);
     const sermons = sermonsResult.status === 'fulfilled' ? sermonsResult.value : null;
     const profile = profileResult.status === 'fulfilled' ? profileResult.value : null;
+    const streams = streamsResult.status === 'fulfilled' ? streamsResult.value : null;
     const list = Array.isArray(sermons) ? sermons : [];
     document.getElementById('stat-sermons').textContent = list.length || allSermonsCache?.length || 0;
     document.getElementById('stat-views').textContent = list.reduce((a, s) => a + (parseInt(s.views_count) || 0), 0).toLocaleString();
@@ -946,7 +960,7 @@ async function loadOverview() {
     // not this pastor's own follower count even when it did load. Now uses
     // the pastor's own profile data.
     document.getElementById('stat-followers').textContent = (profile?.pastor?.followers_count ?? '—');
-    document.getElementById('stat-streams').textContent = '—';
+    document.getElementById('stat-streams').textContent = (streams?.streams?.length ?? '—');
     renderSermonList(list.slice(0, 5), 'recent-sermons');
   } catch(e) {
     document.getElementById('recent-sermons').innerHTML = '<div class="empty-state"><div class="empty-icon">🎧</div><h3 data-i18n="no_sermons_yet">No sermons yet</h3><p data-i18n="upload_first">Upload your first sermon to get started</p></div>';
@@ -1342,12 +1356,14 @@ async function loadAnalytics(period, btn) {
     btn.classList.add('active');
   }
   try {
-    const data = await api(`/api/admin/analytics?period=${period}`);
+    const data = await api(`/api/sermons/my/analytics?period=${period}`);
     document.getElementById('an-views').textContent = (data?.period_views || 0).toLocaleString();
     const labelEl = document.getElementById('an-views-label');
-    if(labelEl) labelEl.textContent = `Views (${period} days)`;
+    // Honest label — this reflects all-time views, not a true period-specific
+    // breakdown (no per-view timestamp log exists yet to compute that).
+    if(labelEl) labelEl.textContent = `Total Views`;
     const allTimeEl = document.getElementById('an-views-alltime');
-    if(allTimeEl) allTimeEl.textContent = 'All time: ' + (data?.total_views || 0).toLocaleString();
+    if(allTimeEl) allTimeEl.textContent = '';
     document.getElementById('an-sermons').textContent = data?.live_sermons || data?.total_sermons || 0;
     const top = document.getElementById('top-sermons');
     if (data?.top_sermons?.length) {
@@ -2906,7 +2922,7 @@ function toggleCamera() {
 async function loadPastStreams() {
   try {
     const token = localStorage.getItem('pastor_token');
-    const r = await fetch(API+'/live/history', {headers:{'Authorization':'Bearer '+token}});
+    const r = await fetch(API+'/api/streams/history', {headers:{'Authorization':'Bearer '+token}});
     const data = await r.json();
     const container = document.getElementById('past-streams-list');
     if (!data.streams || !data.streams.length) {

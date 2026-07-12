@@ -101,6 +101,7 @@
     .stat-card.clickable:hover { border-color:rgba(212,175,55,0.5); }
     .stat-card.clickable:active { transform:scale(0.98); }
     .stat-card.clickable .stat-hint { position:absolute; top:14px; right:16px; color:var(--gold); font-size:12px; opacity:0.6; }
+    .stat-card.clickable .stat-tap-hint { color:var(--gold); font-size:10px; margin-top:6px; opacity:0.8; }
     .stat-icon { font-size:28px; margin-bottom:10px; }
     .stat-value { font-family:'Cinzel',serif; font-size:28px; color:var(--white); margin-bottom:4px; }
     .stat-label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
@@ -588,10 +589,10 @@
         <p class="page-sub" data-i18n="here_how">Here's how your ministry is performing</p>
       </div>
       <div class="stats-grid" id="stats-grid">
-        <div class="stat-card clickable" onclick="showPage('sermons')" title="View my sermons"><span class="stat-hint">→</span><div class="stat-icon">🎧</div><div class="stat-value" id="stat-sermons">—</div><div class="stat-label" data-i18n="total_sermons">Total Sermons</div></div>
-        <div class="stat-card clickable" onclick="showPage('analytics')" title="View analytics"><span class="stat-hint">→</span><div class="stat-icon">👁️</div><div class="stat-value" id="stat-views">—</div><div class="stat-label" data-i18n="total_views">Total Views</div></div>
-        <div class="stat-card clickable" onclick="showPage('analytics')" title="View analytics"><span class="stat-hint">→</span><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label" data-i18n="followers">Followers</div></div>
-        <div class="stat-card clickable" onclick="showPage('live')" title="View live streams"><span class="stat-hint">→</span><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label" data-i18n="live_streams">Live Streams</div></div>
+        <div class="stat-card clickable" onclick="showPage('sermons')" title="View my sermons"><span class="stat-hint">→</span><div class="stat-icon">🎧</div><div class="stat-value" id="stat-sermons">—</div><div class="stat-label" data-i18n="total_sermons">Total Sermons</div><div class="stat-tap-hint">Tap to view</div></div>
+        <div class="stat-card clickable" onclick="showPage('analytics')" title="View analytics"><span class="stat-hint">→</span><div class="stat-icon">👁️</div><div class="stat-value" id="stat-views">—</div><div class="stat-label" data-i18n="total_views">Total Views</div><div class="stat-tap-hint">Tap for details</div></div>
+        <div class="stat-card clickable" onclick="showPage('analytics')" title="View analytics"><span class="stat-hint">→</span><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label" data-i18n="followers">Followers</div><div class="stat-tap-hint">Tap for details</div></div>
+        <div class="stat-card clickable" onclick="scrollToPastStreams()" title="View live stream history"><span class="stat-hint">→</span><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label" data-i18n="live_streams">Live Streams</div><div class="stat-tap-hint">Tap for history</div></div>
       </div>
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
         <span style="color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;" data-i18n="recent_sermons">Recent Sermons</span>
@@ -1229,7 +1230,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=25"></script>
+<script src="/pastor/dashboard.js?v=26"></script>
 
 
 <!-- Cookie Consent Banner -->
