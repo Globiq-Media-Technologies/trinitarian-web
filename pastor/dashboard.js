@@ -2510,7 +2510,22 @@ function toggleTranscription(){
   _recognition = new SR();
   _recognition.continuous = true;
   _recognition.interimResults = true;
-  _recognition.lang = document.getElementById('up-lang')?.value==='fr'?'fr-FR':document.getElementById('up-lang')?.value==='pt'?'pt-PT':'en-US';
+  // Previously only handled en/fr/pt — every other one of the 14 languages
+  // this platform supports silently fell back to English recognition, which
+  // would badly mangle speech in a different language rather than just
+  // being imprecise. Honest caveat: Chrome's underlying speech engine has
+  // uneven real-world support across languages — major world languages
+  // (fr/pt/es/de/it/zh/hi/ar) are generally solid, but some African
+  // languages (ig/yo/ha/tw/zu) may still have limited accuracy regardless
+  // of the correct tag being set, since that's a limitation of Chrome's
+  // engine itself, not something fixable from our side.
+  const sermonLang = document.getElementById('up-lang')?.value || 'en';
+  const langMap = {
+    en: 'en-US', fr: 'fr-FR', ig: 'ig-NG', yo: 'yo-NG', ha: 'ha-NG',
+    pt: 'pt-PT', tw: 'ak-GH', zu: 'zu-ZA', ar: 'ar-SA', zh: 'zh-CN',
+    hi: 'hi-IN', es: 'es-ES', de: 'de-DE', it: 'it-IT'
+  };
+  _recognition.lang = langMap[sermonLang] || 'en-US';
   const textarea=document.getElementById('up-transcript');
   let baseText = textarea.value ? textarea.value + ' ' : '';
 
@@ -2584,6 +2599,7 @@ const AGORA_APP_ID = '87a5424b14e84e75b9569a80ea053929';
 let agoraClient = null;
 let localAudioTrack = null;
 let localVideoTrack = null;
+let currentFacingMode = 'user';
 let currentStreamId = null;
 let liveStartTime = null;
 let liveTimerInterval = null;
@@ -2687,8 +2703,12 @@ async function pdGoLiveStream(streamId, streamTitle) {
     await agoraClient.setClientRole('host');
     await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
 
-    // Create local tracks
-    [localAudioTrack, localVideoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
+    // Create local tracks. Previously used createMicrophoneAndCameraTracks(),
+    // a combined helper with no camera control — switched to separate calls
+    // so facingMode can be controlled for front/rear switching.
+    currentFacingMode = 'user';
+    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode });
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     // Show local video
@@ -2725,6 +2745,35 @@ async function pdGoLiveStream(streamId, streamTitle) {
   } catch(e) {
     console.error('Go live error:', e);
     showToast('Failed to start stream: ' + e.message, 'error');
+  }
+}
+
+// Switches between front and rear camera during an active broadcast.
+// createMicrophoneAndCameraTracks() (the original combined helper) has no
+// facingMode control, so the video track is created separately and can be
+// swapped out for a new one with the opposite facingMode.
+async function switchCamera() {
+  if (!agoraClient || !localVideoTrack) {
+    showToast('Not currently live', 'error');
+    return;
+  }
+  try {
+    const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    const newVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: newFacingMode });
+
+    await agoraClient.unpublish([localVideoTrack]);
+    localVideoTrack.stop();
+    localVideoTrack.close();
+
+    localVideoTrack = newVideoTrack;
+    currentFacingMode = newFacingMode;
+    await agoraClient.publish([localVideoTrack]);
+    localVideoTrack.play('local-video');
+
+    showToast(newFacingMode === 'user' ? 'Switched to front camera' : 'Switched to rear camera', 'success');
+  } catch(e) {
+    console.error('Switch camera error:', e);
+    showToast('Could not switch camera — your device may only have one, or a browser permission is blocking it.', 'error');
   }
 }
 
