@@ -874,6 +874,10 @@ function lhSendChat() {
         <div><div style="color:#e8e8e8;font-size:14px;" data-i18n="live_streams">Live Streams</div><div style="color:#8fa3c0;font-size:12px;" data-i18n="notif_sub_live">When pastors go live</div></div>
         <div id="lhs-notif-streams-track" onclick="lhToggleNotif('lhs-notif-streams')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-streams-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
       </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.08);">
+        <div><div style="color:#e8e8e8;font-size:14px;" data-i18n="live_stream_sound">Live Stream Sound Alert</div><div style="color:#8fa3c0;font-size:12px;" data-i18n="notif_sub_chime">Play a sound when a stream starts, while browsing</div></div>
+        <div id="lhs-notif-chime-track" onclick="lhToggleNotif('lhs-notif-chime')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-chime-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
         <div><div style="color:#e8e8e8;font-size:14px;" data-i18n="inbox_messages">Inbox Messages</div><div style="color:#8fa3c0;font-size:12px;" data-i18n="notif_sub_msg">When you receive a message</div></div>
         <div id="lhs-notif-inbox-track" onclick="lhToggleNotif('lhs-notif-inbox')" style="position:relative;width:48px;height:26px;background:#D4AF37;border-radius:26px;cursor:pointer;flex-shrink:0;"><div id="lhs-notif-inbox-knob" style="position:absolute;top:3px;left:25px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;"></div></div>
@@ -1302,7 +1306,13 @@ async function checkForNewLiveStreams(){
     if(lhLiveAlertInitialized){
       const newlyLive=streams.filter(s=>!lhKnownLiveStreamIds.has(s.id));
       if(newlyLive.length){
-        playLiveAlertChime();
+        // Previously played unconditionally with no way to turn it off.
+        // Default on, but respects the toggle in Settings.
+        const chimeVal=localStorage.getItem('lhs-notif-chime');
+        const chimeOn=chimeVal===null?true:chimeVal==='true';
+        if(chimeOn){
+          playLiveAlertChime();
+        }
         newlyLive.forEach(function(s){
           showShareToast('🔴 '+(s.display_name||'A pastor')+' is live now!');
         });
@@ -2419,7 +2429,7 @@ function lhToggleNotif(id){
 }
 
 function initLhNotifToggles(){
-  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox'].forEach(id=>{
+  ['lhs-notif-sermons','lhs-notif-streams','lhs-notif-inbox','lhs-notif-chime'].forEach(id=>{
     const val=localStorage.getItem(id);
     const isOn=val===null?true:val==='true';
     const track=document.getElementById(id+'-track');
