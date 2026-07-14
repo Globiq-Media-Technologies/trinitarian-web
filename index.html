@@ -119,91 +119,7 @@
 
     </style>
   <!-- Google Analytics placeholder - add your ID here when ready -->
-  <!-- Agora SDK — uncomment when LIVE_ENABLED = true -->
-  <!-- <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js">
-// ── LIVE STREAM VIEWER (Agora) ───────────────────────────────────────────────
-const LH_LIVE_ENABLED = true;
-const LH_AGORA_APP_ID = 'YOUR_AGORA_APP_ID';
-let lhAgoraClient = null, lhCurrentStream = null, lhViewerPoll = null;
-
-function initLhLivePage() {
-  const enabled = LH_LIVE_ENABLED;
-  document.getElementById('lh-live-coming-soon').style.display = enabled ? 'none' : 'block';
-  document.getElementById('lh-live-studio').style.display = enabled ? 'block' : 'none';
-  if (enabled) lhLoadActiveStreams();
-}
-
-async function lhLoadActiveStreams() {
-  try {
-    // Was calling /live/active, which never existed anywhere on the
-    // backend — every single call in this function was hitting a 404,
-    // silently falling back to "no live streams" even when one genuinely
-    // was live. Real endpoint is GET /api/streams?status=live.
-    const r = await fetch(API + '/api/streams?status=live');
-    const streams = await r.json();
-    const container = document.getElementById('lh-active-streams');
-    document.getElementById('lh-streams-loading').style.display = 'none';
-    if (!Array.isArray(streams) || !streams.length) {
-      container.innerHTML += '<div style="text-align:center;padding:40px;"><div style="font-size:40px;margin-bottom:12px;">📡</div><p style="color:#8fa3c0;font-size:13px;">No live streams right now. Check back soon!</p></div>';
-      return;
-    }
-    container.innerHTML = streams.map(function(s) {
-      return '<div onclick="lhJoinLiveStream(\'' + s.id + '\',\'' + (s.title||'').replace(/'/g,"\\'") + '\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;display:flex;gap:12px;align-items:center;"><div style="background:#e53e3e;color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;letter-spacing:1px;white-space:nowrap;">● LIVE</div><div style="flex:1;"><div style="color:#e8e8e8;font-size:14px;font-weight:600;">'+s.title+'</div><div style="color:#8fa3c0;font-size:12px;margin-top:2px;">👤 '+(s.display_name||'')+' · 👥 '+(s.viewer_count||0)+' watching</div></div><div style="color:#D4AF37;font-size:18px;">▶</div></div>';
-    }).join('');
-  } catch(e) { console.error('Load streams error:',e); }
-}
-
-async function lhJoinStream(channel, title, pastorName) {
-  try {
-    document.getElementById('lh-active-streams').style.display = 'none';
-    document.getElementById('lh-stream-player').style.display = 'block';
-    document.getElementById('lh-stream-title').textContent = title;
-    document.getElementById('lh-stream-pastor').textContent = '👤 ' + pastorName;
-    lhCurrentStream = channel;
-    const r = await fetch('https://trinitarian-backend-production.up.railway.app/live/token?channel='+channel+'&role=audience');
-    const data = await r.json();
-    lhAgoraClient = AgoraRTC.createClient({mode:'live',codec:'vp8'});
-    await lhAgoraClient.setClientRole('audience');
-    await lhAgoraClient.join(LH_AGORA_APP_ID, channel, data.token, null);
-    lhAgoraClient.on('user-published', async function(user, mediaType) {
-      await lhAgoraClient.subscribe(user, mediaType);
-      if (mediaType === 'video') { document.getElementById('lh-video-placeholder').style.display='none'; user.videoTrack.play('lh-remote-video'); }
-      if (mediaType === 'audio') user.audioTrack.play();
-    });
-    lhAgoraClient.on('user-unpublished', function() { document.getElementById('lh-video-placeholder').style.display='flex'; });
-    if (lhViewerPoll) clearInterval(lhViewerPoll);
-    lhViewerPoll = setInterval(async function() {
-      try {
-        const rv = await fetch('https://trinitarian-backend-production.up.railway.app/live/viewers?channel='+channel);
-        const dv = await rv.json(); document.getElementById('lh-viewer-count').textContent = '👥 '+(dv.count||0)+' watching';
-      } catch(e) {}
-    }, 5000);
-  } catch(e) { console.error('Join stream error:',e); }
-}
-
-async function lhLeaveStream() {
-  if (lhAgoraClient) await lhAgoraClient.leave();
-  if (lhViewerPoll) clearInterval(lhViewerPoll);
-  lhCurrentStream = null;
-  document.getElementById('lh-stream-player').style.display = 'none';
-  document.getElementById('lh-active-streams').style.display = 'block';
-  document.getElementById('lh-video-placeholder').style.display = 'flex';
-}
-
-function lhSendChat() {
-  const input = document.getElementById('lh-chat-input');
-  const msg = input.value.trim(); if (!msg) return;
-  const user = JSON.parse(localStorage.getItem('trinitarian_user')||'null');
-  const name = (user && user.display_name) ? user.display_name : 'Listener';
-  const box = document.getElementById('lh-chat-messages');
-  const el = document.createElement('div');
-  el.style.cssText = 'font-size:12px;color:#e8e8e8;';
-  el.innerHTML = '<span style="color:#D4AF37;font-weight:600;">'+name+':</span> '+msg;
-  box.appendChild(el); box.scrollTop = box.scrollHeight; input.value = '';
-}
-// ── END LIVE STREAM VIEWER ───────────────────────────────────────────────────
-
-</script> -->
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
 </head>
 <body>
 
@@ -2816,6 +2732,38 @@ let lhRemoteAudioTrack=null;
 // streaming — explaining total unresponsiveness with zero console/network
 // activity.
 
+// ── LIVE STREAM VIEWER ────────────────────────────────────────────────────────
+// These three were previously trapped inside a broken <script src="...">
+// tag wrapped in an HTML comment — browsers ignore inline content when a
+// script tag has a src attribute, AND the whole thing was additionally
+// commented out. Meant neither ever actually ran, regardless of any flag
+// value — restoring them here as genuinely live code.
+const LH_LIVE_ENABLED = true;
+
+function initLhLivePage() {
+  const enabled = LH_LIVE_ENABLED;
+  document.getElementById('lh-live-coming-soon').style.display = enabled ? 'none' : 'block';
+  document.getElementById('lh-live-studio').style.display = enabled ? 'block' : 'none';
+  if (enabled) lhLoadActiveStreams();
+}
+
+async function lhLoadActiveStreams() {
+  try {
+    const r = await fetch(API + '/api/streams?status=live');
+    const streams = await r.json();
+    const container = document.getElementById('lh-active-streams');
+    const loadingEl = document.getElementById('lh-streams-loading');
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (!Array.isArray(streams) || !streams.length) {
+      container.innerHTML += '<div style="text-align:center;padding:40px;"><div style="font-size:40px;margin-bottom:12px;">📡</div><p style="color:#8fa3c0;font-size:13px;">No live streams right now. Check back soon!</p></div>';
+      return;
+    }
+    container.innerHTML = streams.map(function(s) {
+      return '<div onclick="lhJoinLiveStream(\'' + s.id + '\',\'' + (s.title||'').replace(/'/g,"\\'") + '\')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;display:flex;gap:12px;align-items:center;"><div style="background:#e53e3e;color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;letter-spacing:1px;white-space:nowrap;">● LIVE</div><div style="flex:1;"><div style="color:#e8e8e8;font-size:14px;font-weight:600;">'+s.title+'</div><div style="color:#8fa3c0;font-size:12px;margin-top:2px;">👤 '+(s.display_name||'')+' · 👥 '+(s.viewer_count||0)+' watching</div></div><div style="color:#D4AF37;font-size:18px;">▶</div></div>';
+    }).join('');
+  } catch(e) { console.error('Load streams error:',e); }
+}
+
 async function lhJoinLiveStream(streamId, streamTitle){
   const token=localStorage.getItem('trinitarian_token')||'';
   if(!token){showToast('Please sign in to watch live streams','error');return;}
@@ -2920,36 +2868,6 @@ function lhToggleLiveVolume(){
   lhVolumeMuted=!lhVolumeMuted;
   if(lhRemoteAudioTrack)lhRemoteAudioTrack.setVolume(lhVolumeMuted?0:100);
   document.getElementById('lh-btn-vol').textContent=lhVolumeMuted?'🔇':'🔊';
-}
-
-async function joinLiveStream(streamId,title){
-  // Track viewer
-  fetch(API+'/api/streams/'+streamId+'/join',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
-  // Show stream player (placeholder for now)
-  const overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;background:#071528;z-index:99999;display:flex;flex-direction:column;';
-  const header=document.createElement('div');
-  header.style.cssText='background:#071528;border-bottom:1px solid rgba(212,175,55,0.2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;';
-  const titleEl=document.createElement('span');
-  titleEl.style.cssText='color:#fff;font-size:15px;font-weight:600;';
-  titleEl.textContent=title;
-  const leaveBtn=document.createElement('button');
-  leaveBtn.textContent='✕ Leave';
-  leaveBtn.style.cssText='background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;';
-  leaveBtn.onclick=function(){
-    overlay.remove();
-    fetch(API+'/api/streams/'+streamId+'/leave',{method:'POST'});
-  };
-  header.appendChild(titleEl);
-  header.appendChild(leaveBtn);
-  overlay.appendChild(header);
-  overlay.innerHTML+='<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">'
-  
-    +'<div style="font-size:64px;">📡</div>'
-    +'<p style="color:#e05555;font-size:16px;font-weight:600;">🔴 LIVE</p>'
-    +'<p style="color:#b0c4d8;font-size:14px;text-align:center;max-width:300px;">Live video streaming will be available in the next update.<br>You are counted as watching.</p>'
-    +'</div>';
-  document.body.appendChild(overlay);
 }
 
 async function toggleLike(){
