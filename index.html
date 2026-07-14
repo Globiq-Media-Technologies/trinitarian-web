@@ -2860,37 +2860,51 @@ function lhOpenLivePlayer(streamData, streamTitle){
 
 async function lhInitAgoraViewer(streamData){
   try{
+    console.log('🔍 LIVE DEBUG: joining with', {app_id: streamData.app_id, channel: streamData.channel_name, uid: streamData.uid, hasToken: !!streamData.token});
     lhAgoraClient=AgoraRTC.createClient({mode:'live',codec:'vp8'});
     await lhAgoraClient.setClientRole('audience');
 
     lhAgoraClient.on('user-published',async(user,mediaType)=>{
+      console.log('🔍 LIVE DEBUG: user-published fired', {uid:user.uid, mediaType});
       await lhAgoraClient.subscribe(user,mediaType);
+      console.log('🔍 LIVE DEBUG: subscribed successfully to', mediaType);
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteVideoTrack.play('lh-remote-video');
+        console.log('🔍 LIVE DEBUG: video track playing');
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
         lhRemoteAudioTrack.play();
+        console.log('🔍 LIVE DEBUG: audio track playing');
       }
     });
 
     lhAgoraClient.on('user-unpublished',(user,mediaType)=>{
+      console.log('🔍 LIVE DEBUG: user-unpublished', mediaType);
       if(mediaType==='video'&&document.getElementById('lh-remote-video')){
         document.getElementById('lh-live-loading').style.display='block';
       }
     });
 
     lhAgoraClient.on('user-left',()=>{
+      console.log('🔍 LIVE DEBUG: user-left (host left channel)');
       showToast('The live stream has ended','info');
       setTimeout(lhLeaveLiveStream,2000);
     });
 
+    lhAgoraClient.on('user-joined',(user)=>{
+      console.log('🔍 LIVE DEBUG: user-joined (someone entered channel)', user.uid);
+    });
+
     await lhAgoraClient.join(streamData.app_id||LH_AGORA_APP_ID, streamData.channel_name, streamData.token, streamData.uid);
-    console.log('Joined live stream channel:', streamData.channel_name);
+    console.log('🔍 LIVE DEBUG: join succeeded, channel:', streamData.channel_name);
+
+    const remoteUsers=lhAgoraClient.remoteUsers;
+    console.log('🔍 LIVE DEBUG: remote users already in channel at join time:', remoteUsers.length, remoteUsers);
   }catch(e){
-    console.error('Agora viewer error:',e);
+    console.error('🔍 LIVE DEBUG: Agora viewer error:',e);
     showToast('Could not connect to stream','error');
   }
 }
