@@ -457,6 +457,16 @@
   <!-- Content area with bottom padding for nav -->
   <div style="padding-bottom:70px;">
 
+<!-- Live now banner - hidden by default, shown/updated by checkForNewLiveStreams -->
+  <div id="lh-home-live-banner" style="display:none;margin:16px 24px 0;background:linear-gradient(135deg,#e05555,#c23f3f);border-radius:14px;padding:14px 18px;cursor:pointer;" onclick="lhGoToLiveFromBanner()">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:10px;height:10px;border-radius:5px;background:#fff;flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;overflow:hidden;">
+        <div id="lh-home-live-banner-text" style="color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      </div>
+      <div style="color:#fff;font-size:16px;flex-shrink:0;">▶</div>
+    </div>
+  </div>
 <!-- Search bar + filter tabs -->
   <div style="padding:16px 24px 12px;display:flex;align-items:center;gap:6px;">
     <div style="position:relative;flex:1;min-width:0;">
@@ -1222,6 +1232,7 @@ async function checkForNewLiveStreams(){
     if(!res.ok)return;
     const streams=await res.json();
     if(!Array.isArray(streams))return;
+    updateLiveHomeBanner(streams);
     const currentIds=new Set(streams.map(s=>s.id));
     if(lhLiveAlertInitialized){
       const newlyLive=streams.filter(s=>!lhKnownLiveStreamIds.has(s.id));
@@ -1243,6 +1254,32 @@ async function checkForNewLiveStreams(){
   }catch(e){}
 }
 setInterval(checkForNewLiveStreams,30000);
+
+// Previously the only signal a listener ever got was the transient toast+
+// chime at the exact moment a stream started — miss that, or open the app a
+// minute later, and there was no way to discover anything was live at all.
+// This keeps a persistent banner in sync every poll cycle instead.
+function updateLiveHomeBanner(streams){
+  const banner=document.getElementById('lh-home-live-banner');
+  const textEl=document.getElementById('lh-home-live-banner-text');
+  if(!banner||!textEl)return;
+  if(!streams.length){
+    banner.style.display='none';
+    return;
+  }
+  const first=streams[0];
+  const extra=streams.length>1?` (+${streams.length-1} more live)`:'';
+  textEl.textContent='🔴 '+(first.display_name||'A pastor')+' is live now — '+(first.title||'Tap to watch')+extra;
+  banner.style.display='block';
+}
+
+// Navigates to the Live tab by clicking the real tab button, so tab
+// highlighting stays in sync rather than just calling lhShowLive() directly.
+function lhGoToLiveFromBanner(){
+  const liveBtn=document.querySelector(".lh-tab[onclick*=\"'live'\"]");
+  if(liveBtn){ liveBtn.click(); }
+  else { lhShowLive(); }
+}
 checkForNewLiveStreams();
 
 function deferredClear(ids){
@@ -1543,12 +1580,18 @@ function lhOpenNotifSermon(sermonId){
 
 
 
-function showShareToast(msg){
+function showShareToast(msg,type){
   const t=document.createElement('div');
   t.textContent=msg;
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
+  const bg=type==='error'?'#e05555':type==='info'?'#3a5a8c':'#40c96a';
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;max-width:85%;text-align:center;';
   document.body.appendChild(t);setTimeout(function(){t.remove();},2500);
 }
+// Alias — this file's live-streaming code was written calling showToast(msg,
+// type), a function that never actually existed, meaning every error path
+// (sign-in required, connection failure, stream ended) silently threw a
+// ReferenceError instead of showing the intended message.
+function showToast(msg,type){ showShareToast(msg,type); }
 function lhSearch(){const q=document.getElementById('lh-search').value;document.getElementById('lh-search-clear').style.display=q?'block':'none';lhRender();lhSearchPastors(q);}
 
 let lhPastorSearchTimer=null;
@@ -2664,7 +2707,7 @@ async function lhShowLive(){
   el.style.cssText='display:block;';
 
   // COMING SOON CHECK
-  const LIVE_ENABLED = false; // SET TO true WHEN READY TO LAUNCH
+  const LIVE_ENABLED = true;
   if(!LIVE_ENABLED){
     el.innerHTML=`
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;">
