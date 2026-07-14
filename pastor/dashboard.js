@@ -2640,7 +2640,7 @@ function toggleTranscription(){
 // SET LIVE_ENABLED = true WHEN READY TO LAUNCH
 // ═══════════════════════════════════════════════════════
 const LIVE_ENABLED = true;
-const LIVE_STREAMING_LAUNCHED = false; // Set to true when ready to let pastors go live
+const LIVE_STREAMING_LAUNCHED = true; // Set to true when ready to let pastors go live
 const AGORA_APP_ID = '87a5424b14e84e75b9569a80ea053929';
 let agoraClient = null;
 let localAudioTrack = null;
