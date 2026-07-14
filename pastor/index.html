@@ -892,6 +892,15 @@
         </div>
       </div>
       <div id="admin-applications"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+
+      <div style="margin:32px 0 16px;">
+        <span class="section-label">Manage Pro Status</span>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:4px;">Search a user by name or email to grant or revoke Pro access — no payment processing yet, this is the staged manual approach.</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input id="pro-search-input" type="text" placeholder="Search by name or email…" oninput="searchProUsers()" style="flex:1;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--white);font-size:14px;"/>
+      </div>
+      <div id="pro-search-results"></div>
     </div>
 
     <!-- PROFILE -->
@@ -1231,7 +1240,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=27"></script>
+<script src="/pastor/dashboard.js?v=28"></script>
 
 
 <!-- Cookie Consent Banner -->

@@ -986,6 +986,7 @@ function renderSermonList(sermons, containerId) {
         <div class="sermon-title">${s.title}</div>
         <div class="sermon-meta">
           <span>👁 ${parseInt(s.views_count || 0).toLocaleString()} views</span>
+          ${s.category?`<span style="color:#D4AF37;">🏷 ${s.category}</span>`:''}
           <span>${s.published_at?new Date(s.published_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):''}</span>
         </div>
       </div>
@@ -1639,6 +1640,51 @@ async function cancelAutoApproval(id, name) {
     filterApps('auto-approval', document.querySelector('.app-filter-btn[onclick*="auto-approval"]'));
   } catch(e) {
     showToast('Failed to pause auto-approval', 'error');
+  }
+}
+
+let proSearchTimer = null;
+function searchProUsers() {
+  clearTimeout(proSearchTimer);
+  const q = document.getElementById('pro-search-input').value.trim();
+  const container = document.getElementById('pro-search-results');
+  if (q.length < 2) { container.innerHTML = ''; return; }
+  proSearchTimer = setTimeout(async () => {
+    try {
+      const data = await api('/api/pro/search?q=' + encodeURIComponent(q));
+      const users = data?.users || [];
+      if (!users.length) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:12px;">No matching users found.</p>';
+        return;
+      }
+      container.innerHTML = users.map(u => `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;">
+          <div>
+            <div style="color:var(--white);font-size:14px;font-weight:600;">${u.display_name || 'Unnamed'}</div>
+            <div style="color:var(--text-muted);font-size:12px;">${u.email} · ${u.role}</div>
+          </div>
+          <button onclick="toggleProStatus('${u.id}', ${!u.is_pro}, this)" style="background:${u.is_pro ? 'rgba(224,85,85,0.1)' : 'rgba(212,175,55,0.15)'};border:1px solid ${u.is_pro ? 'rgba(224,85,85,0.3)' : 'rgba(212,175,55,0.3)'};color:${u.is_pro ? '#e05555' : '#D4AF37'};border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;">
+            ${u.is_pro ? '✕ Revoke Pro' : '👑 Grant Pro'}
+          </button>
+        </div>
+      `).join('');
+    } catch(e) {
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:12px;">Search failed.</p>';
+    }
+  }, 300);
+}
+
+async function toggleProStatus(userId, newStatus, btn) {
+  const label = newStatus ? 'grant' : 'revoke';
+  if (!confirm(`Are you sure you want to ${label} Pro status for this user?`)) return;
+  btn.disabled = true;
+  try {
+    await api('/api/pro/' + userId + '/toggle', 'PUT', { is_pro: newStatus });
+    showToast(`Pro status ${newStatus ? 'granted' : 'revoked'}`);
+    searchProUsers();
+  } catch(e) {
+    showToast('Failed to update Pro status', 'error');
+    btn.disabled = false;
   }
 }
 
@@ -2979,10 +3025,23 @@ async function loadPastStreams() {
       return;
     }
     container.innerHTML = data.streams.map(function(s) {
-      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px;">'+new Date(s.created_at).toLocaleDateString()+' · '+Math.round((s.duration||0)/60)+' min · 👥 '+(s.peak_viewers||0)+' peak</div></div><div style="color:var(--gold);font-size:11px;font-weight:600;">ENDED</div></div>';
+      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px;">'+new Date(s.created_at).toLocaleDateString()+' · '+Math.round((s.duration||0)/60)+' min · 👥 '+(s.peak_viewers||0)+' peak</div></div><div style="display:flex;align-items:center;gap:10px;"><span style="color:var(--gold);font-size:11px;font-weight:600;">ENDED</span><button onclick="deletePastStream(\''+s.id+'\')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;">🗑 Delete</button></div></div>';
     }).join('');
   } catch(e) {
     document.getElementById('past-streams-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Could not load past streams</p>';
+  }
+}
+
+async function deletePastStream(id) {
+  if (!confirm('Delete this stream from your history? This cannot be undone.')) return;
+  try {
+    const token = localStorage.getItem('pastor_token');
+    const res = await fetch(API+'/api/streams/'+id, {method:'DELETE', headers:{'Authorization':'Bearer '+token}});
+    if (!res.ok) { const d = await res.json().catch(()=>({})); showToast(d.error||'Could not delete stream', 'error'); return; }
+    showToast('Stream deleted');
+    loadPastStreams();
+  } catch(e) {
+    showToast('Could not delete stream', 'error');
   }
 }
 // ── END LIVE STREAM ──────────────────────────────────────────────────────────
