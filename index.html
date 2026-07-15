@@ -2869,7 +2869,7 @@ async function lhInitAgoraViewer(streamData){
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
-        lhRemoteVideoTrack.play('lh-remote-video',{fit:'contain',mirror:false});
+        lhRemoteVideoTrack.play('lh-remote-video',{fit:'contain',mirror:true});
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
