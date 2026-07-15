@@ -2939,7 +2939,6 @@ function initLivePage() {
 }
 
 async function startLiveStream() {
-  alert('DEBUG: startLiveStream() was called');
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   const title = (document.getElementById('live-title').value||'').trim();
   if (!title) { showToast('Please enter a stream title'); return; }
@@ -2970,8 +2969,13 @@ async function startLiveStream() {
     agoraClient = AgoraRTC.createClient({mode:'live',codec:'vp8'});
     await agoraClient.setClientRole('host');
     await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
-    const tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
-    localAudioTrack = tracks[0]; localVideoTrack = tracks[1];
+    // Previously createMicrophoneAndCameraTracks() (the combined helper) —
+    // this has zero resolution control at all, which is the actual reason
+    // every previous resolution fix never took effect: those were applied
+    // to a different piece of code entirely (the camera-switch feature),
+    // never to this real, active go-live path.
+    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     localVideoTrack.play('local-video-container');
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
