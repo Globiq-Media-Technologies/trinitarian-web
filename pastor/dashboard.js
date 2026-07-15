@@ -2782,6 +2782,7 @@ async function pdGoLiveStream(streamId, streamTitle) {
     // preset for 1280x720, a good balance of quality vs bandwidth for live
     // streaming specifically.
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
+    console.log('🔍 CAMERA DEBUG: requested 720p_1, actual settings:', localVideoTrack.getMediaStreamTrack().getSettings());
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     // Show local video
