@@ -2927,7 +2927,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // LIVE_ENABLED already declared above
 // AGORA_APP_ID already declared above
 // agoraClient, localVideoTrack, localAudioTrack already declared above
-let isStreaming = false, isMicOn = true, isCamOn = true;
+let isStreaming = false, isMicOn = true, isCamOn = true, isStartingStream = false;
 let streamDurationTimer = null, streamSeconds = 0, currentChannelName = null;
 let viewerPollInterval = null;
 
@@ -2940,8 +2940,25 @@ function initLivePage() {
 
 async function startLiveStream() {
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
+  // Previously isStreaming only got set to true after the entire async
+  // publish chain succeeded — nothing blocked a second click while the
+  // first attempt was still in flight. That let two full attempts run in
+  // parallel, each creating and trying to publish its own video track to
+  // the same client, causing CAN_NOT_PUBLISH_MULTIPLE_VIDEO_TRACKS.
+  if (isStartingStream || isStreaming) { showToast('Already going live — please wait.', 'info'); return; }
+  isStartingStream = true;
+  // Defensive cleanup - if a previous attempt failed partway through and
+  // left a client or tracks behind, agoraClient would just get overwritten
+  // below without ever properly closing them, potentially leaving an
+  // orphaned publish active on Agora's side even after our local
+  // reference moves on.
+  try {
+    if (localVideoTrack) { localVideoTrack.close(); localVideoTrack = null; }
+    if (localAudioTrack) { localAudioTrack.close(); localAudioTrack = null; }
+    if (agoraClient) { await agoraClient.leave().catch(()=>{}); agoraClient = null; }
+  } catch(e) {}
   const title = (document.getElementById('live-title').value||'').trim();
-  if (!title) { showToast('Please enter a stream title'); return; }
+  if (!title) { showToast('Please enter a stream title'); isStartingStream = false; return; }
   const token = localStorage.getItem('pastor_token');
   try {
     // 1. Create stream record
@@ -2980,6 +2997,7 @@ async function startLiveStream() {
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     isStreaming = true;
+    isStartingStream = false;
     document.getElementById('camera-placeholder').style.display = 'none';
     document.getElementById('live-badge').style.display = 'block';
     document.getElementById('stream-indicator').style.background = '#e53e3e';
@@ -3004,7 +3022,7 @@ async function startLiveStream() {
       } catch(e) {}
     }, 5000);
     showToast('You are now live!');
-  } catch(e) { console.error('Live stream error:',e); showToast('Failed to start stream: ' + (e.message||'Please try again.')); }
+  } catch(e) { isStartingStream = false; console.error('Live stream error:',e); showToast('Failed to start stream: ' + (e.message||'Please try again.')); }
 }
 
 async function endLiveStream() {
