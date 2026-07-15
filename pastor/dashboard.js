@@ -2678,7 +2678,7 @@ let videoMuted = false;
 function pdInitLiveUI() {
   if (LIVE_ENABLED) {
     document.getElementById('live-coming-soon').style.display = 'none';
-    document.getElementById('live-full-ui').style.display = 'block';
+    document.getElementById('live-studio').style.display = 'block';
     pdLoadStreams();
   }
 }
@@ -2782,7 +2782,18 @@ async function pdGoLiveStream(streamId, streamTitle) {
     // preset for 1280x720, a good balance of quality vs bandwidth for live
     // streaming specifically.
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
-    console.log('🔍 CAMERA DEBUG: requested 720p_1, actual settings:', localVideoTrack.getMediaStreamTrack().getSettings());
+    try {
+      const mst = localVideoTrack.getMediaStreamTrack ? localVideoTrack.getMediaStreamTrack() : null;
+      console.log('🔍 CAMERA DEBUG: getMediaStreamTrack exists?', !!mst);
+      if (mst && mst.getSettings) {
+        console.log('🔍 CAMERA DEBUG: actual settings:', mst.getSettings());
+      }
+      if (localVideoTrack.getStats) {
+        console.log('🔍 CAMERA DEBUG: track stats:', localVideoTrack.getStats());
+      }
+    } catch(diagErr) {
+      console.log('🔍 CAMERA DEBUG: diagnostic itself failed:', diagErr.message);
+    }
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     // Show local video
