@@ -2843,7 +2843,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
         <button onclick="lhLeaveLiveStream()" style="background:rgba(224,85,85,0.2);color:#e05555;border:1px solid rgba(224,85,85,0.4);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;">Leave</button>
       </div>
     </div>
-    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;">
+    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;padding:0 12px;box-sizing:border-box;">
       <div id="lh-live-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#8fa3c0;">
         <div style="font-size:40px;margin-bottom:12px;">📡</div>
         <p>Connecting to live stream...</p>
@@ -2869,7 +2869,7 @@ async function lhInitAgoraViewer(streamData){
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
-        lhRemoteVideoTrack.play('lh-remote-video',{fit:'contain'});
+        lhRemoteVideoTrack.play('lh-remote-video',{fit:'contain',mirror:false});
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
