@@ -2782,15 +2782,10 @@ async function pdGoLiveStream(streamId, streamTitle) {
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     try {
       const mst = localVideoTrack.getMediaStreamTrack ? localVideoTrack.getMediaStreamTrack() : null;
-      console.log('🔍 CAMERA DEBUG: getMediaStreamTrack exists?', !!mst);
-      if (mst && mst.getSettings) {
-        console.log('🔍 CAMERA DEBUG: actual settings:', mst.getSettings());
-      }
-      if (localVideoTrack.getStats) {
-        console.log('🔍 CAMERA DEBUG: track stats:', localVideoTrack.getStats());
-      }
+      const settings = mst && mst.getSettings ? mst.getSettings() : null;
+      alert('CAMERA DEBUG\n\nrequested: 720p_1 (1280x720)\n\nactual settings: ' + (settings ? JSON.stringify(settings, null, 2) : 'getSettings unavailable') + '\n\nmediaStreamTrack exists: ' + !!mst);
     } catch(diagErr) {
-      console.log('🔍 CAMERA DEBUG: diagnostic itself failed:', diagErr.message);
+      alert('CAMERA DEBUG - diagnostic itself failed: ' + diagErr.message);
     }
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
@@ -2944,6 +2939,7 @@ function initLivePage() {
 }
 
 async function startLiveStream() {
+  alert('DEBUG: startLiveStream() was called');
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   const title = (document.getElementById('live-title').value||'').trim();
   if (!title) { showToast('Please enter a stream title'); return; }
