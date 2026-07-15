@@ -978,6 +978,13 @@ function renderSermonList(sermons, containerId) {
   }
   el.innerHTML = sermons.map(s => {
     const safeTitle = (s.title||'').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    // HTML entity escaping (safeTitle above) is correct for displayed text,
+    // but wrong inside a JS string literal within an onclick attribute — the
+    // browser decodes &#39; back to a literal apostrophe before JS ever
+    // runs, breaking the string boundary for any title containing one
+    // (e.g. "God's Grace"). This is what was causing Delete to silently do
+    // nothing for some sermons but not others.
+    const jsSafeTitle = (s.title||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     const safeDesc = (s.description||'').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     return `
     <div class="sermon-card" style="cursor:pointer;">
@@ -994,7 +1001,7 @@ function renderSermonList(sermons, containerId) {
         <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'archived' ? 'status-archived' : 'status-pending'}">${s.status === 'live' ? 'PUBLISHED' : s.status === 'archived' ? 'ARCHIVED' : (s.status||'').toUpperCase()}</span>
         <button class="btn btn-ghost btn-sm" onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
         <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('https://trinitarian.app/?sermon=${s.id}').then(function(){showToast('Link copied!')})">🔗 Copy Link</button>
-        <button class="btn btn-ghost btn-sm" style="color:var(--error);" onclick="deleteSermon('${s.id}','${safeTitle}')">🗑 Delete</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--error);" onclick="deleteSermon('${s.id}','${jsSafeTitle}')">🗑 Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -1114,6 +1121,22 @@ async function archiveAll() {
     alert(`${live.length} sermon(s) archived.`);
     loadSermons();
   } catch(e) { alert('Failed to archive sermons'); }
+}
+
+// This is permanent and affects potentially every sermon a pastor has ever
+// uploaded, so it gets a stronger confirmation than the simple OK/Cancel
+// used for the less-destructive archive action above.
+async function deleteAllSermons() {
+  const data = await api('/api/sermons/my/sermons').catch(() => []);
+  const sermons = Array.isArray(data) ? data.filter(s => s.status !== 'deleted') : [];
+  if (!sermons.length) { alert('No sermons to delete.'); return; }
+  const typed = prompt(`This will PERMANENTLY delete all ${sermons.length} of your sermons. This cannot be undone.\n\nType DELETE to confirm:`);
+  if (typed !== 'DELETE') { if (typed !== null) alert('Confirmation text did not match — nothing was deleted.'); return; }
+  try {
+    await Promise.all(sermons.map(s => api(`/api/sermons/${s.id}`, 'DELETE')));
+    alert(`${sermons.length} sermon(s) deleted.`);
+    loadSermons();
+  } catch(e) { alert('Failed to delete all sermons.'); }
 }
 
 // ── Upload ──
@@ -3041,6 +3064,24 @@ async function deletePastStream(id) {
     loadPastStreams();
   } catch(e) {
     showToast('Could not delete stream', 'error');
+  }
+}
+
+async function deleteAllPastStreams() {
+  if (!confirm('Delete ALL past streams from your history? This cannot be undone.')) return;
+  try {
+    const token = localStorage.getItem('pastor_token');
+    const r = await fetch(API+'/api/streams/history', {headers:{'Authorization':'Bearer '+token}});
+    const data = await r.json();
+    const streams = data.streams || [];
+    if (!streams.length) { showToast('No past streams to delete', 'info'); return; }
+    await Promise.all(streams.map(s =>
+      fetch(API+'/api/streams/'+s.id, {method:'DELETE', headers:{'Authorization':'Bearer '+token}})
+    ));
+    showToast('All past streams deleted');
+    loadPastStreams();
+  } catch(e) {
+    showToast('Could not delete all streams', 'error');
   }
 }
 // ── END LIVE STREAM ──────────────────────────────────────────────────────────

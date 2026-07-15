@@ -611,6 +611,7 @@
         <div style="display:flex;gap:8px;">
           <button class="btn btn-ghost btn-sm" onclick="downloadAllSermons()">⬇ Download All</button>
           <button class="btn btn-ghost btn-sm" onclick="archiveAll()">📦 Archive All</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--error);" onclick="deleteAllSermons()">🗑 Delete All</button>
           <button class="btn btn-gold btn-sm" onclick="showPage('upload')">+ Upload</button>
         </div>
       </div>
@@ -812,17 +813,11 @@
         <button onclick="toggleCamera()" id="btn-cam" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Toggle camera">📷</button>
         <button onclick="switchCamera()" id="btn-switch-cam" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Switch front/rear camera">🔄</button>
       </div>
-      <div style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <h3 style="color:var(--gold);font-size:13px;font-weight:600;">💬 Live Chat</h3>
-          <span style="color:var(--text-muted);font-size:11px;" id="chat-count">0 messages</span>
-        </div>
-        <div id="live-chat-messages" style="height:160px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:6px;">
-          <p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:40px;">Chat messages will appear here during the stream</p>
-        </div>
-      </div>
       <div style="margin-top:20px;">
-        <h3 style="color:var(--gold);font-size:14px;font-weight:600;margin-bottom:12px;">Past Streams</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="color:var(--gold);font-size:14px;font-weight:600;margin:0;">Past Streams</h3>
+          <button onclick="deleteAllPastStreams()" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">🗑 Delete All</button>
+        </div>
         <div id="past-streams-list"><p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">No past streams yet</p></div>
       </div>
     </div>
