@@ -2870,21 +2870,6 @@ async function lhInitAgoraViewer(streamData){
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteVideoTrack.play('lh-remote-video');
-        setTimeout(()=>{
-          const container=document.getElementById('lh-remote-video');
-          const rect=container.getBoundingClientRect();
-          const cs=getComputedStyle(container);
-          console.log('🔍 LIVE DEBUG v3: container rect', {width:rect.width, height:rect.height});
-          console.log('🔍 LIVE DEBUG v3: container computed style', {display:cs.display, flex:cs.flex, flexGrow:cs.flexGrow, flexBasis:cs.flexBasis, minHeight:cs.minHeight, height:cs.height, position:cs.position});
-          console.log('🔍 LIVE DEBUG v3: parent (overlay) computed style', getComputedStyle(container.parentElement) ? {display:getComputedStyle(container.parentElement).display, flexDirection:getComputedStyle(container.parentElement).flexDirection} : 'no parent');
-          const videoEl=container.querySelector('video');
-          console.log('🔍 LIVE DEBUG v3: video element found?', !!videoEl);
-          if(videoEl){
-            console.log('🔍 LIVE DEBUG v3: video element rect', videoEl.getBoundingClientRect());
-            console.log('🔍 LIVE DEBUG v3: video element state', {paused:videoEl.paused, readyState:videoEl.readyState, videoWidth:videoEl.videoWidth, videoHeight:videoEl.videoHeight, hasSrcObject:!!videoEl.srcObject});
-          }
-          console.log('🔍 LIVE DEBUG v3: how many #lh-live-overlay elements exist?', document.querySelectorAll('#lh-live-overlay').length);
-        },1500);
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
@@ -3259,37 +3244,6 @@ async function resendVerification(){
         <p style="color:#8fa3c0;font-size:13px;">Loading live streams...</p>
       </div>
     </div>
-    <div id="lh-stream-player" style="display:none;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-        <button onclick="lhLeaveStream()" style="background:transparent;border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:6px 12px;color:#D4AF37;font-size:12px;cursor:pointer;">← Back</button>
-        <div style="background:#e53e3e;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:1px;">● LIVE</div>
-        <span id="lh-viewer-count" style="color:#8fa3c0;font-size:12px;">👥 0 watching</span>
-      </div>
-      <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;position:relative;aspect-ratio:16/9;">
-        <div id="lh-remote-video" style="width:100%;height:100%;"></div>
-        <div id="lh-video-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a1628;">
-          <div style="font-size:40px;margin-bottom:8px;">📡</div>
-          <p style="color:#8fa3c0;font-size:12px;">Connecting to stream...</p>
-        </div>
-      </div>
-      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
-        <div id="lh-stream-title" style="color:#e8e8e8;font-size:14px;font-weight:600;margin-bottom:4px;"></div>
-        <div id="lh-stream-pastor" style="color:#8fa3c0;font-size:12px;"></div>
-      </div>
-      <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:12px 14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <span style="color:#D4AF37;font-size:12px;font-weight:600;">💬 Live Chat</span>
-        </div>
-        <div id="lh-chat-messages" style="height:140px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:6px;">
-          <p style="color:#8fa3c0;font-size:11px;text-align:center;margin-top:40px;">Be the first to comment!</p>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <input id="lh-chat-input" type="text" placeholder="Say something..." maxlength="200"
-            style="flex:1;background:#0a1628;border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:8px 12px;color:#e8e8e8;font-size:12px;outline:none;"
-            onkeydown="if(event.key==='Enter')lhSendChat()">
-          <button onclick="lhSendChat()" style="background:#D4AF37;color:#0a1628;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;">Send</button>
-        </div>
-      </div>
     </div>
   </div>
 </div>
