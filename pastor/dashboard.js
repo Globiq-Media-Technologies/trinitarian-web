@@ -2938,6 +2938,21 @@ function initLivePage() {
   if (enabled) loadPastStreams();
 }
 
+function showButtonHints() {
+  ['hint-mic', 'hint-cam', 'hint-switch-cam'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.transition = 'none';
+    el.style.opacity = '1';
+    // Force a reflow so the browser registers opacity:1 before we re-enable
+    // the transition and fade back to 0 - without this the fade-out would
+    // sometimes skip straight to invisible with no visible transition.
+    void el.offsetWidth;
+    el.style.transition = 'opacity 0.6s';
+    setTimeout(() => { el.style.opacity = '0'; }, 4000);
+  });
+}
+
 async function startLiveStream() {
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   // Previously isStreaming only got set to true after the entire async
@@ -2997,6 +3012,7 @@ async function startLiveStream() {
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     isStreaming = true;
+    showButtonHints();
     isStartingStream = false;
     document.getElementById('camera-placeholder').style.display = 'none';
     document.getElementById('live-badge').style.display = 'block';
