@@ -2776,7 +2776,12 @@ async function pdGoLiveStream(streamId, streamTitle) {
     // so facingMode can be controlled for front/rear switching.
     currentFacingMode = 'user';
     localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode });
+    // Previously no resolution was specified at all, letting Agora default
+    // to a near-4:3 shape (confirmed 640x480) — noticeably more square
+    // than the widescreen 16:9 video people expect. 720p_1 is Agora's
+    // preset for 1280x720, a good balance of quality vs bandwidth for live
+    // streaming specifically.
+    localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     // Show local video
@@ -2827,7 +2832,7 @@ async function switchCamera() {
   }
   try {
     const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-    const newVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: newFacingMode });
+    const newVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: newFacingMode, encoderConfig: '720p_1' });
 
     await agoraClient.unpublish([localVideoTrack]);
     localVideoTrack.stop();
