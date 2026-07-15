@@ -1474,7 +1474,7 @@ function applyTranslations(lang){
   });
 }
 
-async function initListenerHome(){updateNotifCount();
+async function initListenerHome(){updateNotifCount();registerPush();
   const _initLang=localStorage.getItem('trinitarian_lang')||'en';
   applyTranslations(_initLang);
   const _ldrop=document.getElementById('landing-lang-select');
@@ -2873,11 +2873,18 @@ async function lhInitAgoraViewer(streamData){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteVideoTrack.play('lh-remote-video');
         console.log('🔍 LIVE DEBUG: video track playing');
+        setTimeout(()=>{
+          const container=document.getElementById('lh-remote-video');
+          const rect=container.getBoundingClientRect();
+          console.log('🔍 LIVE DEBUG: container size', {width:rect.width, height:rect.height, visible:rect.width>0&&rect.height>0});
+          console.log('🔍 LIVE DEBUG: container children', container.children.length, Array.from(container.children).map(c=>({tag:c.tagName, id:c.id, computedDisplay:getComputedStyle(c).display, computedVisibility:getComputedStyle(c).visibility, computedZIndex:getComputedStyle(c).zIndex, rect:c.getBoundingClientRect()})));
+        },1000);
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
         lhRemoteAudioTrack.play();
-        console.log('🔍 LIVE DEBUG: audio track playing');
+        console.log('🔍 LIVE DEBUG: audio track playing', {trackId:lhRemoteAudioTrack.getTrackId?.(), volumeLevel:lhRemoteAudioTrack.getVolumeLevel?.()});
+        console.log('🔍 LIVE DEBUG: total remote users with audio publishing:', lhAgoraClient.remoteUsers.filter(u=>u.hasAudio).length);
       }
     });
 
