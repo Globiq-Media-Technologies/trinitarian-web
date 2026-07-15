@@ -2870,6 +2870,18 @@ async function lhInitAgoraViewer(streamData){
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteVideoTrack.play('lh-remote-video');
+        // Agora's SDK applies its own styling directly to the video element
+        // it creates, which can override a CSS rule even with !important.
+        // Setting this directly in JS, after the element exists, wins
+        // regardless of how Agora styles it.
+        setTimeout(()=>{
+          const videoEl=document.querySelector('#lh-remote-video video');
+          if(videoEl){
+            videoEl.style.setProperty('object-fit','contain','important');
+            videoEl.style.setProperty('width','100%','important');
+            videoEl.style.setProperty('height','100%','important');
+          }
+        },300);
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
