@@ -117,6 +117,7 @@
     .feature-card h3 { color: #fff; font-size: 16px; margin-bottom: 10px; }
     .feature-card p { color: #8fa3c0; font-size: 14px; line-height: 1.7; }
 
+    #lh-remote-video video, #lh-remote-video canvas { width:100% !important; height:100% !important; object-fit:cover; }
     </style>
   <!-- Google Analytics placeholder - add your ID here when ready -->
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
@@ -2830,9 +2831,9 @@ function lhOpenLivePlayer(streamData, streamTitle){
   // Create fullscreen overlay player
   const overlay=document.createElement('div');
   overlay.id='lh-live-overlay';
-  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;flex-direction:column;';
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;flex-direction:column;';
   overlay.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.8);">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.8);flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:8px;height:8px;background:#e05555;border-radius:4px;animation:pulse 1s infinite;"></div>
         <span style="color:#fff;font-size:13px;font-weight:600;">${streamTitle||'Live Stream'}</span>
@@ -2842,13 +2843,13 @@ function lhOpenLivePlayer(streamData, streamTitle){
         <button onclick="lhLeaveLiveStream()" style="background:rgba(224,85,85,0.2);color:#e05555;border:1px solid rgba(224,85,85,0.4);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;">Leave</button>
       </div>
     </div>
-    <div id="lh-remote-video" style="flex:1;background:#000;position:relative;">
+    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;">
       <div id="lh-live-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#8fa3c0;">
         <div style="font-size:40px;margin-bottom:12px;">📡</div>
         <p>Connecting to live stream...</p>
       </div>
     </div>
-    <div style="padding:10px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;">
+    <div style="padding:10px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <div id="lh-live-pastor" style="color:#D4AF37;font-size:13px;font-weight:600;flex:1;"></div>
       <button id="lh-btn-vol" onclick="lhToggleLiveVolume()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:18px;cursor:pointer;">🔊</button>
     </div>`;
@@ -2860,58 +2861,37 @@ function lhOpenLivePlayer(streamData, streamTitle){
 
 async function lhInitAgoraViewer(streamData){
   try{
-    console.log('🔍 LIVE DEBUG: joining with', {app_id: streamData.app_id, channel: streamData.channel_name, uid: streamData.uid, hasToken: !!streamData.token});
     lhAgoraClient=AgoraRTC.createClient({mode:'live',codec:'vp8'});
     await lhAgoraClient.setClientRole('audience');
 
     lhAgoraClient.on('user-published',async(user,mediaType)=>{
-      console.log('🔍 LIVE DEBUG: user-published fired', {uid:user.uid, mediaType});
       await lhAgoraClient.subscribe(user,mediaType);
-      console.log('🔍 LIVE DEBUG: subscribed successfully to', mediaType);
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteVideoTrack.play('lh-remote-video');
-        console.log('🔍 LIVE DEBUG: video track playing');
-        setTimeout(()=>{
-          const container=document.getElementById('lh-remote-video');
-          const rect=container.getBoundingClientRect();
-          console.log('🔍 LIVE DEBUG: container size', {width:rect.width, height:rect.height, visible:rect.width>0&&rect.height>0});
-          console.log('🔍 LIVE DEBUG: container children', container.children.length, Array.from(container.children).map(c=>({tag:c.tagName, id:c.id, computedDisplay:getComputedStyle(c).display, computedVisibility:getComputedStyle(c).visibility, computedZIndex:getComputedStyle(c).zIndex, rect:c.getBoundingClientRect()})));
-        },1000);
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
         lhRemoteAudioTrack.play();
-        console.log('🔍 LIVE DEBUG: audio track playing', {trackId:lhRemoteAudioTrack.getTrackId?.(), volumeLevel:lhRemoteAudioTrack.getVolumeLevel?.()});
-        console.log('🔍 LIVE DEBUG: total remote users with audio publishing:', lhAgoraClient.remoteUsers.filter(u=>u.hasAudio).length);
       }
     });
 
     lhAgoraClient.on('user-unpublished',(user,mediaType)=>{
-      console.log('🔍 LIVE DEBUG: user-unpublished', mediaType);
       if(mediaType==='video'&&document.getElementById('lh-remote-video')){
         document.getElementById('lh-live-loading').style.display='block';
       }
     });
 
     lhAgoraClient.on('user-left',()=>{
-      console.log('🔍 LIVE DEBUG: user-left (host left channel)');
       showToast('The live stream has ended','info');
       setTimeout(lhLeaveLiveStream,2000);
     });
 
-    lhAgoraClient.on('user-joined',(user)=>{
-      console.log('🔍 LIVE DEBUG: user-joined (someone entered channel)', user.uid);
-    });
-
     await lhAgoraClient.join(streamData.app_id||LH_AGORA_APP_ID, streamData.channel_name, streamData.token, streamData.uid);
-    console.log('🔍 LIVE DEBUG: join succeeded, channel:', streamData.channel_name);
-
-    const remoteUsers=lhAgoraClient.remoteUsers;
-    console.log('🔍 LIVE DEBUG: remote users already in channel at join time:', remoteUsers.length, remoteUsers);
+    console.log('Joined live stream channel:', streamData.channel_name);
   }catch(e){
-    console.error('🔍 LIVE DEBUG: Agora viewer error:',e);
+    console.error('Agora viewer error:',e);
     showToast('Could not connect to stream','error');
   }
 }
