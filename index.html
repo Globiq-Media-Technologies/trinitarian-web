@@ -2873,10 +2873,17 @@ async function lhInitAgoraViewer(streamData){
         setTimeout(()=>{
           const container=document.getElementById('lh-remote-video');
           const rect=container.getBoundingClientRect();
-          console.log('🔍 LIVE DEBUG v2: container size', {width:rect.width, height:rect.height});
-          console.log('🔍 LIVE DEBUG v2: overlay size', document.getElementById('lh-live-overlay')?.getBoundingClientRect());
+          const cs=getComputedStyle(container);
+          console.log('🔍 LIVE DEBUG v3: container rect', {width:rect.width, height:rect.height});
+          console.log('🔍 LIVE DEBUG v3: container computed style', {display:cs.display, flex:cs.flex, flexGrow:cs.flexGrow, flexBasis:cs.flexBasis, minHeight:cs.minHeight, height:cs.height, position:cs.position});
+          console.log('🔍 LIVE DEBUG v3: parent (overlay) computed style', getComputedStyle(container.parentElement) ? {display:getComputedStyle(container.parentElement).display, flexDirection:getComputedStyle(container.parentElement).flexDirection} : 'no parent');
           const videoEl=container.querySelector('video');
-          console.log('🔍 LIVE DEBUG v2: video element found?', !!videoEl, videoEl?getBoundingClientRect():null, videoEl?{paused:videoEl.paused, readyState:videoEl.readyState, videoWidth:videoEl.videoWidth, videoHeight:videoEl.videoHeight, srcObject:!!videoEl.srcObject}:null);
+          console.log('🔍 LIVE DEBUG v3: video element found?', !!videoEl);
+          if(videoEl){
+            console.log('🔍 LIVE DEBUG v3: video element rect', videoEl.getBoundingClientRect());
+            console.log('🔍 LIVE DEBUG v3: video element state', {paused:videoEl.paused, readyState:videoEl.readyState, videoWidth:videoEl.videoWidth, videoHeight:videoEl.videoHeight, hasSrcObject:!!videoEl.srcObject});
+          }
+          console.log('🔍 LIVE DEBUG v3: how many #lh-live-overlay elements exist?', document.querySelectorAll('#lh-live-overlay').length);
         },1500);
       }
       if(mediaType==='audio'){
