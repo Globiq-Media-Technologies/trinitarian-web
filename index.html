@@ -2851,6 +2851,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
     </div>
     <div style="padding:4px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <div id="lh-live-pastor" style="color:#D4AF37;font-size:12px;font-weight:600;flex:1;"></div>
+      <button id="lh-btn-fullscreen" onclick="lhToggleLiveFullscreen()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">⛶</button>
       <button id="lh-btn-vol" onclick="lhToggleLiveVolume()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">🔊</button>
     </div>`;
   document.body.appendChild(overlay);
@@ -2913,6 +2914,29 @@ function lhToggleLiveVolume(){
   if(lhRemoteAudioTrack)lhRemoteAudioTrack.setVolume(lhVolumeMuted?0:100);
   document.getElementById('lh-btn-vol').textContent=lhVolumeMuted?'🔇':'🔊';
 }
+
+function lhToggleLiveFullscreen(){
+  const overlay=document.getElementById('lh-live-overlay');
+  const btn=document.getElementById('lh-btn-fullscreen');
+  const isFullscreen=document.fullscreenElement||document.webkitFullscreenElement;
+  if(!isFullscreen){
+    if(overlay.requestFullscreen)overlay.requestFullscreen();
+    else if(overlay.webkitRequestFullscreen)overlay.webkitRequestFullscreen();
+    if(btn)btn.textContent='⤢';
+  }else{
+    if(document.exitFullscreen)document.exitFullscreen();
+    else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+    if(btn)btn.textContent='⛶';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  const btn=document.getElementById('lh-btn-fullscreen');
+  if(btn)btn.textContent=(document.fullscreenElement)?'⤢':'⛶';
+});
+document.addEventListener('webkitfullscreenchange',()=>{
+  const btn=document.getElementById('lh-btn-fullscreen');
+  if(btn)btn.textContent=(document.webkitFullscreenElement)?'⤢':'⛶';
+});
 
 async function toggleLike(){
   if(!currentSermon)return;
