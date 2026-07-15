@@ -531,10 +531,8 @@ function showPage(name) {
     deferredClear(['cp-current', 'cp-new', 'cp-confirm']);
   }
   if (name === 'live') initLivePage();
-  if (name === 'live') pdInitLiveUI();
   if (name === 'sermons') loadSermons();
   if (name === 'analytics') loadAnalytics(7, document.querySelector('.period-tab.active'));
-  if (name === 'live') loadStreams();
   if (name === 'notifications') loadNotifications();
   if (name === 'admin' && ['admin','moderator','owner'].includes(user?.role)) loadAdmin();
   if (name === 'profile') loadProfile();
