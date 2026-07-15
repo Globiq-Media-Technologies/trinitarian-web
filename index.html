@@ -117,7 +117,7 @@
     .feature-card h3 { color: #fff; font-size: 16px; margin-bottom: 10px; }
     .feature-card p { color: #8fa3c0; font-size: 14px; line-height: 1.7; }
 
-    #lh-remote-video video, #lh-remote-video canvas { width:100% !important; height:100% !important; object-fit:contain; }
+    #lh-video-inner video, #lh-video-inner canvas { width:100% !important; height:100% !important; object-fit:contain; }
     </style>
   <!-- Google Analytics placeholder - add your ID here when ready -->
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
@@ -2843,7 +2843,8 @@ function lhOpenLivePlayer(streamData, streamTitle){
         <button onclick="lhLeaveLiveStream()" style="background:rgba(224,85,85,0.2);color:#e05555;border:1px solid rgba(224,85,85,0.4);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;">Leave</button>
       </div>
     </div>
-    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;padding:0 12px;box-sizing:border-box;">
+    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;display:flex;align-items:center;justify-content:center;">
+      <div id="lh-video-inner" style="height:100%;width:auto;max-width:100%;aspect-ratio:16/9;position:relative;"></div>
       <div id="lh-live-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#8fa3c0;">
         <div style="font-size:40px;margin-bottom:12px;">📡</div>
         <p>Connecting to live stream...</p>
@@ -2870,7 +2871,7 @@ async function lhInitAgoraViewer(streamData){
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
-        lhRemoteVideoTrack.play('lh-remote-video',{fit:'contain',mirror:true});
+        lhRemoteVideoTrack.play('lh-video-inner',{fit:'contain',mirror:true});
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
