@@ -2790,7 +2790,7 @@ async function pdGoLiveStream(streamId, streamTitle) {
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
 
     // Show local video
-    localVideoTrack.play('local-video');
+    localVideoTrack.play('local-video-container');
 
     currentStreamId = streamId;
     liveStartTime = Date.now();
@@ -2846,7 +2846,7 @@ async function switchCamera() {
     localVideoTrack = newVideoTrack;
     currentFacingMode = newFacingMode;
     await agoraClient.publish([localVideoTrack]);
-    localVideoTrack.play('local-video');
+    localVideoTrack.play('local-video-container');
 
     showToast(newFacingMode === 'user' ? 'Switched to front camera' : 'Switched to rear camera', 'success');
   } catch(e) {
@@ -2908,7 +2908,7 @@ async function pdToggleMute(type) {
   if (type === 'audio' && localAudioTrack) {
     audioMuted = !audioMuted;
     await localAudioTrack.setMuted(audioMuted);
-    document.getElementById('btn-mute-audio').textContent = audioMuted ? '🔇' : '🎙';
+    document.getElementById('btn-mute-audio').textContent = audioMuted ? '🔇' : '🎤';
   } else if (type === 'video' && localVideoTrack) {
     videoMuted = !videoMuted;
     await localVideoTrack.setMuted(videoMuted);
@@ -3074,7 +3074,7 @@ async function endLiveStream() {
 function toggleMic() {
   if (!localAudioTrack) return;
   isMicOn = !isMicOn; localAudioTrack.setEnabled(isMicOn);
-  document.getElementById('btn-mic').textContent = isMicOn ? '🎙' : '🔇';
+  document.getElementById('btn-mic').textContent = isMicOn ? '🎤' : '🔇';
   document.getElementById('btn-mic').style.borderColor = isMicOn ? 'var(--border)' : '#e53e3e';
 }
 
