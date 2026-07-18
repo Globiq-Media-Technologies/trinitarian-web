@@ -2875,7 +2875,7 @@ async function lhInitAgoraViewer(streamData){
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
         lhRemoteUid=user.uid;
-        lhRemoteVideoTrack.play('lh-video-inner',{fit:'contain',mirror:true});
+        lhRemoteVideoTrack.play('lh-video-inner',{fit:'contain',mirror:false});
         // Applies whatever quality the listener already picked (if they
         // re-join a stream after switching earlier), rather than always
         // resetting to HD.
