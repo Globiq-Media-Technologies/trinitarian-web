@@ -2939,7 +2939,7 @@ function initLivePage() {
 }
 
 function showButtonHints() {
-  ['hint-mic', 'hint-cam', 'hint-switch-cam'].forEach(id => {
+  ['hint-mic', 'hint-cam', 'hint-switch-cam', 'hint-lowlight'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.style.transition = 'none';
@@ -3018,6 +3018,46 @@ async function scheduleStreamWeb() {
   }
 }
 
+let lowLightOn = false;
+function toggleLowLight() {
+  if (!localVideoTrack) { showToast('Not currently live'); return; }
+  lowLightOn = !lowLightOn;
+  // Agora's docs note this feature isn't supported on all browsers -
+  // failing quietly here rather than showing an alarming error if a
+  // particular browser doesn't support it.
+  localVideoTrack.setBeautyEffect(lowLightOn, {
+    lighteningContrastLevel: 1,
+    lighteningLevel: lowLightOn ? 0.6 : 0,
+    smoothnessLevel: 0,
+    rednessLevel: 0,
+  }).then(() => {
+    document.getElementById('btn-lowlight').style.background = lowLightOn ? 'var(--gold)' : 'var(--navy3)';
+    document.getElementById('btn-lowlight').style.borderColor = lowLightOn ? 'var(--gold)' : 'var(--border)';
+    showToast(lowLightOn ? 'Brightening enabled' : 'Brightening off');
+  }).catch(() => {
+    lowLightOn = false;
+    showToast('Brightening isn\'t supported in this browser', 'error');
+  });
+}
+
+function updateNetworkIndicator(quality) {
+  const el = document.getElementById('live-network-indicator');
+  if (!el) return;
+  const map = {
+    0: { label: 'Checking…', color: '#8fa3c0' },
+    1: { label: 'Excellent connection', color: '#40c96a' },
+    2: { label: 'Good connection', color: '#40c96a' },
+    3: { label: 'Fair connection', color: '#D4AF37' },
+    4: { label: 'Poor connection', color: '#e05555' },
+    5: { label: 'Very poor connection', color: '#e05555' },
+    6: { label: 'Connection lost', color: '#e05555' },
+  };
+  const info = map[quality] || map[0];
+  el.textContent = '📶 ' + info.label;
+  el.style.color = info.color;
+  el.style.display = 'block';
+}
+
 async function startLiveStream() {
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   // Previously isStreaming only got set to true after the entire async
@@ -3064,6 +3104,10 @@ async function startLiveStream() {
 
     // 3. Join Agora channel
     agoraClient = AgoraRTC.createClient({mode:'live',codec:'vp8'});
+    agoraClient.on('network-quality', (stats) => {
+      // uplinkNetworkQuality: 0=unknown, 1=excellent, 2=good, 3=poor, 4=bad, 5=very bad, 6=down
+      updateNetworkIndicator(stats.uplinkNetworkQuality);
+    });
     await agoraClient.setClientRole('host');
     await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
     // Previously createMicrophoneAndCameraTracks() (the combined helper) —
@@ -3131,6 +3175,10 @@ async function endLiveStream() {
     document.getElementById('stream-setup').style.pointerEvents = 'auto';
     document.getElementById('live-viewer-count').textContent = '0';
     document.getElementById('live-duration').textContent = '00:00';
+    document.getElementById('live-network-indicator').style.display = 'none';
+    lowLightOn = false;
+    document.getElementById('btn-lowlight').style.background = 'var(--navy3)';
+    document.getElementById('btn-lowlight').style.borderColor = 'var(--border)';
     showToast('Stream ended. Great job!');
     loadPastStreams();
   } catch(e) { console.error('End stream error:',e); showToast('Error ending stream'); }

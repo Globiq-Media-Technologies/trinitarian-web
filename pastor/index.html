@@ -762,6 +762,7 @@
           <span id="stream-status-text" style="color:var(--text-muted);font-size:13px;">Not streaming</span>
         </div>
         <div style="display:flex;align-items:center;gap:16px;">
+          <span id="live-network-indicator" style="font-size:12px;font-weight:600;display:none;"></span>
           <span style="color:var(--text-muted);font-size:12px;">👥 <span id="live-viewer-count">0</span> watching</span>
           <span style="color:var(--text-muted);font-size:12px;">⏱ <span id="live-duration">00:00</span></span>
         </div>
@@ -836,6 +837,10 @@
         <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
           <span id="hint-switch-cam" style="font-size:10px;font-weight:600;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:6px;opacity:0;transition:opacity 0.6s;white-space:nowrap;">Switch camera</span>
           <button onclick="switchCamera()" id="btn-switch-cam" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Switch front/rear camera">🔄</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <span id="hint-lowlight" style="font-size:10px;font-weight:600;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:6px;opacity:0;transition:opacity 0.6s;white-space:nowrap;">Brighten</span>
+          <button onclick="toggleLowLight()" id="btn-lowlight" style="padding:14px 18px;background:var(--navy3);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:18px;" title="Brighten video in dim rooms">💡</button>
         </div>
       </div>
       <div style="margin-top:20px;">
@@ -1259,7 +1264,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=41"></script>
+<script src="/pastor/dashboard.js?v=42"></script>
 
 
 <!-- Cookie Consent Banner -->
