@@ -2766,6 +2766,8 @@ async function lhShowLive(){
 
 // ─── LISTENER: JOIN LIVE STREAM ──────────────────────────────────────────────
 let lhAgoraClient=null;
+let lhRemoteUid=null;
+let lhQualityLevel=0; // 0 = HD (high stream), 1 = Data Saver (low stream)
 let lhRemoteVideoTrack=null;
 let lhRemoteAudioTrack=null;
 // LH_AGORA_APP_ID already declared near the top of this file — this was a
@@ -2852,6 +2854,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
     </div>
     <div style="padding:4px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <div id="lh-live-pastor" style="color:#D4AF37;font-size:12px;font-weight:600;flex:1;"></div>
+      <button id="lh-btn-quality" onclick="lhToggleQuality()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">HD</button>
       <button id="lh-btn-fullscreen" onclick="lhToggleLiveFullscreen()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">⛶</button>
       <button id="lh-btn-vol" onclick="lhToggleLiveVolume()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">🔊</button>
     </div>`;
@@ -2871,7 +2874,12 @@ async function lhInitAgoraViewer(streamData){
       document.getElementById('lh-live-loading').style.display='none';
       if(mediaType==='video'){
         lhRemoteVideoTrack=user.videoTrack;
+        lhRemoteUid=user.uid;
         lhRemoteVideoTrack.play('lh-video-inner',{fit:'contain',mirror:true});
+        // Applies whatever quality the listener already picked (if they
+        // re-join a stream after switching earlier), rather than always
+        // resetting to HD.
+        lhAgoraClient.setRemoteVideoStreamType(user.uid, lhQualityLevel).catch(()=>{});
       }
       if(mediaType==='audio'){
         lhRemoteAudioTrack=user.audioTrack;
@@ -2898,13 +2906,26 @@ async function lhInitAgoraViewer(streamData){
   }
 }
 
+function lhToggleQuality(){
+  lhQualityLevel=lhQualityLevel===0?1:0;
+  const btn=document.getElementById('lh-btn-quality');
+  if(btn)btn.textContent=lhQualityLevel===0?'HD':'SD';
+  if(lhAgoraClient&&lhRemoteUid!==null){
+    lhAgoraClient.setRemoteVideoStreamType(lhRemoteUid,lhQualityLevel).then(()=>{
+      showToast(lhQualityLevel===0?'Switched to HD quality':'Switched to Data Saver');
+    }).catch(()=>{
+      showToast('Could not change quality','error');
+    });
+  }
+}
+
 async function lhLeaveLiveStream(){
   try{
     if(lhRemoteAudioTrack){lhRemoteAudioTrack.stop();}
     if(lhRemoteVideoTrack){lhRemoteVideoTrack.stop();}
     if(lhAgoraClient){await lhAgoraClient.leave();}
   }catch(e){}
-  lhAgoraClient=null;lhRemoteVideoTrack=null;lhRemoteAudioTrack=null;
+  lhAgoraClient=null;lhRemoteVideoTrack=null;lhRemoteAudioTrack=null;lhRemoteUid=null;
   const overlay=document.getElementById('lh-live-overlay');
   if(overlay)overlay.remove();
 }
