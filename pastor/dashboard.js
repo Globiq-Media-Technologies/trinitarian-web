@@ -2980,42 +2980,22 @@ function setLiveMode(mode) {
   document.getElementById('live-schedule-row').style.display = mode === 'schedule' ? 'block' : 'none';
   document.getElementById('btn-start-stream').style.display = mode === 'now' ? 'block' : 'none';
   document.getElementById('btn-schedule-stream').style.display = mode === 'schedule' ? 'block' : 'none';
-  if (mode === 'schedule') renderScheduleOptions();
-}
-
-let selectedScheduleTime = null;
-function renderScheduleOptions() {
-  const now = new Date();
-  const opts = [];
-  const inHours = h => new Date(now.getTime() + h*60*60*1000);
-  opts.push({ label: 'In 1 hour', date: inHours(1) });
-  opts.push({ label: 'In 3 hours', date: inHours(3) });
-  const tomorrow9am = new Date(now); tomorrow9am.setDate(now.getDate()+1); tomorrow9am.setHours(9,0,0,0);
-  opts.push({ label: 'Tomorrow, 9:00 AM', date: tomorrow9am });
-  const nextSunday = new Date(now);
-  const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
-  nextSunday.setDate(now.getDate() + daysUntilSunday); nextSunday.setHours(10,0,0,0);
-  opts.push({ label: 'Sunday ' + nextSunday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ', 10:00 AM', date: nextSunday });
-  const container = document.getElementById('live-schedule-options');
-  container.innerHTML = opts.map((opt, i) =>
-    '<button onclick="selectScheduleTime(' + i + ')" data-schedule-idx="' + i + '" style="background:var(--navy3);color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;font-weight:600;font-size:13px;cursor:pointer;text-align:left;">' + opt.label + '</button>'
-  ).join('');
-  container._options = opts;
-}
-function selectScheduleTime(idx) {
-  const opts = document.getElementById('live-schedule-options')._options;
-  selectedScheduleTime = opts[idx].date;
-  document.querySelectorAll('[data-schedule-idx]').forEach((btn, i) => {
-    btn.style.background = i === idx ? 'var(--gold)' : 'var(--navy3)';
-    btn.style.color = i === idx ? 'var(--navy)' : '#fff';
-    btn.style.borderColor = i === idx ? 'var(--gold)' : 'var(--border)';
-  });
+  if (mode === 'schedule' && !document.getElementById('live-schedule-datetime').value) {
+    const inOneHour = new Date(Date.now() + 60*60*1000);
+    inOneHour.setMinutes(0, 0, 0);
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('live-schedule-datetime').value =
+      inOneHour.getFullYear() + '-' + pad(inOneHour.getMonth()+1) + '-' + pad(inOneHour.getDate()) + 'T' + pad(inOneHour.getHours()) + ':' + pad(inOneHour.getMinutes());
+  }
 }
 
 async function scheduleStreamWeb() {
   const title = (document.getElementById('live-title').value||'').trim();
   if (!title) { showToast('Please enter a stream title'); return; }
-  if (!selectedScheduleTime) { showToast('Please choose when this stream should happen'); return; }
+  const dtValue = document.getElementById('live-schedule-datetime').value;
+  if (!dtValue) { showToast('Please choose when this stream should happen'); return; }
+  const scheduledDate = new Date(dtValue);
+  if (scheduledDate.getTime() < Date.now()) { showToast('Please pick a time in the future'); return; }
   const token = localStorage.getItem('pastor_token');
   try {
     const res = await fetch(API + '/api/streams', {
@@ -3024,14 +3004,14 @@ async function scheduleStreamWeb() {
         title,
         category: document.getElementById('live-category')?.value || null,
         description: document.getElementById('live-language')?.value || null,
-        scheduled_at: selectedScheduleTime.toISOString(),
+        scheduled_at: scheduledDate.toISOString(),
       })
     });
     const stream = await res.json();
     if (!res.ok) throw new Error(stream.error || 'Failed to schedule stream');
-    showToast('Stream scheduled for ' + selectedScheduleTime.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
+    showToast('Stream scheduled for ' + scheduledDate.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
     document.getElementById('live-title').value = '';
-    selectedScheduleTime = null;
+    document.getElementById('live-schedule-datetime').value = '';
     loadPastStreams();
   } catch(e) {
     showToast(e.message || 'Could not schedule stream', 'error');
