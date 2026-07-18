@@ -2860,6 +2860,13 @@ function lhOpenLivePlayer(streamData, streamTitle){
     </div>`;
   document.body.appendChild(overlay);
 
+  // Was hardcoded to "0 watching" with nothing ever updating it -
+  // immediate call plus interval, matching the polling pattern already
+  // used elsewhere in this app.
+  lhUpdateViewerCount(streamData.stream_id||streamData.id);
+  if(lhViewerPollInterval)clearInterval(lhViewerPollInterval);
+  lhViewerPollInterval=setInterval(()=>lhUpdateViewerCount(streamData.stream_id||streamData.id),5000);
+
   // Initialize Agora viewer
   lhInitAgoraViewer(streamData);
 }
@@ -2925,9 +2932,26 @@ async function lhLeaveLiveStream(){
     if(lhRemoteVideoTrack){lhRemoteVideoTrack.stop();}
     if(lhAgoraClient){await lhAgoraClient.leave();}
   }catch(e){}
+  if(lhViewerPollInterval){clearInterval(lhViewerPollInterval);lhViewerPollInterval=null;}
   lhAgoraClient=null;lhRemoteVideoTrack=null;lhRemoteAudioTrack=null;lhRemoteUid=null;
   const overlay=document.getElementById('lh-live-overlay');
   if(overlay)overlay.remove();
+}
+
+let lhViewerPollInterval=null;
+async function lhUpdateViewerCount(streamId){
+  try{
+    const token=localStorage.getItem('trinitarian_token')||'';
+    // Was never called anywhere - without this, joined_at only gets set
+    // once at join time, so anyone watching longer than the backend's
+    // 2-minute window would silently drop out of the count while still
+    // actively watching.
+    fetch(API+'/api/streams/'+streamId+'/heartbeat',{method:'POST',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+    const res=await fetch(API+'/api/streams/'+streamId);
+    const data=await res.json();
+    const el=document.getElementById('lh-live-viewers');
+    if(el)el.textContent='👁 '+(data.viewer_count||0)+' watching';
+  }catch(e){}
 }
 
 let lhVolumeMuted=false;
