@@ -2939,7 +2939,7 @@ function initLivePage() {
 }
 
 function showButtonHints() {
-  ['hint-mic', 'hint-cam', 'hint-switch-cam', 'hint-lowlight'].forEach(id => {
+  ['hint-mic', 'hint-cam', 'hint-switch-cam'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.style.transition = 'none';
@@ -3016,28 +3016,6 @@ async function scheduleStreamWeb() {
   } catch(e) {
     showToast(e.message || 'Could not schedule stream', 'error');
   }
-}
-
-let lowLightOn = false;
-function toggleLowLight() {
-  if (!localVideoTrack) { showToast('Not currently live'); return; }
-  lowLightOn = !lowLightOn;
-  // Agora's docs note this feature isn't supported on all browsers -
-  // failing quietly here rather than showing an alarming error if a
-  // particular browser doesn't support it.
-  localVideoTrack.setBeautyEffect(lowLightOn, {
-    lighteningContrastLevel: 1,
-    lighteningLevel: lowLightOn ? 0.6 : 0,
-    smoothnessLevel: 0,
-    rednessLevel: 0,
-  }).then(() => {
-    document.getElementById('btn-lowlight').style.background = lowLightOn ? 'var(--gold)' : 'var(--navy3)';
-    document.getElementById('btn-lowlight').style.borderColor = lowLightOn ? 'var(--gold)' : 'var(--border)';
-    showToast(lowLightOn ? 'Brightening enabled' : 'Brightening off');
-  }).catch(() => {
-    lowLightOn = false;
-    showToast('Brightening isn\'t supported in this browser', 'error');
-  });
 }
 
 function updateNetworkIndicator(quality) {
@@ -3176,9 +3154,6 @@ async function endLiveStream() {
     document.getElementById('live-viewer-count').textContent = '0';
     document.getElementById('live-duration').textContent = '00:00';
     document.getElementById('live-network-indicator').style.display = 'none';
-    lowLightOn = false;
-    document.getElementById('btn-lowlight').style.background = 'var(--navy3)';
-    document.getElementById('btn-lowlight').style.borderColor = 'var(--border)';
     showToast('Stream ended. Great job!');
     loadPastStreams();
   } catch(e) { console.error('End stream error:',e); showToast('Error ending stream'); }
