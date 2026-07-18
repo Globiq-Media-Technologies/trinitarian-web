@@ -776,6 +776,10 @@
       </div>
       <div id="stream-setup" style="background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
         <h3 style="color:var(--gold);font-size:14px;font-weight:600;margin-bottom:16px;">Stream Details</h3>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button id="btn-mode-now" onclick="setLiveMode('now')" style="flex:1;background:var(--gold);color:var(--navy);border:1px solid var(--gold);border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;">🔴 Go Live Now</button>
+          <button id="btn-mode-schedule" onclick="setLiveMode('schedule')" style="flex:1;background:var(--navy3);color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;">🕐 Schedule</button>
+        </div>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div>
             <label class="form-label" style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;">Stream Title *</label>
@@ -803,11 +807,23 @@
               <option value="de">Deutsch</option><option value="it">Italiano</option>
             </select>
           </div>
+          <div id="live-camera-choice-row">
+            <label class="form-label" style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;">Starting camera</label>
+            <div style="display:flex;gap:8px;">
+              <button id="btn-cam-front" onclick="setStartCamera('front')" style="flex:1;background:var(--gold);color:var(--navy);border:1px solid var(--gold);border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;">🤳 Front</button>
+              <button id="btn-cam-rear" onclick="setStartCamera('rear')" style="flex:1;background:var(--navy3);color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;">📷 Rear</button>
+            </div>
+          </div>
+          <div id="live-schedule-row" style="display:none;">
+            <label class="form-label" style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;">When should this stream happen?</label>
+            <div id="live-schedule-options" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
         </div>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end;">
         <button id="btn-start-stream" onclick="startLiveStream()" class="btn btn-gold" style="flex:1;min-width:140px;font-size:14px;padding:14px;position:relative;">🔴 Go Live
         </button>
+        <button id="btn-schedule-stream" onclick="scheduleStreamWeb()" class="btn btn-gold" style="flex:1;min-width:140px;font-size:14px;padding:14px;display:none;">🕐 Schedule Stream</button>
         <button id="btn-end-stream" onclick="endLiveStream()" style="flex:1;min-width:140px;font-size:14px;padding:14px;background:#e53e3e;color:#fff;border:none;border-radius:10px;cursor:pointer;display:none;">⏹ End Stream</button>
         <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
           <span id="hint-mic" style="font-size:10px;font-weight:600;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:6px;opacity:0;transition:opacity 0.6s;white-space:nowrap;">Mic</span>
@@ -1243,7 +1259,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=39"></script>
+<script src="/pastor/dashboard.js?v=40"></script>
 
 
 <!-- Cookie Consent Banner -->

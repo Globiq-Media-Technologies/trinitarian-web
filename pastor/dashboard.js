@@ -2953,6 +2953,91 @@ function showButtonHints() {
   });
 }
 
+function setStartCamera(direction) {
+  // Reuses the same currentFacingMode variable already used by the
+  // camera-switch feature and the go-live track creation itself - just
+  // letting the UI set it before going live instead of always defaulting
+  // to front.
+  currentFacingMode = direction === 'rear' ? 'environment' : 'user';
+  document.getElementById('btn-cam-front').style.background = direction === 'front' ? 'var(--gold)' : 'var(--navy3)';
+  document.getElementById('btn-cam-front').style.color = direction === 'front' ? 'var(--navy)' : '#fff';
+  document.getElementById('btn-cam-front').style.borderColor = direction === 'front' ? 'var(--gold)' : 'var(--border)';
+  document.getElementById('btn-cam-rear').style.background = direction === 'rear' ? 'var(--gold)' : 'var(--navy3)';
+  document.getElementById('btn-cam-rear').style.color = direction === 'rear' ? 'var(--navy)' : '#fff';
+  document.getElementById('btn-cam-rear').style.borderColor = direction === 'rear' ? 'var(--gold)' : 'var(--border)';
+}
+
+let liveMode = 'now';
+function setLiveMode(mode) {
+  liveMode = mode;
+  document.getElementById('btn-mode-now').style.background = mode === 'now' ? 'var(--gold)' : 'var(--navy3)';
+  document.getElementById('btn-mode-now').style.color = mode === 'now' ? 'var(--navy)' : '#fff';
+  document.getElementById('btn-mode-now').style.borderColor = mode === 'now' ? 'var(--gold)' : 'var(--border)';
+  document.getElementById('btn-mode-schedule').style.background = mode === 'schedule' ? 'var(--gold)' : 'var(--navy3)';
+  document.getElementById('btn-mode-schedule').style.color = mode === 'schedule' ? 'var(--navy)' : '#fff';
+  document.getElementById('btn-mode-schedule').style.borderColor = mode === 'schedule' ? 'var(--gold)' : 'var(--border)';
+  document.getElementById('live-camera-choice-row').style.display = mode === 'now' ? 'block' : 'none';
+  document.getElementById('live-schedule-row').style.display = mode === 'schedule' ? 'block' : 'none';
+  document.getElementById('btn-start-stream').style.display = mode === 'now' ? 'block' : 'none';
+  document.getElementById('btn-schedule-stream').style.display = mode === 'schedule' ? 'block' : 'none';
+  if (mode === 'schedule') renderScheduleOptions();
+}
+
+let selectedScheduleTime = null;
+function renderScheduleOptions() {
+  const now = new Date();
+  const opts = [];
+  const inHours = h => new Date(now.getTime() + h*60*60*1000);
+  opts.push({ label: 'In 1 hour', date: inHours(1) });
+  opts.push({ label: 'In 3 hours', date: inHours(3) });
+  const tomorrow9am = new Date(now); tomorrow9am.setDate(now.getDate()+1); tomorrow9am.setHours(9,0,0,0);
+  opts.push({ label: 'Tomorrow, 9:00 AM', date: tomorrow9am });
+  const nextSunday = new Date(now);
+  const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+  nextSunday.setDate(now.getDate() + daysUntilSunday); nextSunday.setHours(10,0,0,0);
+  opts.push({ label: 'Sunday ' + nextSunday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ', 10:00 AM', date: nextSunday });
+  const container = document.getElementById('live-schedule-options');
+  container.innerHTML = opts.map((opt, i) =>
+    '<button onclick="selectScheduleTime(' + i + ')" data-schedule-idx="' + i + '" style="background:var(--navy3);color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;font-weight:600;font-size:13px;cursor:pointer;text-align:left;">' + opt.label + '</button>'
+  ).join('');
+  container._options = opts;
+}
+function selectScheduleTime(idx) {
+  const opts = document.getElementById('live-schedule-options')._options;
+  selectedScheduleTime = opts[idx].date;
+  document.querySelectorAll('[data-schedule-idx]').forEach((btn, i) => {
+    btn.style.background = i === idx ? 'var(--gold)' : 'var(--navy3)';
+    btn.style.color = i === idx ? 'var(--navy)' : '#fff';
+    btn.style.borderColor = i === idx ? 'var(--gold)' : 'var(--border)';
+  });
+}
+
+async function scheduleStreamWeb() {
+  const title = (document.getElementById('live-title').value||'').trim();
+  if (!title) { showToast('Please enter a stream title'); return; }
+  if (!selectedScheduleTime) { showToast('Please choose when this stream should happen'); return; }
+  const token = localStorage.getItem('pastor_token');
+  try {
+    const res = await fetch(API + '/api/streams', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({
+        title,
+        category: document.getElementById('live-category')?.value || null,
+        description: document.getElementById('live-language')?.value || null,
+        scheduled_at: selectedScheduleTime.toISOString(),
+      })
+    });
+    const stream = await res.json();
+    if (!res.ok) throw new Error(stream.error || 'Failed to schedule stream');
+    showToast('Stream scheduled for ' + selectedScheduleTime.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
+    document.getElementById('live-title').value = '';
+    selectedScheduleTime = null;
+    loadPastStreams();
+  } catch(e) {
+    showToast(e.message || 'Could not schedule stream', 'error');
+  }
+}
+
 async function startLiveStream() {
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   // Previously isStreaming only got set to true after the entire async
