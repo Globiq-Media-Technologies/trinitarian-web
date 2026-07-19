@@ -2935,7 +2935,7 @@ function initLivePage() {
   const enabled = typeof LIVE_ENABLED !== 'undefined' && LIVE_ENABLED;
   document.getElementById('live-coming-soon').style.display = enabled ? 'none' : 'block';
   document.getElementById('live-studio').style.display = enabled ? 'block' : 'none';
-  if (enabled) loadPastStreams();
+  if (enabled) { loadPastStreams(); loadUpcomingStreams(); }
 }
 
 function showButtonHints() {
@@ -3012,7 +3012,7 @@ async function scheduleStreamWeb() {
     showToast('Stream scheduled for ' + scheduledDate.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
     document.getElementById('live-title').value = '';
     document.getElementById('live-schedule-datetime').value = '';
-    loadPastStreams();
+    loadUpcomingStreams();
   } catch(e) {
     showToast(e.message || 'Could not schedule stream', 'error');
   }
@@ -3171,6 +3171,26 @@ function toggleCamera() {
   isCamOn = !isCamOn; localVideoTrack.setEnabled(isCamOn);
   document.getElementById('btn-cam').textContent = isCamOn ? '📷' : '🚫';
   document.getElementById('btn-cam').style.borderColor = isCamOn ? 'var(--border)' : '#e53e3e';
+}
+
+async function loadUpcomingStreams() {
+  try {
+    const token = localStorage.getItem('pastor_token');
+    const r = await fetch(API+'/api/streams/history?status=scheduled', {headers:{'Authorization':'Bearer '+token}});
+    const data = await r.json();
+    const container = document.getElementById('upcoming-streams-list');
+    if (!data.streams || !data.streams.length) {
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">No upcoming streams scheduled</p>';
+      return;
+    }
+    container.innerHTML = data.streams.map(function(s) {
+      const when = s.scheduled_at ? new Date(s.scheduled_at).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Time not set';
+      const safeTitle = (s.title||'').replace(/'/g,"\\'");
+      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--gold);font-size:11px;margin-top:2px;">🕐 '+when+'</div></div><div style="display:flex;align-items:center;gap:8px;"><button onclick="pdGoLiveStream(\''+s.id+'\',\''+safeTitle+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:var(--gold);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;">🔴 Go Live Now</button><button onclick="deletePastStream(\''+s.id+'\')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;">🗑</button></div></div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('upcoming-streams-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Could not load upcoming streams</p>';
+  }
 }
 
 async function loadPastStreams() {
