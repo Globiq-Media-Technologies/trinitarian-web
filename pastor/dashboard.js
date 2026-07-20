@@ -3002,6 +3002,7 @@ async function deletePastStream(id) {
     if (!res.ok) { const d = await res.json().catch(()=>({})); showToast(d.error||'Could not delete stream', 'error'); return; }
     showToast('Stream deleted');
     loadPastStreams();
+    loadUpcomingStreams();
   } catch(e) {
     showToast('Could not delete stream', 'error');
   }
