@@ -2673,159 +2673,6 @@ let viewerCountInterval = null;
 let audioMuted = false;
 let videoMuted = false;
 
-function pdInitLiveUI() {
-  if (LIVE_ENABLED) {
-    document.getElementById('live-coming-soon').style.display = 'none';
-    document.getElementById('live-studio').style.display = 'block';
-    pdLoadStreams();
-  }
-}
-
-async function pdLoadStreams() {
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    const res = await fetch(API + '/api/streams?status=scheduled', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const streams = await res.json();
-    const el = document.getElementById('pd-streams-list');
-    if (!streams.length) {
-      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-muted);"><div style="font-size:32px;margin-bottom:12px;">📅</div><p>No streams yet. Schedule your first live stream above.</p></div>';
-      return;
-    }
-    el.innerHTML = streams.map(s => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--navy3);border-radius:12px;margin-bottom:8px;">
-        <div>
-          <div style="color:#fff;font-size:14px;font-weight:600;">${s.title}</div>
-          <div style="color:var(--text-muted);font-size:12px;margin-top:2px;">${s.scheduled_at ? new Date(s.scheduled_at).toLocaleString() : 'Unscheduled'}</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button onclick="pdGoLiveStream('${s.id}','${s.title.replace(/'/g,"\'")}')" style="background:rgba(224,85,85,0.15);color:#e05555;border:1px solid rgba(224,85,85,0.3);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">Go Live</button>
-          <button onclick="pdDeleteStream('${s.id}')" style="background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">Delete</button>
-        </div>
-      </div>
-    `).join('');
-  } catch(e) {
-    document.getElementById('pd-streams-list').innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">Could not load streams</p>';
-  }
-}
-
-async function pdScheduleStream() {
-  const title = document.getElementById('new-stream-title').value.trim();
-  const dt = document.getElementById('new-stream-dt').value;
-  const cat = document.getElementById('new-stream-cat').value;
-  if (!title) { showToast('Please enter a stream title', 'error'); return; }
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    const res = await fetch(API + '/api/streams', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, scheduled_at: dt || null, category: cat })
-    });
-    const data = await res.json();
-    if (data.coming_soon) { showToast('Live streaming coming soon!', 'info'); return; }
-    if (!res.ok) throw new Error(data.error);
-    showToast('Stream scheduled!', 'success');
-    document.getElementById('new-stream-title').value = '';
-    document.getElementById('new-stream-dt').value = '';
-    pdLoadStreams();
-  } catch(e) {
-    showToast('Failed to schedule stream', 'error');
-  }
-}
-
-async function pdGoLiveNow() {
-  const title = document.getElementById('new-stream-title').value.trim() || 'Live Stream';
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    // Create stream then immediately start it
-    const res = await fetch(API + '/api/streams', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title })
-    });
-    const data = await res.json();
-    if (data.coming_soon) { showToast('Live streaming coming soon!', 'info'); return; }
-    if (!res.ok) throw new Error(data.error);
-    await pdGoLiveStream(data.id, data.title);
-  } catch(e) {
-    showToast('Failed to go live', 'error');
-  }
-}
-
-async function pdGoLiveStream(streamId, streamTitle) {
-  if (!LIVE_ENABLED) { showToast('Live streaming coming soon!', 'info'); return; }
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    const res = await fetch(API + '/api/streams/' + streamId + '/start', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-
-    // Initialize Agora client
-    agoraClient = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' });
-    await agoraClient.setClientRole('host');
-    await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
-
-    // Create local tracks. Previously used createMicrophoneAndCameraTracks(),
-    // a combined helper with no camera control — switched to separate calls
-    // so facingMode can be controlled for front/rear switching.
-    currentFacingMode = 'user';
-    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    // Previously no resolution was specified at all, letting Agora default
-    // to a near-4:3 shape (confirmed 640x480) — noticeably more square
-    // than the widescreen 16:9 video people expect. 720p_1 is Agora's
-    // preset for 1280x720, a good balance of quality vs bandwidth for live
-    // streaming specifically.
-    localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
-    try {
-      const mst = localVideoTrack.getMediaStreamTrack ? localVideoTrack.getMediaStreamTrack() : null;
-      const settings = mst && mst.getSettings ? mst.getSettings() : null;
-      alert('CAMERA DEBUG\n\nrequested: 720p_1 (1280x720)\n\nactual settings: ' + (settings ? JSON.stringify(settings, null, 2) : 'getSettings unavailable') + '\n\nmediaStreamTrack exists: ' + !!mst);
-    } catch(diagErr) {
-      alert('CAMERA DEBUG - diagnostic itself failed: ' + diagErr.message);
-    }
-    await agoraClient.publish([localAudioTrack, localVideoTrack]);
-
-    // Show local video
-    localVideoTrack.play('local-video-container');
-
-    currentStreamId = streamId;
-    liveStartTime = Date.now();
-
-    // Show broadcast panel
-    document.getElementById('live-broadcast-panel').style.display = 'block';
-    document.getElementById('go-live-btn').style.display = 'none';
-    document.getElementById('live-stream-title').textContent = streamTitle;
-
-    // Start timer
-    liveTimerInterval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - liveStartTime) / 1000);
-      const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-      const s = String(elapsed % 60).padStart(2, '0');
-      document.getElementById('live-duration').textContent = m + ':' + s;
-    }, 1000);
-
-    // Poll viewer count every 30s
-    viewerCountInterval = setInterval(async () => {
-      try {
-        const r = await fetch(API + '/api/streams/' + streamId, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const d = await r.json();
-        document.getElementById('live-viewer-count').textContent = '👁 ' + (d.viewer_count || 0) + ' watching';
-      } catch(e) {}
-    }, 30000);
-
-    showToast('You are now live!', 'success');
-  } catch(e) {
-    console.error('Go live error:', e);
-    showToast('Failed to start stream: ' + e.message, 'error');
-  }
-}
-
 // Switches between front and rear camera during an active broadcast.
 // createMicrophoneAndCameraTracks() (the original combined helper) has no
 // facingMode control, so the video track is created separately and can be
@@ -2854,74 +2701,6 @@ async function switchCamera() {
     showToast('Could not switch camera — your device may only have one, or a browser permission is blocking it.', 'error');
   }
 }
-
-async function pdEndLive() {
-  if (!currentStreamId) return;
-  if (!confirm('Are you sure you want to end the live stream?')) return;
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    // Stop Agora
-    if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack.close(); }
-    if (localVideoTrack) { localVideoTrack.stop(); localVideoTrack.close(); }
-    if (agoraClient) await agoraClient.leave();
-
-    // Clear timers
-    clearInterval(liveTimerInterval);
-    clearInterval(viewerCountInterval);
-
-    // End stream on backend
-    await fetch(API + '/api/streams/' + currentStreamId + '/end', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-
-    // Reset UI
-    document.getElementById('live-broadcast-panel').style.display = 'none';
-    document.getElementById('go-live-btn').style.display = 'flex';
-    document.getElementById('local-video').innerHTML = '';
-    currentStreamId = null;
-    liveStartTime = null;
-
-    showToast('Stream ended', 'success');
-    pdLoadStreams();
-  } catch(e) {
-    showToast('Error ending stream', 'error');
-  }
-}
-
-async function pdDeleteStream(streamId) {
-  if (!confirm('Delete this scheduled stream?')) return;
-  const token = localStorage.getItem('trinitarian_token') || '';
-  try {
-    await fetch(API + '/api/streams/' + streamId, {
-      method: 'DELETE',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    showToast('Stream deleted', 'success');
-    pdLoadStreams();
-  } catch(e) {
-    showToast('Failed to delete', 'error');
-  }
-}
-
-async function pdToggleMute(type) {
-  if (type === 'audio' && localAudioTrack) {
-    audioMuted = !audioMuted;
-    await localAudioTrack.setMuted(audioMuted);
-    document.getElementById('btn-mute-audio').textContent = audioMuted ? '🔇' : '🎤';
-  } else if (type === 'video' && localVideoTrack) {
-    videoMuted = !videoMuted;
-    await localVideoTrack.setMuted(videoMuted);
-    document.getElementById('btn-mute-video').textContent = videoMuted ? '📵' : '📷';
-  }
-}
-
-// Initialize live UI when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  // Called when navigating to live page
-});
-
-
 
 // ── LIVE STREAM (Agora) ──────────────────────────────────────────────────────
 // LIVE_ENABLED already declared above
@@ -3036,7 +2815,7 @@ function updateNetworkIndicator(quality) {
   el.style.display = 'block';
 }
 
-async function startLiveStream() {
+async function startLiveStream(existingStreamId, existingTitle) {
   if (!LIVE_ENABLED) { showToast('Live streaming is launching soon. Stay tuned!', 'info'); return; }
   // Previously isStreaming only got set to true after the entire async
   // publish chain succeeded — nothing blocked a second click while the
@@ -3055,26 +2834,30 @@ async function startLiveStream() {
     if (localAudioTrack) { localAudioTrack.close(); localAudioTrack = null; }
     if (agoraClient) { await agoraClient.leave().catch(()=>{}); agoraClient = null; }
   } catch(e) {}
-  const title = (document.getElementById('live-title').value||'').trim();
-  if (!title) { showToast('Please enter a stream title'); isStartingStream = false; return; }
+  const title = existingTitle || (document.getElementById('live-title').value||'').trim();
+  if (!existingStreamId && !title) { showToast('Please enter a stream title'); isStartingStream = false; return; }
   const token = localStorage.getItem('pastor_token');
   try {
-    // 1. Create stream record
-    const createRes = await fetch(API + '/api/streams', {
-      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({
-        title,
-        category: document.getElementById('live-category')?.value || null,
-        description: document.getElementById('live-language')?.value || null
-      })
-    });
-    const stream = await createRes.json();
-    if (!createRes.ok) throw new Error(stream.error || 'Failed to create stream');
-    currentStreamId = stream.id;
-    currentChannelName = stream.channel_name;
+    let streamId = existingStreamId;
+    if (!streamId) {
+      // 1. Create stream record
+      const createRes = await fetch(API + '/api/streams', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body: JSON.stringify({
+          title,
+          category: document.getElementById('live-category')?.value || null,
+          description: document.getElementById('live-language')?.value || null
+        })
+      });
+      const stream = await createRes.json();
+      if (!createRes.ok) throw new Error(stream.error || 'Failed to create stream');
+      streamId = stream.id;
+      currentChannelName = stream.channel_name;
+    }
+    currentStreamId = streamId;
 
     // 2. Start stream - get Agora token
-    const startRes = await fetch(API + '/api/streams/' + stream.id + '/start', {
+    const startRes = await fetch(API + '/api/streams/' + streamId + '/start', {
       method:'POST', headers:{'Authorization':'Bearer '+token}
     });
     const data = await startRes.json();
@@ -3186,7 +2969,7 @@ async function loadUpcomingStreams() {
     container.innerHTML = data.streams.map(function(s) {
       const when = s.scheduled_at ? new Date(s.scheduled_at).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Time not set';
       const safeTitle = (s.title||'').replace(/'/g,"\\'");
-      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--gold);font-size:11px;margin-top:2px;">🕐 '+when+'</div></div><div style="display:flex;align-items:center;gap:8px;"><button onclick="pdGoLiveStream(\''+s.id+'\',\''+safeTitle+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:var(--gold);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;">🔴 Go Live Now</button><button onclick="deletePastStream(\''+s.id+'\')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;">🗑</button></div></div>';
+      return '<div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><div style="color:#e8e8e8;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:var(--gold);font-size:11px;margin-top:2px;">🕐 '+when+'</div></div><div style="display:flex;align-items:center;gap:8px;"><button onclick="startLiveStream(\''+s.id+'\',\''+safeTitle+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:var(--gold);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;">🔴 Go Live Now</button><button onclick="deletePastStream(\''+s.id+'\')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;">🗑</button></div></div>';
     }).join('');
   } catch(e) {
     document.getElementById('upcoming-streams-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Could not load upcoming streams</p>';
