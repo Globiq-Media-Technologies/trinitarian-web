@@ -1323,7 +1323,7 @@ function goTo(page){
     deferredClear(['reset-pass','reset-confirm']);
   }
   const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
+  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor','lh-live'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
   // Ensures the bottom nav is always correct regardless of entry point -
   // previously only specific "Back" buttons re-showed it after
   // openSermon() hid it for the full-screen player, so any other path
@@ -1334,11 +1334,7 @@ function goTo(page){
   // listener pages - logged-out pages (home, signup, etc.) are left alone.
   if(page==='listener-home'||page==='player'||page.indexOf('lh-')===0){
     const bnavEl=document.querySelector('.lh-bottom-nav');
-    console.log('[NAVDEBUG] page=',page,'bnavEl found=',!!bnavEl);
-    if(bnavEl){
-      bnavEl.style.display=(page==='player')?'none':'flex';
-      console.log('[NAVDEBUG] set inline display to',bnavEl.style.display,'- computed display is',getComputedStyle(bnavEl).display,'- computed visibility is',getComputedStyle(bnavEl).visibility,'- computed z-index is',getComputedStyle(bnavEl).zIndex);
-    }
+    if(bnavEl)bnavEl.style.display=(page==='player')?'none':'flex';
   }
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
@@ -3292,6 +3288,7 @@ async function resendVerification(){
 
 <div id="page-lh-live" class="page" style="display:none;">
   <div style="padding:16px 16px 0;">
+    <span onclick="const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;margin-bottom:16px;">&#8592; Back</span>
     <h2 style="color:#e8e8e8;font-size:18px;font-weight:700;margin-bottom:4px;">🔴 Live Streams</h2>
     <p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">Watch verified pastors preach in real time</p>
   </div>
