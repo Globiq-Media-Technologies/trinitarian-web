@@ -1334,7 +1334,11 @@ function goTo(page){
   // listener pages - logged-out pages (home, signup, etc.) are left alone.
   if(page==='listener-home'||page==='player'||page.indexOf('lh-')===0){
     const bnavEl=document.querySelector('.lh-bottom-nav');
-    if(bnavEl)bnavEl.style.display=(page==='player')?'none':'flex';
+    console.log('[NAVDEBUG] page=',page,'bnavEl found=',!!bnavEl);
+    if(bnavEl){
+      bnavEl.style.display=(page==='player')?'none':'flex';
+      console.log('[NAVDEBUG] set inline display to',bnavEl.style.display,'- computed display is',getComputedStyle(bnavEl).display,'- computed visibility is',getComputedStyle(bnavEl).visibility,'- computed z-index is',getComputedStyle(bnavEl).zIndex);
+    }
   }
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
