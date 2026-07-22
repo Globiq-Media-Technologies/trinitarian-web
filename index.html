@@ -426,23 +426,23 @@
   <div class="lh-bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#071528;border-top:2px solid rgba(212,175,55,0.4);display:flex;justify-content:space-around;padding:5px 0 7px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
     <div onclick="lhBottomNav('sermons',this)" class="lh-bnav active-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">🏠</span>
-      <span style="color:#D4AF37;font-size:11px;font-weight:600;">Home</span>
+      <span style="color:#D4AF37;font-size:11px;font-weight:600;" data-i18n="home">Home</span>
     </div>
     <div onclick="lhBottomNav('pastors',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">🛡️</span>
-      <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Pastors</span>
+      <span style="color:#b0c4d8;font-size:11px;font-weight:500;" data-i18n="pastors">Pastors</span>
     </div>
     <div onclick="lhBottomNav('saved',this)" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">🔖</span>
-      <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Saved</span>
+      <span style="color:#b0c4d8;font-size:11px;font-weight:500;" data-i18n="saved">Saved</span>
     </div>
     <div onclick="goTo('lh-inbox')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">📬</span>
-      <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Messages</span>
+      <span style="color:#b0c4d8;font-size:11px;font-weight:500;" data-i18n="inbox">Messages</span>
     </div>
     <div onclick="goTo('lh-live')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">🔴</span>
-      <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Live</span>
+      <span style="color:#b0c4d8;font-size:11px;font-weight:500;" data-i18n="live_streams">Live</span>
     </div>
     <div onclick="goTo('lh-settings')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">⚙️</span>
@@ -1462,9 +1462,10 @@ function applyTranslations(lang){
   try{localStorage.setItem('trinitarian_lang',lang);}catch(e){}
   const t=LH_TRANS[lang]||LH_TRANS.en;
   localStorage.setItem('trinitarian_lang',lang);
-  // Bottom nav
-  const bnav=document.querySelector('.lh-bottom-nav');
-  if(bnav){const spans=bnav.querySelectorAll('.lh-bnav span:last-child');const keys=['home','pastors','saved','inbox','settings'];spans.forEach(function(s,i){if(keys[i]&&t[keys[i]])s.textContent=t[keys[i]];});}
+  // Bottom nav labels are now handled by the standard data-i18n system above,
+  // not positionally - positional indexing broke silently the moment a new
+  // tab (Live) was inserted, since every tab after it shifted by one slot
+  // without this array being updated to match.
   // Search placeholder
   const srch=document.getElementById('lh-search');if(srch)srch.placeholder='🔍 '+t.search;
   // Tab buttons
