@@ -440,6 +440,10 @@
       <span style="font-size:18px;">📬</span>
       <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Messages</span>
     </div>
+    <div onclick="goTo('lh-live')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
+      <span style="font-size:18px;">🔴</span>
+      <span style="color:#b0c4d8;font-size:11px;font-weight:500;">Live</span>
+    </div>
     <div onclick="goTo('lh-settings')" class="lh-bnav" style="display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:2px 10px;border-radius:10px;">
       <span style="font-size:18px;">⚙️</span>
       <span style="color:#b0c4d8;font-size:11px;font-weight:500;" data-i18n="settings">Settings</span>
@@ -520,7 +524,7 @@
 <!-- ══ SERMON PLAYER ══ -->
 <div id="page-player" class="page">
   <div style="padding:14px 24px;border-bottom:1px solid rgba(212,175,55,0.1);display:flex;align-items:center;gap:12px;">
-    <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
 
@@ -700,7 +704,7 @@
 
 <div id="page-lh-inbox" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;flex:1;">Messages</span>
     <span onclick="lhClearAllInbox()" style="color:#e05555;font-size:13px;cursor:pointer;">🗑 Clear all</span>
   </div>
@@ -719,7 +723,7 @@
 <!-- ══ LISTENER NOTIFICATIONS ══ -->
 <div id="page-lh-notifications" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="const bnav=document.querySelector('.lh-bottom-nav');if(bnav)bnav.style.display='flex';const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;flex:1;" data-i18n="notifications">Notifications</span>
     <span onclick="lhClearAllNotifications()" style="color:#e05555;font-size:13px;cursor:pointer;">🗑 Clear all</span>
   </div>
@@ -733,7 +737,7 @@
 <!-- ══ LISTENER SETTINGS ══ -->
 <div id="page-lh-settings" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:24px 24px 80px;">
@@ -900,7 +904,7 @@
 <!-- ══ DIRECT MESSAGE ══ -->
 <div id="page-lh-dm" class="page">
   <div style="background:#071528;border-bottom:1px solid rgba(212,175,55,0.15);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;">
-    <span onclick="goTo('listener-home')" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span style="color:#fff;font-size:16px;font-weight:600;">Messages</span>
   </div>
   <div style="max-width:700px;margin:0 auto;padding:20px 24px 80px;">
@@ -1323,7 +1327,8 @@ function goTo(page){
     deferredClear(['reset-pass','reset-confirm']);
   }
   const el=document.getElementById('page-'+page);
-  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor','lh-live'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
+  if(el){el.classList.add('active');el.style.display='block';document.body.scrollTop=0;document.documentElement.scrollTop=0;if(['listener-home','player','lh-inbox','lh-notifications','lh-settings','lh-profile','lh-pastor','lh-live','lh-dm'].includes(page)){try{history.pushState({page:page},'',window.location.pathname);}catch(e){}}}
+  if(typeof lhNavStack!=='undefined'){lhNavStack.push(page);if(lhNavStack.length>20)lhNavStack.shift();}
   // Ensures the bottom nav is always correct regardless of entry point -
   // previously only specific "Back" buttons re-showed it after
   // openSermon() hid it for the full-screen player, so any other path
@@ -2325,7 +2330,8 @@ async function loadLhInbox(){const el=document.getElementById('lh-inbox-list');i
   var sermonId=data&&(data.sermon_id||data.id)||null;
   var hasSermon=sermonId&&(m.type==='new_sermon'||m.type==='admin_message');
   var icon=m.type==='new_sermon'?'🎧':m.type==='live_stream'?'📡':m.type==='application_update'?'🛡️':m.type==='admin_message'?'📬':m.type==='follow'?'👤':'📬';
-  return '<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;margin-bottom:6px;">'+m.body+'</div>':'')+(m.created_at?'<div style="color:#c3d4e8;font-size:11px;margin-bottom:6px;">'+new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(sermonId?'<button onclick="lhOpenNotifSermon(\''+sermonId+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>':'')+'</div></div>';
+  var isLiveStream=m.type==='live_stream';
+  return '<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(212,175,55,0.06);"><div style="font-size:20px;flex-shrink:0;">'+icon+'</div><div style="flex:1;"><div style="color:'+(m.is_read?'#b0c4d8':'#fff')+';font-size:14px;margin-bottom:3px;">'+m.title+'</div>'+(m.body?'<div style="color:#8fa3c0;font-size:12px;margin-bottom:6px;">'+m.body+'</div>':'')+(m.created_at?'<div style="color:#c3d4e8;font-size:11px;margin-bottom:6px;">'+new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>':'')+(sermonId?'<button onclick="lhOpenNotifSermon(\''+sermonId+'\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">🎧 Open Sermon</button>':'')+(isLiveStream?'<button onclick="goTo(\'lh-live\')" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:4px 12px;font-size:12px;cursor:pointer;">📡 View Live</button>':'')+'</div></div>';
 }).join('');}catch(e){
     el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load messages</p>';}}
 async function sendLhInboxMsg(){
@@ -2874,7 +2880,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
       </div>
     </div>
     <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;display:flex;align-items:center;justify-content:center;">
-      <div id="lh-video-inner" style="height:100%;width:auto;max-width:100%;aspect-ratio:16/9;position:relative;"></div>
+      <div id="lh-video-inner" style="width:100%;height:100%;position:relative;"></div>
       <div id="lh-live-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#8fa3c0;">
         <div style="font-size:40px;margin-bottom:12px;">📡</div>
         <p>Connecting to live stream...</p>
@@ -2883,7 +2889,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
     <div style="padding:4px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <div id="lh-live-pastor" style="color:#D4AF37;font-size:12px;font-weight:600;flex:1;"></div>
       <button id="lh-btn-quality" onclick="lhToggleQuality()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">HD</button>
-      <button id="lh-btn-fullscreen" onclick="lhToggleLiveFullscreen()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">⛶</button>
+      <button id="lh-btn-fullscreen" onclick="lhToggleLiveFullscreen()" style="background:rgba(255,255,255,0.25);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 12px;font-size:18px;font-weight:700;cursor:pointer;">⛶</button>
       <button id="lh-btn-vol" onclick="lhToggleLiveVolume()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">🔊</button>
     </div>`;
   document.body.appendChild(overlay);
@@ -3183,12 +3189,31 @@ function sanitizeInput(str){
 }
 
 // Handle browser back button for listener pages
+var lhNavStack=[];
+function lhSmartBack(){
+  lhNavStack.pop(); // discard current page
+  var prev=lhNavStack.pop();
+  if(prev){
+    goTo(prev);
+  }else{
+    var bnav=document.querySelector('.lh-bottom-nav');
+    if(bnav)bnav.style.display='flex';
+    var tkn=localStorage.getItem('trinitarian_token');
+    if(tkn)goTo('listener-home');else goTo('home');
+  }
+}
+
 window.addEventListener('popstate', function(e){
   if(e.state&&e.state.page){
     var el=document.getElementById('page-'+e.state.page);
     if(el){
       document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');p.style.display='none';});
       el.classList.add('active');el.style.display='block';
+      var page=e.state.page;
+      if(page==='listener-home'||page==='player'||page.indexOf('lh-')===0){
+        var bnavEl=document.querySelector('.lh-bottom-nav');
+        if(bnavEl)bnavEl.style.display=(page==='player')?'none':'flex';
+      }
     }
   }
 });
@@ -3304,7 +3329,7 @@ async function resendVerification(){
 
 <div id="page-lh-live" class="page" style="display:none;">
   <div style="padding:16px 16px 0;">
-    <span onclick="const tkn=localStorage.getItem('trinitarian_token');if(tkn)goTo('listener-home');else goTo('home');" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;margin-bottom:16px;">&#8592; Back</span>
+    <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;margin-bottom:16px;">&#8592; Back</span>
     <h2 style="color:#e8e8e8;font-size:18px;font-weight:700;margin-bottom:4px;">🔴 Live Streams</h2>
     <p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">Watch verified pastors preach in real time</p>
   </div>
