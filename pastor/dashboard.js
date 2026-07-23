@@ -2871,6 +2871,10 @@ async function startLiveStream(existingStreamId, existingTitle) {
     });
     await agoraClient.setClientRole('host');
     await agoraClient.join(data.app_id, data.channel_name, data.token, data.uid);
+    // Required for viewers to be able to switch to a lower-quality stream -
+    // without this, no low-quality variant exists at all, so the viewer's
+    // HD/SD toggle has nothing real to switch to.
+    try { await agoraClient.enableDualStream(); } catch (e) { console.error('enableDualStream failed:', e); }
     // Previously createMicrophoneAndCameraTracks() (the combined helper) —
     // this has zero resolution control at all, which is the actual reason
     // every previous resolution fix never took effect: those were applied
