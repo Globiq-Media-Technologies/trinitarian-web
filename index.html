@@ -3009,22 +3009,36 @@ function lhToggleLiveFullscreen(){
   const btn=document.getElementById('lh-btn-fullscreen');
   const isFullscreen=document.fullscreenElement||document.webkitFullscreenElement;
   if(!isFullscreen){
+    // Save current windowed styling so it can be restored on exit, then
+    // switch to genuine edge-to-edge dimensions - the browser's fullscreen
+    // API alone doesn't override this element's own inline top/left/width/
+    // height/border-radius, which is exactly why fullscreen never actually
+    // reached the true screen edges before this.
+    overlay.dataset.windowedStyle=overlay.style.cssText;
+    overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;flex-direction:column;border-radius:0;overflow:hidden;';
     if(overlay.requestFullscreen)overlay.requestFullscreen();
     else if(overlay.webkitRequestFullscreen)overlay.webkitRequestFullscreen();
     if(btn)btn.textContent='⤢';
   }else{
     if(document.exitFullscreen)document.exitFullscreen();
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+    if(overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
     if(btn)btn.textContent='⛶';
   }
 }
 document.addEventListener('fullscreenchange',()=>{
   const btn=document.getElementById('lh-btn-fullscreen');
+  const overlay=document.getElementById('lh-live-overlay');
   if(btn)btn.textContent=(document.fullscreenElement)?'⤢':'⛶';
+  // Covers exiting via Escape key or the browser's own fullscreen exit
+  // control, not just our own Leave/toggle button.
+  if(!document.fullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
 });
 document.addEventListener('webkitfullscreenchange',()=>{
   const btn=document.getElementById('lh-btn-fullscreen');
+  const overlay=document.getElementById('lh-live-overlay');
   if(btn)btn.textContent=(document.webkitFullscreenElement)?'⤢':'⛶';
+  if(!document.webkitFullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
 });
 
 async function toggleLike(){
