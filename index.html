@@ -2894,6 +2894,12 @@ function lhOpenLivePlayer(streamData, streamTitle){
       <button id="lh-btn-vol" onclick="lhToggleLiveVolume()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;">🔊</button>
     </div>`;
   document.body.appendChild(overlay);
+  // This overlay bypasses goTo() entirely (appended directly to body), so
+  // the nav-visibility handling centralized there never applied here -
+  // hiding it explicitly, since it otherwise stays visible on top of and
+  // overlapping this overlay's own bottom controls bar.
+  const bnavForLive=document.querySelector('.lh-bottom-nav');
+  if(bnavForLive)bnavForLive.style.display='none';
 
   // Was hardcoded to "0 watching" with nothing ever updating it -
   // immediate call plus interval, matching the polling pattern already
@@ -2971,6 +2977,8 @@ async function lhLeaveLiveStream(){
   lhAgoraClient=null;lhRemoteVideoTrack=null;lhRemoteAudioTrack=null;lhRemoteUid=null;
   const overlay=document.getElementById('lh-live-overlay');
   if(overlay)overlay.remove();
+  const bnavAfterLive=document.querySelector('.lh-bottom-nav');
+  if(bnavAfterLive)bnavAfterLive.style.display='flex';
 }
 
 let lhViewerPollInterval=null;
