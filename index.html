@@ -2870,7 +2870,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
   overlay.id='lh-live-overlay';
   overlay.style.cssText='position:fixed;top:1.5vh;left:1vw;width:98vw;height:97vh;background:#000;z-index:9999;display:flex;flex-direction:column;border-radius:10px;overflow:hidden;';
   overlay.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.8);flex-shrink:0;">
+    <div id="lh-live-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.8);flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:8px;height:8px;background:#e05555;border-radius:4px;animation:pulse 1s infinite;"></div>
         <span style="color:#fff;font-size:13px;font-weight:600;">${streamTitle||'Live Stream'}</span>
@@ -2887,7 +2887,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
         <p>Connecting to live stream...</p>
       </div>
     </div>
-    <div style="padding:4px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div id="lh-live-footer" style="padding:4px 16px;background:rgba(0,0,0,0.8);display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <div id="lh-live-pastor" style="color:#D4AF37;font-size:12px;font-weight:600;flex:1;"></div>
       <button id="lh-btn-quality" onclick="lhToggleQuality()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">HD</button>
       <button id="lh-btn-fullscreen" onclick="lhToggleLiveFullscreen()" style="background:rgba(255,255,255,0.25);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 12px;font-size:18px;font-weight:700;cursor:pointer;">⛶</button>
@@ -3004,6 +3004,25 @@ function lhToggleLiveVolume(){
   document.getElementById('lh-btn-vol').textContent=lhVolumeMuted?'🔇':'🔊';
 }
 
+function lhApplyFullscreenLayout(isFs){
+  const header=document.getElementById('lh-live-header');
+  const footer=document.getElementById('lh-live-footer');
+  if(!header||!footer)return;
+  if(isFs){
+    // Overlay on top of the video instead of occupying their own flex
+    // space - a fixed-height header+footer subtracted from a full-width
+    // container makes the remaining video area wider than the video's own
+    // 16:9 shape on most screens, forcing letterboxing on the sides.
+    // Overlaying lets the video container use the full screen height, so
+    // its shape matches the screen far more closely.
+    header.style.position='absolute';header.style.top='0';header.style.left='0';header.style.right='0';header.style.zIndex='2';
+    footer.style.position='absolute';footer.style.bottom='0';footer.style.left='0';footer.style.right='0';footer.style.zIndex='2';
+  }else{
+    header.style.position='';header.style.top='';header.style.left='';header.style.right='';header.style.zIndex='';
+    footer.style.position='';footer.style.bottom='';footer.style.left='';footer.style.right='';footer.style.zIndex='';
+  }
+}
+
 function lhToggleLiveFullscreen(){
   const overlay=document.getElementById('lh-live-overlay');
   const btn=document.getElementById('lh-btn-fullscreen');
@@ -3018,11 +3037,13 @@ function lhToggleLiveFullscreen(){
     overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;flex-direction:column;border-radius:0;overflow:hidden;';
     if(overlay.requestFullscreen)overlay.requestFullscreen();
     else if(overlay.webkitRequestFullscreen)overlay.webkitRequestFullscreen();
+    lhApplyFullscreenLayout(true);
     if(btn)btn.textContent='⤢';
   }else{
     if(document.exitFullscreen)document.exitFullscreen();
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
     if(overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
+    lhApplyFullscreenLayout(false);
     if(btn)btn.textContent='⛶';
   }
 }
@@ -3033,12 +3054,14 @@ document.addEventListener('fullscreenchange',()=>{
   // Covers exiting via Escape key or the browser's own fullscreen exit
   // control, not just our own Leave/toggle button.
   if(!document.fullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
+  lhApplyFullscreenLayout(!!document.fullscreenElement);
 });
 document.addEventListener('webkitfullscreenchange',()=>{
   const btn=document.getElementById('lh-btn-fullscreen');
   const overlay=document.getElementById('lh-live-overlay');
   if(btn)btn.textContent=(document.webkitFullscreenElement)?'⤢':'⛶';
   if(!document.webkitFullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
+  lhApplyFullscreenLayout(!!document.webkitFullscreenElement);
 });
 
 async function toggleLike(){
