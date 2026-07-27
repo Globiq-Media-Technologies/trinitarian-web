@@ -1431,9 +1431,14 @@ window.addEventListener('load',async()=>{
   }
   const hash=window.location.hash.replace('#','');
   const token=localStorage.getItem('trinitarian_token');
-  // Only auto-redirect if user was previously on a logged-in page
-  const wasLoggedIn=hash&&['listener','listener-home','player','settings','notifications'].includes(hash);
-  if(token&&wasLoggedIn){
+  // Previously only auto-redirected if the URL already had a specific hash
+  // like #listener-home - meaning a plain, hash-less link (bare domain, or
+  // an external "Back to Trinitarian" link) never triggered this check at
+  // all, even with a fully valid token, silently showing the logged-out
+  // marketing page to an actually logged-in visitor. Checking the token
+  // directly is self-correcting for logged-out visitors too, since there's
+  // simply no token for this block to act on.
+  if(token){
     try{const res=await fetch(API+'/api/auth/me',{headers:{'Authorization':'Bearer '+token}});const fresh=await res.json();if(fresh?.id){localStorage.setItem('trinitarian_user',JSON.stringify(fresh));const role=fresh.role||'listener';if(['admin','moderator','pastor','owner'].includes(role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}}catch(e){}
     const user=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
     if(user){if(['admin','moderator','pastor','owner'].includes(user?.role)){window.location.href='https://trinitarian.app/pastor';}else{goTo('listener-home');}return;}
