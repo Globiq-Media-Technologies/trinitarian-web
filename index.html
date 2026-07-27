@@ -647,9 +647,13 @@
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
     <div id="ptab-comments" style="display:none;">
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
-        <textarea id="comment-input" placeholder="Add a comment..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:80px;"></textarea>
-        <button onclick="postComment()" style="margin-top:8px;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
+        <textarea id="comment-input" placeholder="Add a comment..." maxlength="1000" oninput="document.getElementById('comment-char-count').textContent=this.value.length>800?this.value.length+'/1000':'';" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:80px;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <button onclick="postComment()" style="background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;">Post Comment</button>
+          <span id="comment-char-count" style="color:#e05555;font-size:12px;"></span>
+        </div>
       </div>
+      <div id="comment-count" style="color:#8fa3c0;font-size:12px;margin-bottom:10px;"></div>
       <div id="comments-list" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
   </div>
@@ -1743,7 +1747,6 @@ function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('tri
 function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});if(btn){btn.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}if(section==='sermons'){lhCurrentType='all';document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();}else if(section==='pastors'){lhCurrentType='pastors';lhShowPastors();}else if(section==='saved'){lhCurrentType='saved';lhShowSaved();}}
 
 let currentSermon=null,ptFontSz=15,ptIsNight=false;
-let comments=JSON.parse(localStorage.getItem('lh_comments')||'{}');
 let bookmarks=JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
 
 function openResetInApp(){
@@ -2243,9 +2246,63 @@ async function loadComments(sermonId){
     if(!res.ok)throw new Error('Failed');
     const data=await res.json();
     const coms=data.comments||[];
+    const countEl=document.getElementById('comment-count');
+    if(countEl)countEl.textContent=coms.length?coms.length+' comment'+(coms.length===1?'':'s'):'';
     if(!coms.length){list.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">No comments yet. Be the first!</p>';return;}
-    list.innerHTML=coms.map(c=>'<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:10px;padding:14px;"><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">'+sanitizeInput(c.display_name||'Listener')+' · '+new Date(c.created_at).toLocaleDateString('en-GB')+'</div><div style="color:#b0c4d8;font-size:14px;line-height:1.7;">'+sanitizeInput(c.body)+'</div></div>').join('');
+    const currentUser=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+    const canDelete=function(c){return currentUser&&(c.user_id===currentUser.id||['admin','moderator','owner'].includes(currentUser.role));};
+    // Was reading c.body, but the backend only ever returns a field named
+    // content - every comment was silently displaying as blank text even
+    // though posting and storage worked correctly.
+    list.innerHTML=coms.map(function(c){
+      return '<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:10px;padding:14px;">'
+        +'<div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">'+sanitizeInput(c.display_name||'Listener')+' · '+new Date(c.created_at).toLocaleDateString('en-GB')+'</div>'
+        +'<div style="color:#b0c4d8;font-size:14px;line-height:1.7;margin-bottom:8px;">'+sanitizeInput(c.content)+'</div>'
+        +'<div style="display:flex;align-items:center;gap:16px;">'
+        +'<span onclick="toggleCommentLike(\''+c.id+'\',this)" data-liked="'+(c.is_liked?'1':'0')+'" style="cursor:pointer;color:'+(c.is_liked?'#D4AF37':'#8fa3c0')+';font-size:13px;">'+(c.is_liked?'♥':'♡')+(c.like_count>0?' <span class="like-count">'+c.like_count+'</span>':' <span class="like-count"></span>')+'</span>'
+        +'<span onclick="reportCommentWeb(\''+sermonId+'\',\''+c.id+'\')" style="cursor:pointer;color:#8fa3c0;font-size:12px;">⚑ Report</span>'
+        +(canDelete(c)?'<span onclick="deleteCommentWeb(\''+sermonId+'\',\''+c.id+'\')" style="cursor:pointer;color:#8fa3c0;font-size:12px;">🗑 Delete</span>':'')
+        +'</div></div>';
+    }).join('');
   }catch(e){list.innerHTML='<p style="color:#8fa3c0;text-align:center;padding:20px;">Could not load comments.</p>';}
+}
+async function toggleCommentLike(commentId,el){
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token){const t=document.createElement('div');t.textContent='Please sign in to like comments';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#e05555;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(t);setTimeout(function(){t.remove();},2500);return;}
+  // Optimistic update, reverted if the request fails.
+  const wasLiked=el.dataset.liked==='1';
+  const countSpan=el.querySelector('.like-count');
+  const currentCount=parseInt(countSpan.textContent||'0')||0;
+  el.dataset.liked=wasLiked?'0':'1';
+  el.style.color=wasLiked?'#8fa3c0':'#D4AF37';
+  el.firstChild.textContent=wasLiked?'♡':'♥';
+  countSpan.textContent=wasLiked?(currentCount-1||''):(currentCount+1);
+  try{
+    await fetch(API+'/api/sermons/comments/'+commentId+'/like',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+  }catch(e){
+    el.dataset.liked=wasLiked?'1':'0';
+    el.style.color=wasLiked?'#D4AF37':'#8fa3c0';
+    el.firstChild.textContent=wasLiked?'♥':'♡';
+    countSpan.textContent=currentCount||'';
+  }
+}
+async function deleteCommentWeb(sermonId,commentId){
+  if(!confirm('Delete this comment?'))return;
+  const token=localStorage.getItem('trinitarian_token');
+  try{
+    const res=await fetch(API+'/api/sermons/'+sermonId+'/comments/'+commentId,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+    if(res.ok)loadComments(sermonId);
+    else alert('Failed to delete comment.');
+  }catch(e){alert('Connection error. Please try again.');}
+}
+async function reportCommentWeb(sermonId,commentId){
+  if(!confirm('Report this comment for review?'))return;
+  const token=localStorage.getItem('trinitarian_token');
+  try{
+    const res=await fetch(API+'/api/sermons/'+sermonId+'/comments/'+commentId+'/report',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({reason:'Inappropriate content',description:'Reported from web'})});
+    if(res.ok){const t=document.createElement('div');t.textContent='✓ Comment reported. Thank you.';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(t);setTimeout(function(){t.remove();},3000);}
+    else alert('Failed to submit report.');
+  }catch(e){alert('Connection error. Please try again.');}
 }
 async function postComment(){
   if(!currentSermon)return;
@@ -2254,9 +2311,10 @@ async function postComment(){
   const token=localStorage.getItem('trinitarian_token');
   if(!token){const t=document.createElement('div');t.textContent='Please sign in to comment';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#e05555;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(t);setTimeout(()=>t.remove(),2500);return;}
   try{
-    const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/comments',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({body:text})});
+    const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/comments',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({content:text})});
     if(res.ok){
       document.getElementById('comment-input').value='';
+      document.getElementById('comment-char-count').textContent='';
       loadComments(currentSermon.id);
       const toast=document.createElement('div');toast.textContent='✓ Comment posted';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500);
     }else{const d=await res.json();alert(d.error||'Failed to post comment');}
