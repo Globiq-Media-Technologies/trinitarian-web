@@ -735,9 +735,9 @@ async function handleApply() {
   if (wordCount < 100) return showAlert('apply-error', `Personal statement must be at least 100 words. Currently ${wordCount} words.`);
   if (!finalDenom) return showAlert('apply-error', 'Please select or enter your denomination');
   // Use pastor token, or fall back to listener token
-  const activeToken = token || localStorage.getItem('trinitarian_token');
+  const activeToken = token;
   if (!activeToken) {
-    showAlert('apply-error', 'Please sign in or register first before applying.');
+    showAlert('apply-error', 'Please sign in here on the Pastor Dashboard first before applying.');
     return;
   }
   try {
