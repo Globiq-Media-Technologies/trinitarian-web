@@ -448,6 +448,7 @@ function pdApplyTranslations(lang){
 const API = 'https://trinitarian-backend-production.up.railway.app';
 let token = localStorage.getItem('pastor_token');
 let user = JSON.parse(localStorage.getItem('pastor_user') || 'null');
+let badgePollInterval = null;
 let uploadType = 'video';
 let uploadLang = 'en';
 
@@ -785,7 +786,7 @@ async function handleApply() {
         // Auto-verified - reload user and go to dashboard
         try {
           const fresh = await api('/api/auth/me');
-          if (fresh?.id) { const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4}; if((roleOrder[fresh.role]||0) >= (roleOrder[user?.role]||0)) { user = fresh; } else { fresh.role = user.role; user = fresh; } localStorage.setItem('pastor_user', JSON.stringify(user)); }
+          if (fresh?.id) { user = fresh; localStorage.setItem('pastor_user', JSON.stringify(user)); }
         } catch(e) {}
         showAlert('apply-success', '🎉 Congratulations! You are now a Verified Pastor. Loading your dashboard...', 'success');
         setTimeout(() => initDashboard(), 1500);
@@ -816,6 +817,7 @@ async function deletePastorAccount(){
 function handleLogout() {
   if (!confirm('Are you sure you want to sign out?')) return;
   token = null; user = null;
+  if (badgePollInterval) { clearInterval(badgePollInterval); badgePollInterval = null; }
   localStorage.removeItem('pastor_token');
   localStorage.removeItem('pastor_user');
   showScreen('login');
@@ -830,7 +832,8 @@ function initDashboard() {
   // Show notification badge on load
   updateBadges();
   // Poll every 60s
-  setInterval(updateBadges, 60000);
+  if (badgePollInterval) clearInterval(badgePollInterval);
+  badgePollInterval = setInterval(updateBadges, 60000);
   document.getElementById('sidebar-name').textContent = user?.display_name || 'Pastor';
   const savedAvatar=localStorage.getItem('pastor_avatar');
   if(savedAvatar){const av=document.getElementById('profile-avatar');if(av){av.style.backgroundImage='url('+savedAvatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';const rb=document.getElementById('remove-photo-btn');if(rb)rb.style.display='block';}}
@@ -2161,8 +2164,6 @@ async function init() {
     try {
       const fresh = await api('/api/auth/me');
       if (fresh?.id) {
-        const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
-        if ((roleOrder[fresh.role]||0) < (roleOrder[user?.role]||0)) { fresh.role = user.role; }
         user = fresh;
         localStorage.setItem('pastor_user', JSON.stringify(user));
         initDashboard();
@@ -3089,8 +3090,6 @@ document.addEventListener('visibilitychange', async function() {
     try {
       const fresh = await api('/api/auth/me');
       if (fresh?.id) {
-        const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
-        if ((roleOrder[fresh.role]||0) < (roleOrder[user?.role]||0)) { fresh.role = user.role; }
         user = fresh;
         localStorage.setItem('pastor_user', JSON.stringify(user));
         // Update role display without full re-init
