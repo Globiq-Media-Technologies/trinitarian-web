@@ -1305,7 +1305,11 @@ function deferredClear(ids){
 }
 
 function goTo(page){
-  if(page==='pastor'){window.open('https://trinitarian.app/pastor','_blank');return;}
+  if(page==='pastor'){
+    const lu=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+    window.open('https://trinitarian.app/pastor?from=apply&expect='+encodeURIComponent(lu?.id||''),'_blank');
+    return;
+  }
   if(page==='privacy'){window.location.href='https://trinitarian.app/privacy';return;}
   if(page==='terms'){window.location.href='https://trinitarian.app/terms';return;}
   // Leaving the player page — pause playback and save final progress, so
