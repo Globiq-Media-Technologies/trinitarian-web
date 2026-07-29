@@ -149,7 +149,7 @@
     <a onclick="goTo('privacy')" data-i18n="nav_privacy">Privacy</a>
     <a onclick="goTo('terms')" data-i18n="nav_terms">Terms</a>
     <span onclick="goTo('listener')" style="color:#b0c4d8;font-size:14px;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#b0c4d8'" data-i18n="sign_in">Sign In / Register</span>
-    <span onclick="goTo('pastor')" style="background:#D4AF37;color:#071528;padding:8px 20px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;display:inline-block;line-height:1;" data-i18n="pastor_login">Pastor Login</span>
+    <span onclick="goToPastorLogin()" style="background:#D4AF37;color:#071528;padding:8px 20px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;display:inline-block;line-height:1;" data-i18n="pastor_login">Pastor Login</span>
   </div>
 </nav>
 
@@ -367,7 +367,7 @@
       <div style="text-align:right;margin-bottom:20px;"><a onclick="llShow('forgot')" style="color:#D4AF37;font-size:13px;cursor:pointer;" data-i18n="forgot_pwd">Forgot password?</a></div>
       <button onclick="this.style.transform='scale(0.97)';setTimeout(()=>this.style.transform='',150);llLogin()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:16px;transition:transform 0.15s;" data-i18n="sign_in_btn">Sign In</button>
       <p style="text-align:center;color:#8fa3c0;font-size:13px;"><span data-i18n="no_account">No account?</span> <a onclick="llShow('register')" style="color:#D4AF37;cursor:pointer;" data-i18n="create_free" data-i18n="create_free">Create one free</a></p>
-      <p style="text-align:center;margin-top:8px;color:#8fa3c0;font-size:13px;"><span data-i18n="is_pastor">Pastor?</span> <a onclick="goTo('pastor')" style="color:#D4AF37;cursor:pointer;" data-i18n="pastor_login_link" data-i18n="pastor_login_link">Pastor Login →</a></p>
+      <p style="text-align:center;margin-top:8px;color:#8fa3c0;font-size:13px;"><span data-i18n="is_pastor">Pastor?</span> <a onclick="goToPastorLogin()" style="color:#D4AF37;cursor:pointer;" data-i18n="pastor_login_link" data-i18n="pastor_login_link">Pastor Login →</a></p>
           </div>
     <!-- Register -->
     <div id="ll-register" style="display:none;">
@@ -1302,6 +1302,11 @@ function deferredClear(ids){
   setTimeout(doClear,150);
   setTimeout(doClear,400);
   setTimeout(doClear,900);
+}
+
+function goToPastorLogin(){
+  const lu=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+  window.open('https://trinitarian.app/pastor?from=login&expect='+encodeURIComponent(lu?.id||''),'_blank');
 }
 
 function goTo(page){

@@ -2142,20 +2142,24 @@ async function init() {
   applyStoredSettings();
   await loadCategories();
 
-  // If this tab was opened via "Apply as Verified Pastor" on the listener
-  // site, confirm any existing session here actually belongs to whoever
-  // clicked that link, before trusting it - otherwise a session left
-  // logged in on a shared computer (e.g. Owner, forgotten) could silently
-  // be handed to a different person who clicks the same link later,
-  // including access to sensitive actions like Transfer Ownership.
+  // If this tab was opened via a link on the listener site, confirm any
+  // existing session here actually belongs to whoever clicked that link,
+  // before trusting it - otherwise a session left logged in on a shared
+  // computer (e.g. Owner, forgotten) could silently be handed to a
+  // different person who clicks the same link later, including access to
+  // sensitive actions like Transfer Ownership.
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('from') === 'apply') {
+  const cameFrom = urlParams.get('from');
+  if (cameFrom === 'apply' || cameFrom === 'login') {
     const expectId = urlParams.get('expect') || '';
     if (!expectId || expectId !== user?.id) {
       token = null; user = null;
       localStorage.removeItem('pastor_token');
       localStorage.removeItem('pastor_user');
-      showScreen(expectId ? 'login' : 'apply');
+      // "Pastor Login" always means sign in as an existing pastor - never
+      // silently redirect that intent into the application form the way
+      // an empty "apply" case does.
+      showScreen(cameFrom === 'login' ? 'login' : (expectId ? 'login' : 'apply'));
       return;
     }
   }
