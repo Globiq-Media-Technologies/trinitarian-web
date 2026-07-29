@@ -613,6 +613,7 @@ async function handleLogin() {
       user = freshUser;
       localStorage.setItem('pastor_token', token);
       localStorage.setItem('pastor_user', JSON.stringify(user));
+      if (window.location.search) window.history.replaceState({}, '', window.location.pathname);
       initDashboard();
     } else {
       showAlert('login-error', data.error || 'Invalid credentials');
@@ -2160,8 +2161,14 @@ async function init() {
       // silently redirect that intent into the application form the way
       // an empty "apply" case does.
       showScreen(cameFrom === 'login' ? 'login' : (expectId ? 'login' : 'apply'));
+      window.history.replaceState({}, '', window.location.pathname);
       return;
     }
+    // Validation passed - this check is meant to run once, at the moment
+    // this tab was opened. Leaving from/expect in the URL would mean a
+    // later refresh re-validates against this same, now-stale value even
+    // after someone has since legitimately logged in as someone else here.
+    window.history.replaceState({}, '', window.location.pathname);
   }
 
   if (token && user) {
