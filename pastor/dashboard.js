@@ -885,7 +885,7 @@ function initDashboard() {
   const escTab=document.getElementById('tab-escalations');
   if(escTab) escTab.style.display=isAdmin?'inline-flex':'none';
   const modEscTab=document.getElementById('tab-mod-escalate');
-  if(modEscTab) modEscTab.style.display=(isModerator&&!isAdmin)?'inline-flex':'none';
+  if(modEscTab) modEscTab.style.display=(isModerator||user?.role==='admin')?'inline-flex':'none';
   const reportsTab=document.getElementById('tab-reports');
   if(reportsTab) reportsTab.style.display=isAdmin||isModerator?'inline-flex':'none';
   const flaggedTab=document.getElementById('tab-flagged');
@@ -940,6 +940,30 @@ function scrollToPastStreams() {
 }
 
 async function loadOverview() {
+  const isAdminTier = ['admin', 'moderator', 'owner'].includes(user?.role);
+  if (isAdminTier) {
+    // Admin/moderator/owner get genuine platform-wide totals - this
+    // endpoint already existed and was fully built on the backend, but
+    // this page only ever queried this specific account's own sermons,
+    // which is correctly-but-uselessly all zero for an account (like
+    // Owner) that has never published anything of its own.
+    try {
+      const analytics = await api('/api/admin/analytics?period=30');
+      document.getElementById('stat-sermons').textContent = analytics?.total_sermons ?? '—';
+      document.getElementById('stat-views').textContent = (analytics?.total_views ?? 0).toLocaleString();
+      document.getElementById('stat-followers').textContent = analytics?.new_users ?? '—';
+      const followersLabel = document.querySelector('#stat-followers')?.closest('.stat-card')?.querySelector('.stat-label');
+      if (followersLabel) followersLabel.textContent = 'New Users (30d)';
+      document.getElementById('stat-streams').textContent = analytics?.top_pastors?.length ?? '—';
+      const streamsLabel = document.querySelector('#stat-streams')?.closest('.stat-card')?.querySelector('.stat-label');
+      if (streamsLabel) streamsLabel.textContent = 'Top Pastors';
+      const topSermons = (analytics?.top_sermons || []).map(s => ({ ...s, pastor_name: s.pastor_name }));
+      renderSermonList(topSermons.slice(0, 5), 'recent-sermons');
+    } catch(e) {
+      document.getElementById('recent-sermons').innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><h3>Could not load platform data</h3></div>';
+    }
+    return;
+  }
   try {
     // Previously Promise.all — if the admin-only analytics call failed (as
     // it always would for a regular pastor without admin/moderator access),
@@ -1549,6 +1573,18 @@ async function clearAllInbox() {
   const isReportsActive = reportsTab && reportsTab.classList.contains('btn-gold');
   const flaggedTab = document.getElementById('tab-flagged');
   const isFlaggedActive = flaggedTab && flaggedTab.classList.contains('btn-gold');
+  const escalationsTab = document.getElementById('tab-escalations');
+  const isEscalationsActive = escalationsTab && escalationsTab.classList.contains('btn-gold');
+
+  if (isEscalationsActive) {
+    if (!confirm('Clear all escalations? This cannot be undone.')) return;
+    try {
+      await api('/api/admin/escalations', 'DELETE');
+      loadEscalations();
+      showToast('All escalations cleared');
+    } catch(e) { showToast('Failed to clear escalations', 'error'); }
+    return;
+  }
 
   if (isReportsActive || isFlaggedActive) {
     if (!confirm('Clear all reports? This cannot be undone.')) return;
@@ -2160,7 +2196,7 @@ async function init() {
       // "Pastor Login" always means sign in as an existing pastor - never
       // silently redirect that intent into the application form the way
       // an empty "apply" case does.
-      showScreen(cameFrom === 'login' ? 'login' : (expectId ? 'login' : 'apply'));
+      showScreen(cameFrom === 'login' ? 'login' : 'apply');
       window.history.replaceState({}, '', window.location.pathname);
       return;
     }
@@ -2453,8 +2489,8 @@ async function loadEscalations(){
   const wrap=document.getElementById('escalations-list-wrap');
   if(!wrap)return;
   try{
-    const data=await api('/api/admin/escalations');
-    const list=(data.escalations||[]).filter(e=>e.moderator_id===user?.id);
+    const data=await api('/api/admin/escalations/mine');
+    const list=data.escalations||[];
     if(!list.length){wrap.innerHTML='<p style="color:var(--text-muted);font-size:13px;" data-i18n="no_prev_escalations">No previous escalations.</p>';return;}
     wrap.innerHTML='<h3 style="color:var(--white);font-size:15px;margin-bottom:12px;" data-i18n="prev_escalations">Your Previous Escalations</h3>'
       +list.map(function(e){return `<div style="background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
@@ -2470,10 +2506,11 @@ async function loadEscalations(){
 function showEscalationPanel(){
   const content=document.getElementById('mod-escalate-panel');
   if(!content)return;
+  const escalatesTo=user?.role==='admin'?'Owner':'Admin';
   content.innerHTML=`<div style="max-width:600px;">
     <div id="escalations-list-wrap" style="margin-bottom:24px;"></div>
     <div class="card">
-      <h3 style="color:var(--white);font-size:15px;margin-bottom:16px;" data-i18n="new_escalation">New Escalation to Admin</h3>
+      <h3 style="color:var(--white);font-size:15px;margin-bottom:16px;">New Escalation to ${escalatesTo}</h3>
       <div class="alert alert-error" id="escalation-error"></div>
       <div class="alert alert-success" id="escalation-success"></div>
       <div class="form-group">
@@ -2514,7 +2551,7 @@ async function submitEscalation(){
   if(btn){btn.disabled=true;btn.textContent='Submitting...';}
   try{
     await api('/api/admin/escalate','POST',{subject,description,type,reference_id:reference||null});
-    showToast('✅ Escalation submitted. Admin has been notified.');
+    showToast(`✅ Escalation submitted. ${user?.role==='admin'?'Owner':'Admin'} has been notified.`);
     document.getElementById('esc-subject').value='';
     document.getElementById('esc-description').value='';
     if(document.getElementById('esc-reference'))document.getElementById('esc-reference').value='';
