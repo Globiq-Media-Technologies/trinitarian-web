@@ -1580,7 +1580,8 @@ async function clearAllInbox() {
     if (!confirm('Clear all escalations? This cannot be undone.')) return;
     try {
       await api('/api/admin/escalations', 'DELETE');
-      loadEscalations();
+      loadAdminEscalations();
+      updateBadges();
       showToast('All escalations cleared');
     } catch(e) { showToast('Failed to clear escalations', 'error'); }
     return;
@@ -1591,6 +1592,7 @@ async function clearAllInbox() {
     try {
       await api('/api/admin/reports', 'DELETE');
       loadReports();
+      updateBadges();
       showToast('All reports cleared');
     } catch(e) { showToast('Failed to clear reports', 'error'); }
     return;
@@ -2262,6 +2264,8 @@ function showInboxTab(tab, btn) {
   if (btn) btn.className = 'btn btn-gold btn-sm';
   document.getElementById('inbox-list').style.display = tab === 'notifications' ? 'block' : 'none';
   document.getElementById('support-list').style.display = tab === 'support' ? 'block' : 'none';
+  const supportSendEl = document.getElementById('support-send-section');
+  if (supportSendEl) supportSendEl.style.display = tab === 'support' ? 'block' : 'none';
   const reportsEl = document.getElementById('reports-list');
   const flaggedEl = document.getElementById('flagged-list');
   const escEl = document.getElementById('escalations-list');
