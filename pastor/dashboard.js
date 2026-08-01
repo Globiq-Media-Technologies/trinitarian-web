@@ -2786,7 +2786,25 @@ function initLivePage() {
   const enabled = typeof LIVE_ENABLED !== 'undefined' && LIVE_ENABLED;
   document.getElementById('live-coming-soon').style.display = enabled ? 'none' : 'block';
   document.getElementById('live-studio').style.display = enabled ? 'block' : 'none';
-  if (enabled) { loadPastStreams(); loadUpcomingStreams(); }
+  if (enabled) { loadPastStreams(); loadUpcomingStreams(); checkAndShowProBanner(); }
+}
+
+async function checkAndShowProBanner() {
+  const studio = document.getElementById('live-studio');
+  if (!studio) return;
+  const existing = document.getElementById('pro-required-banner');
+  if (existing) existing.remove();
+  try {
+    const token = localStorage.getItem('pastor_token');
+    const res = await fetch(API + '/api/pro/status', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (data?.is_pro) return;
+    const banner = document.createElement('div');
+    banner.id = 'pro-required-banner';
+    banner.style.cssText = 'background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;';
+    banner.innerHTML = '<span style="font-size:24px;">👑</span><div><div style="color:#D4AF37;font-weight:700;font-size:14px;margin-bottom:2px;">Live Streaming is a Pro Feature</div><div style="color:#8fa3c0;font-size:13px;">Upgrade to Trinitarian Premium to go live.</div></div>';
+    studio.insertBefore(banner, studio.firstChild);
+  } catch (e) {}
 }
 
 function showButtonHints() {
