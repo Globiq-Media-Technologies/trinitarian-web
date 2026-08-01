@@ -2511,7 +2511,7 @@ function showEscalationPanel(){
   const content=document.getElementById('mod-escalate-panel');
   if(!content)return;
   const escalatesTo=user?.role==='admin'?'Owner':'Admin';
-  content.innerHTML=`<div style="max-width:600px;">
+  content.innerHTML=`<div style="max-width:720px;">
     <div id="escalations-list-wrap" style="margin-bottom:24px;"></div>
     <div class="card">
       <h3 style="color:var(--white);font-size:15px;margin-bottom:16px;">New Escalation to ${escalatesTo}</h3>
@@ -2529,11 +2529,11 @@ function showEscalationPanel(){
       </div>
       <div class="form-group">
         <label class="form-label" data-i18n="subject">Subject</label>
-        <input type="text" id="esc-subject" class="form-control" placeholder="Brief summary"/>
+        <input type="text" id="esc-subject" class="form-control" placeholder="Brief summary" style="padding:14px 16px;font-size:15px;height:auto;"/>
       </div>
       <div class="form-group">
         <label class="form-label" data-i18n="description">Description</label>
-        <textarea id="esc-description" class="form-control" rows="5" placeholder="Describe the issue in detail..."></textarea>
+        <textarea id="esc-description" class="form-control" rows="10" placeholder="Describe the issue in detail..." style="padding:14px 16px;font-size:15px;min-height:220px;line-height:1.6;resize:vertical;"></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Reference ID (optional)</label>
