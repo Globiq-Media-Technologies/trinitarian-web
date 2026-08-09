@@ -2799,10 +2799,36 @@ async function checkAndShowProBanner() {
     const res = await fetch(API + '/api/pro/status', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
     if (data?.is_pro) return;
+    const benefits = [
+      { icon: '📡', title: 'Live Streaming', desc: 'Go live and broadcast to your congregation in real time' },
+      { icon: '📥', title: 'Unlimited Downloads', desc: 'Download any sermon for offline listening' },
+      { icon: '🚫', title: 'Ad-Free Experience', desc: 'Enjoy sermons without interruptions' },
+      { icon: '🎧', title: 'High Quality Audio', desc: 'Stream in crystal clear HD audio' },
+      { icon: '🔔', title: 'Priority Notifications', desc: 'Never miss a live stream from your pastors' },
+    ];
     const banner = document.createElement('div');
     banner.id = 'pro-required-banner';
-    banner.style.cssText = 'background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;';
-    banner.innerHTML = '<span style="font-size:24px;">👑</span><div><div style="color:#D4AF37;font-weight:700;font-size:14px;margin-bottom:2px;">Live Streaming is a Pro Feature</div><div style="color:#8fa3c0;font-size:13px;">Upgrade to Trinitarian Premium to go live.</div></div>';
+    banner.style.cssText = 'background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:20px;margin-bottom:16px;';
+    banner.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">👑</span>
+        <div>
+          <div style="color:#D4AF37;font-weight:700;font-size:15px;margin-bottom:2px;">Live Streaming is a Pro Feature</div>
+          <div style="color:#8fa3c0;font-size:13px;">Upgrade to Trinitarian Premium to unlock everything below.</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+        ${benefits.map(b => `
+          <div style="display:flex;gap:8px;align-items:flex-start;background:rgba(0,0,0,0.15);border-radius:8px;padding:10px 12px;">
+            <span style="font-size:16px;">${b.icon}</span>
+            <div>
+              <div style="color:#fff;font-size:12px;font-weight:600;">${b.title}</div>
+              <div style="color:#8fa3c0;font-size:11px;line-height:1.4;">${b.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
     studio.insertBefore(banner, studio.firstChild);
   } catch (e) {}
 }
