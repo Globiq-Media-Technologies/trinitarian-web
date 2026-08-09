@@ -711,6 +711,17 @@
           
         </div>
 
+        <div class="form-group">
+          <span class="section-label">Thumbnail <span style="color:var(--text-muted);font-weight:400;">(optional)</span></span>
+          <div class="upload-area" onclick="document.getElementById('thumbnail-input').click()" id="thumbnail-drop-area">
+            <div style="font-size:36px;">🖼️</div>
+            <p>Click to select a cover image</p>
+            <p style="font-size:11px;margin-top:4px;">JPG or PNG · Shown on sermon cards</p>
+            <img id="thumbnail-preview" style="display:none;max-width:160px;max-height:120px;border-radius:8px;margin-top:10px;object-fit:cover;" />
+          </div>
+          <input type="file" id="thumbnail-input" style="display:none;" accept="image/jpeg,image/png" onchange="handleThumbnailSelect(this)" />
+        </div>
+
         <button class="btn btn-gold" id="upload-submit-btn" onclick="handleUpload()">Publish Sermon</button>
         <div class="alert alert-success" id="upload-success-bottom"></div>
         <div class="alert alert-error" id="upload-error-bottom"></div>
