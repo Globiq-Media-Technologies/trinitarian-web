@@ -1025,12 +1025,74 @@ function renderSermonList(sermons, containerId) {
       </div>
       <div class="sermon-actions">
         <span class="status-badge ${s.status === 'live' ? 'status-live' : s.status === 'archived' ? 'status-archived' : 'status-pending'}">${s.status === 'live' ? 'PUBLISHED' : s.status === 'archived' ? 'ARCHIVED' : (s.status||'').toUpperCase()}</span>
+        <button class="btn btn-ghost btn-sm" onclick="viewSermonComments('${s.id}','${jsSafeTitle}')">💬 Comments</button>
         <button class="btn btn-ghost btn-sm" onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
         <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('https://trinitarian.app/?sermon=${s.id}').then(function(){showToast('Link copied!')})">🔗 Copy Link</button>
         <button class="btn btn-ghost btn-sm" style="color:var(--error);" onclick="deleteSermon('${s.id}','${jsSafeTitle}')">🗑 Delete</button>
       </div>
     </div>`;
   }).join('');
+}
+
+async function viewSermonComments(sermonId, sermonTitle) {
+  const existing = document.getElementById('sermon-comments-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'sermon-comments-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          <h3 style="color:var(--white);margin:0 0 4px;">💬 Comments</h3>
+          <p style="color:var(--text-muted);font-size:13px;margin:0;">${sermonTitle}</p>
+        </div>
+        <span onclick="document.getElementById('sermon-comments-modal').remove()" style="cursor:pointer;color:var(--text-muted);font-size:20px;">✕</span>
+      </div>
+      <div id="sermon-comments-list"><p style="color:var(--text-muted);text-align:center;padding:20px;">Loading...</p></div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const list = document.getElementById('sermon-comments-list');
+  try {
+    const res = await fetch(API + '/api/sermons/' + sermonId + '/comments', { headers: token ? { 'Authorization': 'Bearer ' + token } : {} });
+    const data = await res.json();
+    const comments = data.comments || [];
+    if (!comments.length) {
+      list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">No comments yet on this sermon.</p>';
+      return;
+    }
+    const canDelete = ['admin', 'moderator', 'owner'].includes(user?.role);
+    list.innerHTML = comments.map(c => `
+      <div style="background:#071528;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <div style="color:#D4AF37;font-size:12px;font-weight:600;">${c.display_name || c.username || 'Anonymous'}</div>
+          ${canDelete ? `<span onclick="deleteSermonComment('${sermonId}','${c.id}')" style="cursor:pointer;color:var(--text-muted);font-size:12px;" title="Delete">🗑</span>` : ''}
+        </div>
+        <div style="color:var(--white);font-size:13px;margin-top:4px;">${(c.content || '').replace(/</g, '&lt;')}</div>
+        <div style="color:var(--text-muted);font-size:11px;margin-top:6px;">${c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}${c.like_count > 0 ? ' · ♥ ' + c.like_count : ''}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<p style="color:var(--error);text-align:center;padding:20px;">Could not load comments.</p>';
+  }
+}
+
+async function deleteSermonComment(sermonId, commentId) {
+  if (!confirm('Delete this comment?')) return;
+  try {
+    const res = await fetch(API + '/api/sermons/' + sermonId + '/comments/' + commentId, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { showToast('Failed to delete comment'); return; }
+    const item = document.getElementById('sermon-comments-list');
+    // Re-fetch the sermon's title from the modal's own header rather than
+    // threading it through again - simplest way to refresh in place.
+    const titleEl = document.querySelector('#sermon-comments-modal p');
+    viewSermonComments(sermonId, titleEl ? titleEl.textContent : '');
+  } catch (e) {
+    showToast('Connection error, please try again');
+  }
 }
 
 async function openEditSermon(id, title, description){
