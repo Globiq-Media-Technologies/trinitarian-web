@@ -1376,7 +1376,14 @@ function scrollTo_(selector){goTo('home');setTimeout(()=>{const el=document.quer
 window.addEventListener('load',async()=>{
   initCookieConsent();
   const urlParams=new URLSearchParams(window.location.search);
-  const resetToken=urlParams.get('token');
+  // verify-email links use the same "?token=" parameter name as
+  // reset-password links, so the path must be checked first to tell them
+  // apart - previously the generic check below ran unconditionally for
+  // ANY "?token=" URL regardless of path, meaning a verify-email link
+  // was always misrouted to the password-reset screen before the
+  // verify-email-specific logic further down was ever reached.
+  const isVerifyPath=window.location.pathname.includes('verify-email');
+  const resetToken=isVerifyPath?null:urlParams.get('token');
   if(resetToken){
     goTo('reset');
     if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
@@ -1407,7 +1414,7 @@ window.addEventListener('load',async()=>{
     return;
   }
   // Handle email verification
-  const verifyToken=urlParams.get('verify');
+  const verifyToken=isVerifyPath?urlParams.get('token'):urlParams.get('verify');
   if(verifyToken){
     // Remove verify param from URL so reload/prefetch doesn't re-trigger
     try{window.history.replaceState({},document.title,window.location.pathname);}catch(e){}
