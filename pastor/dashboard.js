@@ -85,6 +85,7 @@ function renderUsers(list) {
         ${u.id === user?.id ? `<span style="color:var(--text-muted);font-size:11px;padding:6px 4px;">This is you</span>` : adminMode ? `
         ${isAdmin && canActOn(user?.role, u.role) ? `<button class="btn btn-sm" style="background:rgba(100,150,255,0.1);border:1px solid rgba(100,150,255,0.3);color:#6496ff;" onclick="changeUserRole('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}','${u.role||'listener'}')">👤 Role</button>` : ''}
         ${canActOn(user?.role, u.role) ? `<button class="btn btn-sm" style="background:${u.is_active===false?'rgba(64,201,106,0.1)':'rgba(224,85,85,0.1)'};border:1px solid ${u.is_active===false?'rgba(64,201,106,0.3)':'rgba(224,85,85,0.3)'};color:${u.is_active===false?'#40c96a':'#e05555'};" onclick="suspendUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}',${u.is_active===false})">${u.is_active===false?'✓ Reinstate':'⊘ Suspend'}</button>` : ''}
+        ${isAdmin && canActOn(user?.role, u.role) ? `<button class="btn btn-sm" style="background:rgba(224,85,85,0.15);border:1px solid rgba(224,85,85,0.4);color:#e05555;" onclick="deleteUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">🗑 Delete</button>` : ''}
         <button class="btn btn-sm" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#D4AF37;" onclick="sendMessageToUser('${u.id}','${(u.display_name||u.username||'').replace(/'/g,'')}')">✉ Message</button>
         ` : ''}
       </div>
@@ -101,6 +102,19 @@ async function suspendUser(id, name, isSuspended) {
     showToast(isSuspended ? 'User reinstated successfully' : 'User suspended successfully');
     loadUsers();
   } catch(e) { showToast('Failed to update user status', 'error'); }
+}
+
+async function deleteUser(id, name) {
+  const typed = prompt('This will permanently delete "' + name + '"\'s account (email, username and profile will be anonymised). Their sermons and comments are not affected.\n\nType the account name exactly to confirm:');
+  if (typed !== name) {
+    if (typed !== null) showToast('Name did not match — deletion cancelled');
+    return;
+  }
+  try {
+    await api('/api/admin/users/' + id, 'DELETE');
+    showToast('Account deleted successfully');
+    loadUsers();
+  } catch(e) { showToast(e?.message || 'Failed to delete account', 'error'); }
 }
 
 async function changeUserRole(id, name, currentRole) {
