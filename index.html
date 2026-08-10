@@ -2236,7 +2236,7 @@ async function submitReport(){
   const detail=document.getElementById('report-detail').value.trim();
   if(!selectedReason&&!detail){alert('Please select a reason or provide details.');return;}
   const reason=selectedReason+(detail?' - '+detail:'');
-  const token=localStorage.getItem('trinitarian_token');
+  const token=localStorage.getItem('trinitarian_token')||localStorage.getItem('pastor_token');
   if(!token){alert('Please sign in to report content.');return;}
   try{
     const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({reason,description:detail})});
