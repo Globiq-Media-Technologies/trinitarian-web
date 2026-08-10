@@ -873,6 +873,34 @@
   </div>
 </div>
 
+<!-- ══ VERIFY EMAIL ══ -->
+<div id="page-verify-email" class="page">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 60%);">
+    <div style="width:100%;max-width:420px;background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:28px 22px;text-align:center;">
+      <h2 style="color:#fff;font-size:24px;margin-bottom:8px;font-family:Georgia,serif;">Verify Email</h2>
+      <div id="verify-open-app-banner" style="display:none;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+        <p style="color:#D4AF37;font-size:13px;margin-bottom:10px;">Have the Trinitarian app installed? Continue there instead.</p>
+        <button onclick="openVerifyInApp()" style="background:#D4AF37;color:#0a1628;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📱 Open in App</button>
+      </div>
+      <div id="verify-status-verifying">
+        <div style="font-size:40px;margin-bottom:14px;">⏳</div>
+        <p style="color:#8fa3c0;font-size:14px;">Verifying your email…</p>
+      </div>
+      <div id="verify-status-success" style="display:none;">
+        <div style="font-size:40px;margin-bottom:14px;">✅</div>
+        <p style="color:#D4AF37;font-size:15px;font-weight:700;margin-bottom:6px;">Email Verified!</p>
+        <p style="color:#8fa3c0;font-size:13px;">You now have full access.</p>
+      </div>
+      <div id="verify-status-error" style="display:none;">
+        <div style="font-size:40px;margin-bottom:14px;">⚠️</div>
+        <p style="color:#e05555;font-size:15px;font-weight:700;margin-bottom:6px;">Verification Failed</p>
+        <p id="verify-error-text" style="color:#8fa3c0;font-size:13px;margin-bottom:18px;"></p>
+        <button onclick="goTo('listener')" style="background:#D4AF37;color:#0a1628;border:none;border-radius:10px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer;">Go to Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ RESET PASSWORD ══ -->
 <div id="page-reset" class="page">
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 60%);">
@@ -1418,21 +1446,38 @@ window.addEventListener('load',async()=>{
   if(verifyToken){
     // Remove verify param from URL so reload/prefetch doesn't re-trigger
     try{window.history.replaceState({},document.title,window.location.pathname);}catch(e){}
+    goTo('verify-email');
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      window.__verifyToken = verifyToken;
+      var vbanner = document.getElementById('verify-open-app-banner');
+      if(vbanner) vbanner.style.display = 'block';
+    }
     fetch(API+'/api/auth/verify-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:verifyToken})})
     .then(function(r){return r.json();})
     .then(function(d){
+      const vVerifying=document.getElementById('verify-status-verifying');
+      const vSuccess=document.getElementById('verify-status-success');
+      const vError=document.getElementById('verify-status-error');
+      if(vVerifying)vVerifying.style.display='none';
       if(d.message){
         // Update stored user verified status
         try{const u=JSON.parse(localStorage.getItem('trinitarian_user')||'{}');u.email_verified=true;localStorage.setItem('trinitarian_user',JSON.stringify(u));}catch(e){}
         const vb=document.getElementById('verify-banner');if(vb)vb.remove();
+        if(vSuccess)vSuccess.style.display='block';
         const token=localStorage.getItem('trinitarian_token');
-        if(token){goTo('listener-home');setTimeout(function(){const t=document.createElement('div');t.textContent='✅ Email verified! You now have full access.';t.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:99999;';document.body.appendChild(t);setTimeout(function(){t.remove();},4000);},500);}
-        else{goTo('listener');setTimeout(function(){showMsg('ll-err','✅ Email verified! You can now sign in.',true);},300);}
+        setTimeout(function(){
+          if(token){goTo('listener-home');setTimeout(function(){const t=document.createElement('div');t.textContent='✅ Email verified! You now have full access.';t.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:99999;';document.body.appendChild(t);setTimeout(function(){t.remove();},4000);},500);}
+          else{goTo('listener');setTimeout(function(){showMsg('ll-err','✅ Email verified! You can now sign in.',true);},300);}
+        },1500);
       } else {
-        goTo('listener');
-        setTimeout(function(){showMsg('ll-err','Verification failed: '+(d.error||'Invalid link'));},300);
+        if(vError){vError.style.display='block';const et=document.getElementById('verify-error-text');if(et)et.textContent=d.error||'This link may have expired.';}
       }
-    }).catch(function(){goTo('listener');});
+    }).catch(function(){
+      const vVerifying=document.getElementById('verify-status-verifying');
+      const vError=document.getElementById('verify-status-error');
+      if(vVerifying)vVerifying.style.display='none';
+      if(vError){vError.style.display='block';const et=document.getElementById('verify-error-text');if(et)et.textContent='Connection failed. Please try again.';}
+    });
     return;
   }
   // Handle sermon deep link from share
@@ -1784,6 +1829,12 @@ function openResetInApp(){
   // Custom scheme doesn't require Android App Links verification, so it
   // works reliably even on devices where automatic verification failed.
   window.location.href = 'trinitarian://reset-password?token=' + encodeURIComponent(t);
+}
+
+function openVerifyInApp(){
+  var t = window.__verifyToken;
+  if(!t) return;
+  window.location.href = 'trinitarian://verify-email?token=' + encodeURIComponent(t);
 }
 
 // Tracks which sermons have been opened, so the "NEW" badge can disappear
