@@ -817,8 +817,8 @@ async function handleApply() {
 }
 
 async function deletePastorAccount(){
-  if(!confirm('Are you sure you want to permanently delete your account?\n\nThis will delete all your sermons and data. This cannot be undone.')) return;
-  if(!confirm('Final confirmation: Delete account and all content?')) return;
+  const typed=prompt('This will permanently delete your account and all your data.\n\nType DELETE to confirm:');
+  if(typed!=='DELETE'){ if(typed!==null) alert('Confirmation text did not match — deletion cancelled.'); return; }
   try{
     await api('/api/users/me','DELETE');
     alert('Account deleted. Sorry to see you go.');
