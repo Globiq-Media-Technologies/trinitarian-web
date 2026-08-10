@@ -3304,6 +3304,22 @@ document.addEventListener('visibilitychange', async function() {
 
 
 // ── View sermon with media player ──
+async function reportSermonFromView(id, title) {
+  const reason = prompt('Report "' + title + '" — briefly describe the issue:');
+  if (!reason) return;
+  try {
+    const res = await fetch(API + '/api/sermons/' + id + '/report', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason, description: reason })
+    });
+    if (!res.ok) { const data = await res.json().catch(() => ({})); showToast(data.error || 'Could not submit report'); return; }
+    showToast('Report submitted');
+  } catch (e) {
+    showToast('Connection error, please try again');
+  }
+}
+
 async function viewSermon(id) {
   try {
     // First try from cache
@@ -3358,8 +3374,12 @@ async function viewSermon(id) {
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;text-align:center;padding:32px 16px;background:#071528;border-radius:12px;"><div style="font-size:36px;margin-bottom:14px;">${s.type==='article'?'📰':'📄'}</div><p style="color:#8fa3c0;font-size:13px;margin-bottom:18px;">This sermon was uploaded as a document.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><a href="${s.media_url}" target="_blank" rel="noopener" style="background:#D4AF37;color:#071528;padding:10px 22px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;">⛶ Open</a><a href="${s.media_url}" download style="background:transparent;color:#D4AF37;padding:10px 22px;border-radius:10px;text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(212,175,55,0.3);">⬇ Download</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+          ${(s.pastor_id === user?.id || ['admin','moderator'].includes(user?.role)) ? `
           <button onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
           <button onclick="deleteSermon('${s.id}','${(s.title||'').replace(/'/g,"\\'")}');document.getElementById('sermon-view-overlay').remove();" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🗑 Delete</button>
+          ` : `
+          <button onclick="reportSermonFromView('${s.id}','${(s.title||'').replace(/'/g,"\\'")}')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🚩 Report</button>
+          `}
           <button onclick="navigator.clipboard.writeText('https://trinitarian.app/?sermon=${s.id}').then(function(){showToast('Link copied!')})" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">🔗 Copy Link</button>
           <button onclick="document.getElementById('sermon-view-overlay').remove()" style="background:transparent;border:1px solid var(--border);color:var(--text-sec);border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✕ Close</button>
         </div>
