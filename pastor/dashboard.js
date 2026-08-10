@@ -73,10 +73,10 @@ function renderUsers(list) {
       <div style="width:44px;height:44px;border-radius:22px;background:var(--navy3);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
         ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:44px;height:44px;border-radius:22px;object-fit:cover;"/>` : '👤'}
       </div>
-      <div class="sermon-info">
+      <div class="sermon-info" style="min-width:0;overflow:hidden;">
         <div class="sermon-title">${u.display_name||u.username||'User'}</div>
         <div class="sermon-meta">
-          <span>${u.email||''}</span>
+          <span style="word-break:break-all;">${u.email||''}</span>
           <span style="padding:2px 8px;border-radius:8px;font-size:11px;background:${u.role==='owner'?'rgba(186,104,255,0.15)':u.role==='admin'?'rgba(212,175,55,0.15)':u.role==='moderator'?'rgba(100,150,255,0.15)':u.role==='pastor'?'rgba(64,201,106,0.15)':'rgba(255,255,255,0.05)'};color:${u.role==='owner'?'#ba68ff':u.role==='admin'?'#D4AF37':u.role==='moderator'?'#6496ff':u.role==='pastor'?'#40c96a':'var(--text-muted)'};">${u.role||'listener'}</span>
           ${u.is_active===false?'<span style="padding:2px 8px;border-radius:8px;font-size:11px;background:rgba(224,85,85,0.15);color:#e05555;">Suspended</span>':''}
         </div>
