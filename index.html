@@ -1520,6 +1520,8 @@ window.addEventListener('load',async()=>{
         // and silently kept a deleted/suspended account logged in.
         localStorage.removeItem('trinitarian_token');
         localStorage.removeItem('trinitarian_user');
+        goTo('home');
+        return;
       } else {
         const fresh=await res.json();
         if(fresh?.id){
