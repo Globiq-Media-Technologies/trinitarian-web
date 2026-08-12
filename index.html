@@ -1833,6 +1833,7 @@ async function lhShowSaved(){
   el.innerHTML=`
     <div style="display:flex;gap:8px;margin-bottom:16px;">
       <button onclick="lhLibrarySwitchTab('saved')" id="lh-lib-tab-saved" style="flex:1;padding:10px;border-radius:10px;border:1px solid ${lhLibraryTab==='saved'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)'};background:${lhLibraryTab==='saved'?'rgba(212,175,55,0.15)':'transparent'};color:${lhLibraryTab==='saved'?'#D4AF37':'#8fa3c0'};font-weight:600;font-size:13px;cursor:pointer;">🔖 Saved</button>
+      <button onclick="lhLibrarySwitchTab('downloads')" id="lh-lib-tab-downloads" style="flex:1;padding:10px;border-radius:10px;border:1px solid ${lhLibraryTab==='downloads'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)'};background:${lhLibraryTab==='downloads'?'rgba(212,175,55,0.15)':'transparent'};color:${lhLibraryTab==='downloads'?'#D4AF37':'#8fa3c0'};font-weight:600;font-size:13px;cursor:pointer;">⬇ Downloads</button>
       <button onclick="lhLibrarySwitchTab('history')" id="lh-lib-tab-history" style="flex:1;padding:10px;border-radius:10px;border:1px solid ${lhLibraryTab==='history'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)'};background:${lhLibraryTab==='history'?'rgba(212,175,55,0.15)':'transparent'};color:${lhLibraryTab==='history'?'#D4AF37':'#8fa3c0'};font-weight:600;font-size:13px;cursor:pointer;">🕘 History</button>
     </div>
     <div id="lh-library-content" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
@@ -1847,8 +1848,10 @@ function lhLibrarySwitchTab(tab){
   lhLibraryTab=tab;
   const savedBtn=document.getElementById('lh-lib-tab-saved');
   const historyBtn=document.getElementById('lh-lib-tab-history');
+  const downloadsBtn=document.getElementById('lh-lib-tab-downloads');
   if(savedBtn){savedBtn.style.borderColor=tab==='saved'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';savedBtn.style.background=tab==='saved'?'rgba(212,175,55,0.15)':'transparent';savedBtn.style.color=tab==='saved'?'#D4AF37':'#8fa3c0';}
   if(historyBtn){historyBtn.style.borderColor=tab==='history'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';historyBtn.style.background=tab==='history'?'rgba(212,175,55,0.15)':'transparent';historyBtn.style.color=tab==='history'?'#D4AF37':'#8fa3c0';}
+  if(downloadsBtn){downloadsBtn.style.borderColor=tab==='downloads'?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.15)';downloadsBtn.style.background=tab==='downloads'?'rgba(212,175,55,0.15)':'transparent';downloadsBtn.style.color=tab==='downloads'?'#D4AF37':'#8fa3c0';}
   lhLoadLibraryTab();
 }
 
@@ -1858,14 +1861,25 @@ async function lhLoadLibraryTab(){
   el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:32px;">⏳</div></div>';
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   const token=localStorage.getItem('trinitarian_token');
-  const endpoint=lhLibraryTab==='saved'?'/api/library/saved':'/api/library/history';
+  const endpoint=lhLibraryTab==='saved'?'/api/library/saved':lhLibraryTab==='downloads'?'/api/library/downloads':'/api/library/history';
   try {
     const data=await fetch(API+endpoint,{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json());
     const list=Array.isArray(data)?data:(data.history||data.saved||[]);
     if(!list.length){
-      const emptyIcon=lhLibraryTab==='saved'?'🔖':'🕘';
-      const emptyText=lhLibraryTab==='saved'?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved:'No listening history yet.';
+      const emptyIcon=lhLibraryTab==='saved'?'🔖':lhLibraryTab==='downloads'?'⬇':'🕘';
+      const emptyText=lhLibraryTab==='saved'?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_saved:lhLibraryTab==='downloads'?'No downloads yet.':'No listening history yet.';
       el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">'+emptyIcon+'</div><p style="color:#8fa3c0;">'+emptyText+'</p></div>';
+      return;
+    }
+    if(lhLibraryTab==='downloads'){
+      el.style.cssText='display:block;';
+      el.innerHTML=list.map(function(s){
+        return '<div style="display:flex;align-items:center;gap:12px;background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:12px;margin-bottom:8px;">'
+          + '<div onclick="openSermonById(\''+s.id+'\')" style="width:60px;height:60px;flex-shrink:0;border-radius:8px;background:#071528;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;">'+lhThumbHtml(s,24,'<div style="font-size:24px;">'+(ICONS[s.type]||'🎧')+'</div>')+'</div>'
+          + '<div onclick="openSermonById(\''+s.id+'\')" style="flex:1;min-width:0;cursor:pointer;"><div style="color:#fff;font-size:13px;font-weight:600;">'+s.title+'</div><div style="color:#D4AF37;font-size:11px;">'+(s.pastor_name||'Verified Pastor')+'</div></div>'
+          + '<span onclick="lhRemoveDownloadItem(\''+s.id+'\')" style="color:#8fa3c0;font-size:16px;cursor:pointer;padding:4px 8px;flex-shrink:0;" title="Remove">✕</span>'
+          + '</div>';
+      }).join('');
       return;
     }
     if(lhLibraryTab==='history'){
@@ -1896,6 +1910,14 @@ async function lhRemoveHistoryItem(sermonId){
   const token=localStorage.getItem('trinitarian_token');
   try{
     await fetch(API+'/api/library/history/'+sermonId,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+    lhLoadLibraryTab();
+  }catch(e){}
+}
+
+async function lhRemoveDownloadItem(sermonId){
+  const token=localStorage.getItem('trinitarian_token');
+  try{
+    await fetch(API+'/api/library/downloads/'+sermonId,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
     lhLoadLibraryTab();
   }catch(e){}
 }
@@ -2359,6 +2381,10 @@ function playerDownload(){
   t.textContent='⬇ Download started';
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';
   document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+  const token=localStorage.getItem('trinitarian_token');
+  if(token){
+    fetch(API+'/api/library/downloads/'+currentSermon.id,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({file_url:mediaUrl})}).catch(function(){});
+  }
 }
 
 async function playerReport(){
