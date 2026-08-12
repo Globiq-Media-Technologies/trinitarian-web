@@ -15,6 +15,17 @@ export default {
       return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
     }
 
+    // Verify email - preserve query string (same pattern as reset-password
+    // above). This case was simply never added when this worker script was
+    // first written - it predates the verify-email feature entirely - so
+    // every request to this path fell through to the generic catch-all at
+    // the bottom of this file instead, which does not preserve the path.
+    if (path === '/verify-email' || path.startsWith('/verify-email')) {
+      const indexUrl = new URL('/index.html', request.url);
+      indexUrl.search = url.search;
+      return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
+    }
+
     // Pastor portal
     if (path === '/pastor' || path === '/pastor/') {
       return env.ASSETS.fetch(new Request(new URL('/pastor/index.html', request.url), request));
