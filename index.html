@@ -1784,20 +1784,35 @@ function lhFilterCat(cat,btn){
   lhRender();
 }
 
-async function lhShowPastors(){
+let lhPastorsTabSearchTimer=null;
+async function lhShowPastors(q){
   const el=document.getElementById('lh-sermons');
   el.style.gridTemplateColumns='1fr';
-  el.style.display='block';el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">Loading pastors...</div>';
+  el.style.display='block';
+  const searchBar='<input id="lh-pastors-tab-search" type="text" placeholder="🔍 Search verified pastors…" oninput="lhPastorsTabSearch(this.value)" value="'+(q?q.replace(/"/g,'&quot;'):'')+'" style="width:100%;box-sizing:border-box;background:#0d2142;border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;margin-bottom:16px;"/>';
+  el.innerHTML=searchBar+'<div id="lh-pastors-tab-list"><div style="text-align:center;padding:40px;color:#8fa3c0;">Loading pastors...</div></div>';
+  await lhLoadPastorsTabResults(q);
+}
+
+function lhPastorsTabSearch(q){
+  clearTimeout(lhPastorsTabSearchTimer);
+  lhPastorsTabSearchTimer=setTimeout(()=>lhLoadPastorsTabResults(q),300);
+}
+
+async function lhLoadPastorsTabResults(q){
+  const list=document.getElementById('lh-pastors-tab-list');
+  if(!list)return;
   try{
-    const res=await fetch(API+'/api/pastors?limit=50',{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
+    const url=q&&q.trim()?API+'/api/pastors?q='+encodeURIComponent(q.trim())+'&limit=50':API+'/api/pastors?limit=50';
+    const res=await fetch(url,{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
     const pastors=Array.isArray(data)?data:(data?.pastors||[]);
-    if(!pastors.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_pastors+'</div>';return;}
-    el.innerHTML='';
+    if(!pastors.length){list.innerHTML='<div style="text-align:center;padding:40px;color:#8fa3c0;">'+(q&&q.trim()?'No pastors match your search.':(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_pastors)+'</div>';return;}
+    list.innerHTML='';
     pastors.forEach(function(p){
       const following=lhFollowing.includes(p.id||p.user_id);
       const card=document.createElement('div');
-      card.style.cssText='background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;';
+      card.style.cssText='background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;margin-bottom:10px;';
       const icon=document.createElement('div');
       icon.style.cssText='width:48px;height:48px;border-radius:24px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;';
       icon.textContent='✝';
@@ -1815,10 +1830,11 @@ async function lhShowPastors(){
       btn.textContent=following?'✓ Following':'+ Follow';
       btn.onclick=function(){toggleFollow(p.id||p.user_id,p.display_name||p.username,btn);};
       card.appendChild(icon);card.appendChild(info);card.appendChild(btn);
-      el.appendChild(card);
+      list.appendChild(card);
     });
   }catch(e){
-    el.style.cssText='display:block;text-align:center;';el.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load pastors</p>';}
+    list.innerHTML='<p style="padding:40px;color:#8fa3c0;text-align:center;">Could not load pastors</p>';
+  }
 }
 
 function toggleFollow(id,name,btn){const idx=lhFollowing.indexOf(id);if(idx>-1){lhFollowing.splice(idx,1);btn.textContent='+ Follow';btn.style.color='#8fa3c0';btn.style.borderColor='rgba(212,175,55,0.2)';btn.style.background='transparent';}else{lhFollowing.push(id);btn.textContent='✓ Following';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.4)';btn.style.background='rgba(212,175,55,0.15)';}localStorage.setItem('lh_following',JSON.stringify(lhFollowing));try{fetch(API+'/api/users/'+id+'/follow',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token'),'Content-Type':'application/json'}});}catch(e){}}
