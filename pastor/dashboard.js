@@ -821,11 +821,11 @@ async function deletePastorAccount(){
   if(typed!=='DELETE'){ if(typed!==null) alert('Confirmation text did not match — deletion cancelled.'); return; }
   try{
     await api('/api/users/me','DELETE');
-    alert('Account deleted. Sorry to see you go.');
     token=null; user=null;
     localStorage.removeItem('pastor_token');
     localStorage.removeItem('pastor_user');
-    showScreen('login');
+    alert('Account deleted. Sorry to see you go.');
+    window.location.href='/';
   }catch(e){ alert('Deletion failed. Please email support@trinitarian.app to request account deletion.'); }
 }
 
@@ -2898,7 +2898,6 @@ async function checkAndShowProBanner() {
     if (data?.is_pro) return;
     const benefits = [
       { icon: '📡', title: 'Live Streaming', desc: 'Go live and broadcast to your congregation in real time' },
-      { icon: '📥', title: 'Unlimited Downloads', desc: 'Download any sermon for offline listening' },
       { icon: '🚫', title: 'Ad-Free Experience', desc: 'Enjoy sermons without interruptions' },
       { icon: '🎧', title: 'High Quality Audio', desc: 'Stream in crystal clear HD audio' },
       { icon: '🔔', title: 'Priority Notifications', desc: 'Never miss a live stream from your pastors' },
