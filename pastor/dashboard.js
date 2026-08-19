@@ -1848,6 +1848,47 @@ async function toggleProStatus(userId, newStatus, btn) {
   }
 }
 
+async function loadAdminStreams(status) {
+  document.querySelectorAll('#admin-stream-filter-live, #admin-stream-filter-scheduled, #admin-stream-filter-ended').forEach(b => {
+    const active = b.id === 'admin-stream-filter-' + status;
+    b.style.borderColor = active ? 'rgba(212,175,55,0.4)' : 'var(--border)';
+    b.style.background = active ? 'rgba(212,175,55,0.15)' : 'transparent';
+    b.style.color = active ? 'var(--gold)' : 'var(--text-muted)';
+  });
+  const el = document.getElementById('admin-streams-results');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const data = await api('/api/streams?status=' + status);
+    const streams = Array.isArray(data) ? data : (data?.streams || []);
+    if (!streams.length) {
+      el.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:30px;">No ${status} streams.</p>`;
+      return;
+    }
+    el.innerHTML = streams.map(s => `
+      <div style="background:var(--navy3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="color:#e8e8e8;font-size:13px;font-weight:600;">${s.title || 'Untitled stream'}</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">${s.display_name || 'Unknown pastor'}${s.viewer_count != null ? ' · 👥 ' + s.viewer_count + ' watching' : ''}</div>
+        </div>
+        ${status !== 'live' ? `<button onclick="deleteAdminStream('${s.id}', '${status}')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;">🗑 Delete</button>` : ''}
+      </div>
+    `).join('');
+  } catch (e) {
+    el.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:30px;">Could not load streams.</p>';
+  }
+}
+
+async function deleteAdminStream(id, status) {
+  if (!confirm('Delete this stream? This cannot be undone.')) return;
+  try {
+    await api('/api/streams/' + id, 'DELETE');
+    showToast('Stream deleted');
+    loadAdminStreams(status);
+  } catch (e) {
+    showToast('Failed to delete stream. Live streams must be ended first.', 'error');
+  }
+}
+
 async function loadAdmin() {
   try {
     const [dash, apps] = await Promise.all([
@@ -1862,6 +1903,7 @@ async function loadAdmin() {
     }
     const applications = apps?.applications || [];
     renderApplications(applications);
+    loadAdminStreams('live');
   } catch(e) { document.getElementById('admin-applications').innerHTML = '<p style="color:var(--text-muted);padding:20px;" data-i18n="failed_admin">Failed to load admin data</p>'; }
 }
 

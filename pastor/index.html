@@ -937,6 +937,17 @@
         <input id="pro-search-input" type="text" placeholder="Search by name or email…" oninput="searchProUsers()" style="flex:1;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--white);font-size:14px;"/>
       </div>
       <div id="pro-search-results"></div>
+
+      <div style="margin:32px 0 16px;">
+        <span class="section-label">Manage Streams</span>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:4px;">Review or remove any pastor's live, scheduled, or past stream.</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="admin-stream-filter-live" onclick="loadAdminStreams('live')" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:var(--gold);cursor:pointer;font-size:12px;">🔴 Live</button>
+        <button id="admin-stream-filter-scheduled" onclick="loadAdminStreams('scheduled')" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Scheduled</button>
+        <button id="admin-stream-filter-ended" onclick="loadAdminStreams('ended')" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;">Ended</button>
+      </div>
+      <div id="admin-streams-results"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
 
     <!-- PROFILE -->
