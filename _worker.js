@@ -26,6 +26,15 @@ export default {
       return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
     }
 
+    // Direct sermon links (shared from the app) - same missing-route pattern
+    // as verify-email above. The client-side JS already has full logic to
+    // read /sermon/:id and open the right sermon once index.html loads; this
+    // route was simply never added, so every shared link 404'd before ever
+    // reaching that code.
+    if (path.startsWith('/sermon/')) {
+      return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
+    }
+
     // Pastor portal
     if (path === '/pastor' || path === '/pastor/') {
       return env.ASSETS.fetch(new Request(new URL('/pastor/index.html', request.url), request));
