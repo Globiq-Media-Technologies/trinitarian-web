@@ -1677,7 +1677,7 @@ function lhRender(){
   if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="width:100%;height:120px;border-radius:10px;background:#071528;margin-bottom:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;">${lhThumbHtml(s,36,'<div style="font-size:36px;">'+(ICONS[s.type]||'🎧')+'</div>')}${s.published_at&&!lhIsSermonSeen(s.id)&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:6px;right:6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${s.title}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${s.pastor_name||s.display_name||'Verified Pastor'}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span style="color:#c3d4e8;">${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`).join('');
+  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="width:100%;height:120px;border-radius:10px;background:#071528;margin-bottom:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;">${lhThumbHtml(s,36,'<div style="font-size:36px;">'+(ICONS[s.type]||'🎧')+'</div>')}${s.published_at&&!lhIsSermonSeen(s.id)&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:6px;right:6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${escAttr(s.title)}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${escAttr(s.pastor_name||s.display_name||'Verified Pastor')}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span style="color:#c3d4e8;">${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`).join('');
 }
 
 async function lhClearAllNotifications() {
@@ -2283,13 +2283,13 @@ function _playerFullscreenOverlay(){
     body.style.cssText='padding:32px 24px;color:#e8e8e8;max-width:700px;margin:0 auto;';
     var mediaHtml='';
     if(s.media_url&&s.type==='video'){
-      mediaHtml='<video controls autoplay style="width:100%;max-height:60vh;background:#000;border-radius:10px;margin-bottom:16px;" src="'+s.media_url+'">Your browser does not support video.</video>';
+      mediaHtml='<video controls autoplay style="width:100%;max-height:60vh;background:#000;border-radius:10px;margin-bottom:16px;" src="'+escAttr(s.media_url)+'">Your browser does not support video.</video>';
     }else if(s.media_url&&s.type==='audio'){
-      mediaHtml='<audio controls autoplay style="width:100%;margin-bottom:16px;accent-color:#D4AF37;" src="'+s.media_url+'">Your browser does not support audio.</audio>';
+      mediaHtml='<audio controls autoplay style="width:100%;margin-bottom:16px;accent-color:#D4AF37;" src="'+escAttr(s.media_url)+'">Your browser does not support audio.</audio>';
     }
     body.innerHTML=mediaHtml
-      +'<h2 style="color:#fff;font-size:18px;margin-bottom:8px;line-height:1.4;">'+s.title+'</h2>'
-      +'<p style="color:#D4AF37;font-size:13px;margin-bottom:12px;">✝ '+(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
+      +'<h2 style="color:#fff;font-size:18px;margin-bottom:8px;line-height:1.4;">'+escAttr(s.title)+'</h2>'
+      +'<p style="color:#D4AF37;font-size:13px;margin-bottom:12px;">✝ '+escAttr(s.pastor_name||s.display_name||'Verified Pastor')+'</p>'
       +(s.description?'<p style="color:#b0c4d8;font-size:14px;line-height:1.8;margin-bottom:12px;">'+s.description.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>':'')
       +'<div style="color:#8fa3c0;font-size:12px;">👁 '+parseInt(s.views_count||0).toLocaleString()+' views &nbsp;·&nbsp; '+(s.type||'').toUpperCase()+'</div>';
     overlay.appendChild(body);
@@ -3052,7 +3052,7 @@ async function lhShowLive(){
           <span style="width:6px;height:6px;background:#fff;border-radius:3px;display:inline-block;animation:pulse 1s infinite;"></span>LIVE
         </div>
         <div style="font-size:32px;margin-bottom:10px;">📡</div>
-        <div style="color:#fff;font-size:15px;font-weight:600;margin-bottom:6px;padding-right:60px;">${s.title}</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;margin-bottom:6px;padding-right:60px;">${escAttr(s.title)}</div>
         <div style="color:#D4AF37;font-size:13px;margin-bottom:8px;">${s.display_name||'Verified Pastor'}</div>
         <div style="display:flex;gap:16px;">
           <span style="color:#e05555;font-size:12px;">👁 ${s.viewer_count||0} watching</span>
