@@ -1352,7 +1352,8 @@ function escAttr(str){
 function lhThumbHtml(s, size, icon){
   size = size || 36;
   if(s && s.thumbnail_url){
-    return '<img src="'+escAttr(s.thumbnail_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.outerHTML=\''+icon.replace(/'/g,"\\'")+'\';"/>';
+    var iconJsEscaped = icon.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return '<img src="'+escAttr(s.thumbnail_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror=\'this.outerHTML="'+iconJsEscaped+'";\'/>';
   }
   return icon;
 }
