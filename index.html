@@ -42,6 +42,8 @@
     .nav-links a{color:#b0c4d8;text-decoration:none;font-size:14px;cursor:pointer;transition:color 0.2s;}
     .nav-links a:hover{color:#D4AF37;}
     .nav-hamburger{display:none;color:#D4AF37;font-size:26px;cursor:pointer;line-height:1;}
+    .hscroll-fade{position:relative;}
+    .hscroll-fade::after{content:'';position:absolute;top:0;right:0;bottom:0;width:28px;pointer-events:none;background:linear-gradient(to right, rgba(7,21,40,0), #071528);}
     
     
 
@@ -492,7 +494,7 @@
       <span id="lh-search-clear" onclick="document.getElementById('lh-search').value='';lhSearch();"
         style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#8fa3c0;cursor:pointer;font-size:13px;">✕</span>
     </div>
-    <div style="display:flex;gap:4px;flex-shrink:0;">
+    <div class="hscroll-fade" style="display:flex;gap:4px;flex-shrink:0;overflow-x:auto;max-width:60vw;">
       <button class="lh-tab active" onclick="lhTab(this,'all')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:11px;white-space:nowrap;">All</button>
       <button class="lh-tab" onclick="lhTab(this,'video')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Video</button>
       <button class="lh-tab" onclick="lhTab(this,'audio')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Audio</button>
@@ -506,7 +508,7 @@
   </div>
 
   <!-- Category filter -->
-  <div style="padding:0 24px;margin-bottom:8px;overflow-x:auto;">
+  <div class="hscroll-fade" style="padding:0 24px;margin-bottom:8px;overflow-x:auto;">
     <div style="display:flex;gap:8px;width:max-content;">
       <button class="lh-cat active" onclick="lhSetCategory('All')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_all">All</button>
       <button class="lh-cat" onclick="lhSetCategory('Faith')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_faith">Faith</button>
