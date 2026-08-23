@@ -41,6 +41,7 @@
     .nav-links{display:flex;align-items:center;gap:24px;}
     .nav-links a{color:#b0c4d8;text-decoration:none;font-size:14px;cursor:pointer;transition:color 0.2s;}
     .nav-links a:hover{color:#D4AF37;}
+    .nav-hamburger{display:none;color:#D4AF37;font-size:26px;cursor:pointer;line-height:1;}
     
     
 
@@ -105,10 +106,12 @@
     .back-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.3); color:#D4AF37; padding:7px 16px; border-radius:20px; cursor:pointer; font-size:13px; margin-bottom:20px; }
     .back-btn:hover { background:rgba(212,175,55,0.2); }
     @media(max-width:600px){
-      nav{padding:12px 16px;}
-      .nav-links{gap:14px;}
+      nav{padding:12px 16px;flex-wrap:wrap;}
+      .nav-hamburger{display:block;}
+      .nav-links{display:none;width:100%;flex-direction:column;align-items:flex-start;gap:16px;padding-top:16px;}
+      .nav-links.open{display:flex;}
       .hero img{width:200px;}
-      .nav-links a{font-size:12px;}
+      .nav-links a{font-size:15px;}
     }
   
     /* Features */
@@ -130,7 +133,8 @@
 <!-- NAV (shown on all pages) -->
 <nav>
   <div></div>
-  <div class="nav-links">
+  <div class="nav-hamburger" onclick="toggleMobileNav()">☰</div>
+  <div class="nav-links" id="navLinks">
     <select onchange="applyTranslations(this.value);localStorage.setItem('trinitarian_lang',this.value);" id="landing-lang-select" style="background:#0d2142;color:#D4AF37;border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -1336,6 +1340,17 @@ function deferredClear(ids){
   setTimeout(doClear,400);
   setTimeout(doClear,900);
 }
+
+function toggleMobileNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var links = document.getElementById('navLinks');
+  if (links) links.addEventListener('click', function(e){
+    if (e.target.tagName === 'A' || e.target.tagName === 'SPAN') links.classList.remove('open');
+  });
+});
 
 function goToPastorLogin(){
   const lu=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
