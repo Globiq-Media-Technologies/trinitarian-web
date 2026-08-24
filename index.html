@@ -43,7 +43,8 @@
     .nav-links a:hover{color:#D4AF37;}
     .nav-hamburger{display:none;color:#D4AF37;font-size:26px;cursor:pointer;line-height:1;}
     .hscroll-fade{position:relative;}
-    .hscroll-fade::after{content:'\203a';position:absolute;top:50%;right:2px;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:rgba(212,175,55,0.9);color:#071528;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;pointer-events:none;}
+    .hscroll-inner{overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;}
+    .hscroll-arrow{position:absolute;top:50%;right:2px;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:rgba(212,175,55,0.9);color:#071528;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;border:none;cursor:pointer;z-index:2;}
     
     
 
@@ -495,7 +496,7 @@
         style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#8fa3c0;cursor:pointer;font-size:13px;">✕</span>
     </div>
     <div class="hscroll-fade" style="max-width:60vw;flex-shrink:0;">
-    <div style="display:flex;gap:4px;overflow-x:auto;">
+    <div class="hscroll-inner" style="display:flex;gap:4px;overflow-x:auto;">
       <button class="lh-tab active" onclick="lhTab(this,'all')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:11px;white-space:nowrap;">All</button>
       <button class="lh-tab" onclick="lhTab(this,'video')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Video</button>
       <button class="lh-tab" onclick="lhTab(this,'audio')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Audio</button>
@@ -506,12 +507,13 @@
       <button class="lh-tab" onclick="lhTab(this,'pastors')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Pastors</button>
       <button class="lh-tab" onclick="lhTab(this,'following')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Following</button>
     </div>
+    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">›</button>
     </div>
   </div>
 
   <!-- Category filter -->
   <div class="hscroll-fade" style="padding:0 24px;margin-bottom:8px;">
-    <div style="display:flex;gap:8px;overflow-x:auto;">
+    <div class="hscroll-inner" style="display:flex;gap:8px;overflow-x:auto;">
       <button class="lh-cat active" onclick="lhSetCategory('All')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.4);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_all">All</button>
       <button class="lh-cat" onclick="lhSetCategory('Faith')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_faith">Faith</button>
       <button class="lh-cat" onclick="lhSetCategory('Salvation')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_salvation">Salvation</button>
@@ -523,6 +525,7 @@
       <button class="lh-cat" onclick="lhSetCategory('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_bible">Bible Study</button>
       <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_prayer">Prayer</button>
     </div>
+    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">›</button>
   </div>
 
   
@@ -1158,7 +1161,10 @@ async function llLogin(){
   if(!pass){showMsg('ll-err','Please enter your password.');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('ll-err','Please enter a valid email address.');return;}
   try{
-    const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass})});
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
+    const res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.toLowerCase(),password:pass}),signal:controller.signal});
+    clearTimeout(timeoutId);
     const data=await res.json();
     if(data.token){
       const role=data.user?.role||'listener';
@@ -1191,7 +1197,9 @@ async function llLogin(){
       showMsg('ll-err',msg);
     }
   }catch(e){
-    if(e.message&&e.message.includes('fetch')){showMsg('ll-err','Connection failed. Please check your internet and try again.');}
+    console.error('Listener login failed:', e.name, e.message);
+    if(e.name==='AbortError'){showMsg('ll-err','Connection timed out. Please check your internet and try again.');}
+    else if(e.message&&e.message.includes('fetch')){showMsg('ll-err','Connection failed. Please check your internet and try again.');}
     else{showMsg('ll-err','Sign in failed. Please try again.');}
   }
 }
@@ -1345,6 +1353,11 @@ function deferredClear(ids){
   setTimeout(doClear,150);
   setTimeout(doClear,400);
   setTimeout(doClear,900);
+}
+
+function hscrollNext(btn){
+  const row = btn.parentElement.querySelector('.hscroll-inner');
+  if (row) row.scrollBy({ left: 140, behavior: 'smooth' });
 }
 
 function toggleMobileNav(){
