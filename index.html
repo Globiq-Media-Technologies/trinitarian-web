@@ -44,7 +44,7 @@
     .nav-hamburger{display:none;color:#D4AF37;font-size:26px;cursor:pointer;line-height:1;}
     .hscroll-fade{position:relative;}
     .hscroll-inner{overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;}
-    .hscroll-arrow{position:absolute;top:50%;right:2px;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:rgba(212,175,55,0.9);color:#071528;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;border:none;cursor:pointer;z-index:2;}
+    .hscroll-arrow{position:absolute;top:50%;right:2px;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:rgba(212,175,55,0.35);color:#D4AF37;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1px solid rgba(212,175,55,0.5);cursor:pointer;z-index:2;padding:0;line-height:1;}
     
     
 
@@ -484,6 +484,7 @@
         <div id="lh-home-live-banner-text" style="color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
       </div>
       <div style="color:#fff;font-size:16px;flex-shrink:0;">▶</div>
+      <div onclick="event.stopPropagation();lhDismissLiveBanner()" style="color:#fff;font-size:18px;flex-shrink:0;padding:0 4px;cursor:pointer;opacity:0.8;" title="Dismiss">✕</div>
     </div>
   </div>
 <!-- Search bar + filter tabs -->
@@ -507,7 +508,7 @@
       <button class="lh-tab" onclick="lhTab(this,'pastors')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Pastors</button>
       <button class="lh-tab" onclick="lhTab(this,'following')" style="padding:7px 9px;border-radius:14px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:11px;white-space:nowrap;">Following</button>
     </div>
-    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">›</button>
+    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">»</button>
     </div>
   </div>
 
@@ -525,7 +526,7 @@
       <button class="lh-cat" onclick="lhSetCategory('Bible Study')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_bible">Bible Study</button>
       <button class="lh-cat" onclick="lhSetCategory('Prayer')" style="padding:5px 14px;border-radius:16px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;cursor:pointer;font-size:12px;white-space:nowrap;" data-i18n="c_prayer">Prayer</button>
     </div>
-    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">›</button>
+    <button class="hscroll-arrow" onclick="hscrollNext(this)" aria-label="Scroll for more">»</button>
   </div>
 
   
@@ -1198,8 +1199,12 @@ async function llLogin(){
     }
   }catch(e){
     console.error('Listener login failed:', e.name, e.message);
+    const isOpera = /OPR\//.test(navigator.userAgent) || /Opera Mini/.test(navigator.userAgent);
     if(e.name==='AbortError'){showMsg('ll-err','Connection timed out. Please check your internet and try again.');}
-    else if(e.message&&e.message.includes('fetch')){showMsg('ll-err','Connection failed. Please check your internet and try again.');}
+    else if(e.message&&e.message.includes('fetch')){
+      if(isOpera){showMsg('ll-err','Connection failed. If you have "Data Savings" or "Opera Turbo" enabled, please disable it for this site and try again.');}
+      else{showMsg('ll-err','Connection failed. Please check your internet and try again.');}
+    }
     else{showMsg('ll-err','Sign in failed. Please try again.');}
   }
 }
@@ -1328,9 +1333,25 @@ function updateLiveHomeBanner(streams){
     return;
   }
   const first=streams[0];
+  // A dismissal is tied to the specific stream's own id, not a blanket
+  // "hide all live banners" flag - this way manually dismissing a stale
+  // or already-watched stream doesn't also suppress the notification for
+  // a genuinely different stream starting later.
+  if(sessionStorage.getItem('trinitarian_dismissed_live')===String(first.id)){
+    banner.style.display='none';
+    return;
+  }
   const extra=streams.length>1?` (+${streams.length-1} more live)`:'';
   textEl.textContent='🔴 '+(first.display_name||'A pastor')+' is live now — '+(first.title||'Tap to watch')+extra;
+  banner.dataset.streamId=first.id;
   banner.style.display='block';
+}
+
+function lhDismissLiveBanner(){
+  const banner=document.getElementById('lh-home-live-banner');
+  if(!banner)return;
+  if(banner.dataset.streamId)sessionStorage.setItem('trinitarian_dismissed_live',banner.dataset.streamId);
+  banner.style.display='none';
 }
 
 // Navigates to the Live tab by clicking the real tab button, so tab
