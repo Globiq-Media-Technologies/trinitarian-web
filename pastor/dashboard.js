@@ -1871,6 +1871,7 @@ async function loadAdminStreams(status) {
           <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">${s.display_name || 'Unknown pastor'}${s.viewer_count != null ? ' · 👥 ' + s.viewer_count + ' watching' : ''}</div>
         </div>
         ${status !== 'live' ? `<button onclick="deleteAdminStream('${s.id}', '${status}')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;">🗑 Delete</button>` : ''}
+        ${status === 'live' ? `<button onclick="forceEndAdminStream('${s.id}')" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;">⏹ Force End</button>` : ''}
       </div>
     `).join('');
   } catch (e) {
@@ -1886,6 +1887,17 @@ async function deleteAdminStream(id, status) {
     loadAdminStreams(status);
   } catch (e) {
     showToast('Failed to delete stream. Live streams must be ended first.', 'error');
+  }
+}
+
+async function forceEndAdminStream(id) {
+  if (!confirm('End this stream? Use this if it is stuck showing as live but the pastor is no longer actually broadcasting.')) return;
+  try {
+    await api('/api/streams/' + id + '/force-end', 'PUT');
+    showToast('Stream ended');
+    loadAdminStreams('live');
+  } catch (e) {
+    showToast('Failed to end stream.', 'error');
   }
 }
 
