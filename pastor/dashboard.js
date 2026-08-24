@@ -3150,6 +3150,7 @@ async function startLiveStream(existingStreamId, existingTitle) {
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     localVideoTrack.play('local-video-container');
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
+    initZoomCapability();
 
     isStreaming = true;
     showButtonHints();
@@ -3224,6 +3225,49 @@ function toggleCamera() {
   isCamOn = !isCamOn; localVideoTrack.setEnabled(isCamOn);
   document.getElementById('btn-cam').textContent = isCamOn ? '📷' : '🚫';
   document.getElementById('btn-cam').style.borderColor = isCamOn ? 'var(--border)' : '#e53e3e';
+}
+
+let currentZoom = 1;
+let maxZoom = 1;
+
+function initZoomCapability() {
+  currentZoom = 1;
+  maxZoom = 1;
+  if (!localVideoTrack) return;
+  try {
+    const track = localVideoTrack.getMediaStreamTrack();
+    const caps = track.getCapabilities ? track.getCapabilities() : null;
+    if (caps && caps.zoom) {
+      maxZoom = caps.zoom.max || 1;
+      currentZoom = caps.zoom.min || 1;
+    }
+  } catch (e) {}
+  updateZoomControlsVisibility();
+}
+
+function updateZoomControlsVisibility() {
+  const el = document.getElementById('zoom-controls');
+  if (el) el.style.display = maxZoom > 1 ? 'flex' : 'none';
+}
+
+async function applyZoomWeb(delta) {
+  if (!localVideoTrack || maxZoom <= 1) return;
+  const newZoom = Math.max(1, Math.min(maxZoom, currentZoom + delta));
+  try {
+    const track = localVideoTrack.getMediaStreamTrack();
+    // The zoom constraint is a non-standard, experimental extension to the
+    // MediaTrackConstraints spec (Image Capture API), only supported on
+    // some browsers/devices (mainly Chrome on Android with hardware zoom
+    // support) - this is why getCapabilities().zoom is checked first, and
+    // why this is wrapped defensively: unlike a native SDK method, a
+    // rejected promise here is the worst case, it cannot crash the page.
+    await track.applyConstraints({ advanced: [{ zoom: newZoom }] });
+    currentZoom = newZoom;
+    const label = document.getElementById('zoom-label');
+    if (label) label.textContent = currentZoom.toFixed(1) + 'x';
+  } catch (e) {
+    console.error('Zoom failed:', e);
+  }
 }
 
 async function loadUpcomingStreams() {
