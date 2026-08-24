@@ -1376,6 +1376,18 @@ function deferredClear(ids){
   setTimeout(doClear,900);
 }
 
+function updateHscrollArrows(){
+  document.querySelectorAll('.hscroll-fade').forEach(wrap => {
+    const inner = wrap.querySelector('.hscroll-inner');
+    const arrow = wrap.querySelector('.hscroll-arrow');
+    if (!inner || !arrow) return;
+    arrow.style.display = inner.scrollWidth > inner.clientWidth + 2 ? 'flex' : 'none';
+  });
+}
+window.addEventListener('resize', updateHscrollArrows);
+window.addEventListener('load', updateHscrollArrows);
+setInterval(updateHscrollArrows, 1000);
+
 function hscrollNext(btn){
   const row = btn.parentElement.querySelector('.hscroll-inner');
   if (row) row.scrollBy({ left: 140, behavior: 'smooth' });
