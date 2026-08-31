@@ -328,7 +328,7 @@ function renderPastors(list) {
     <div class="sermon-card">
       <div style="width:44px;height:44px;border-radius:22px;background:rgba(212,175,55,0.1);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✝</div>
       <div class="sermon-info">
-        <div class="sermon-title">${p.display_name||p.username||'Pastor'}</div>
+        <div class="sermon-title">${p.display_name||p.username||'Pastor'}${p.is_pro ? ' <span style="color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:0.5px;">👑 PRO</span>' : ''}</div>
         <div class="sermon-meta">
           <span>${p.church_name||'—'}</span>
           <span>${p.denomination||''}</span>
