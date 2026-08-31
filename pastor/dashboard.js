@@ -74,7 +74,7 @@ function renderUsers(list) {
         ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:44px;height:44px;border-radius:22px;object-fit:cover;"/>` : '👤'}
       </div>
       <div class="sermon-info" style="min-width:0;overflow:hidden;">
-        <div class="sermon-title">${u.display_name||u.username||'User'}</div>
+        <div class="sermon-title">${u.display_name||u.username||'User'}${u.is_pro ? ' <span style="color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:0.5px;">👑 PRO</span>' : ''}</div>
         <div class="sermon-meta">
           <span style="word-break:break-all;">${u.email||''}</span>
           <span style="padding:2px 8px;border-radius:8px;font-size:11px;background:${u.role==='owner'?'rgba(186,104,255,0.15)':u.role==='admin'?'rgba(212,175,55,0.15)':u.role==='moderator'?'rgba(100,150,255,0.15)':u.role==='pastor'?'rgba(64,201,106,0.15)':'rgba(255,255,255,0.05)'};color:${u.role==='owner'?'#ba68ff':u.role==='admin'?'#D4AF37':u.role==='moderator'?'#6496ff':u.role==='pastor'?'#40c96a':'var(--text-muted)'};">${u.role||'listener'}</span>
