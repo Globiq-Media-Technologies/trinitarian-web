@@ -1278,6 +1278,10 @@
         <input type="text" id="pastors-search" placeholder="🔍 Search pastors..." oninput="filterPastors();document.getElementById('pastors-search-clear').style.display=this.value?'block':'none';" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:30px;padding:10px 40px 10px 16px;color:var(--white);font-size:13px;outline:none;" data-i18n-ph="search_pastors_ph"/>
         <span id="pastors-search-clear" onclick="document.getElementById('pastors-search').value='';filterPastors();this.style.display='none';" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:16px;">✕</span>
       </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="pastor-sort-az" onclick="setPastorSort('alphabetical')" style="padding:7px 14px;border-radius:18px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;">A–Z</button>
+        <button id="pastor-sort-followers" onclick="setPastorSort('followers')" style="padding:7px 14px;border-radius:18px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;">👥 Most Followed</button>
+      </div>
       <div id="pastors-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
     </div>
 
@@ -1298,7 +1302,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=58"></script>
+<script src="/pastor/dashboard.js?v=60"></script>
 
 
 <!-- Cookie Consent Banner -->

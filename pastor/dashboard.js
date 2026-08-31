@@ -303,16 +303,29 @@ async function clearAuditLog() {
 
 // ── Pastors ──
 let allPastorsCache = [];
+let pastorSortMode = 'alphabetical';
 
 async function loadPastorsList() {
   try {
-    const data = await api('/api/pastors?limit=100');
+    const sortParam = pastorSortMode === 'followers' ? '&sort=followers' : '';
+    const data = await api('/api/pastors?limit=100' + sortParam);
     allPastorsCache = Array.isArray(data) ? data : (data?.pastors||[]);
     renderPastors(allPastorsCache);
   } catch(e) {
     const el = document.getElementById('pastors-list');
     if (el) el.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><h3>Failed to load pastors</h3></div>';
   }
+}
+
+function setPastorSort(mode) {
+  pastorSortMode = mode;
+  const btnAz = document.getElementById('pastor-sort-az');
+  const btnFollowers = document.getElementById('pastor-sort-followers');
+  const activeStyle = 'padding:7px 14px;border-radius:18px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;';
+  const inactiveStyle = 'padding:7px 14px;border-radius:18px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;';
+  if (btnAz) btnAz.style.cssText = mode === 'alphabetical' ? activeStyle : inactiveStyle;
+  if (btnFollowers) btnFollowers.style.cssText = mode === 'followers' ? activeStyle : inactiveStyle;
+  loadPastorsList();
 }
 
 function filterPastors() {
