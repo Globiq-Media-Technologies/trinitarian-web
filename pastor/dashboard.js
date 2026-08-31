@@ -1042,6 +1042,7 @@ function renderSermonList(sermons, containerId) {
         <button class="btn btn-ghost btn-sm" onclick="viewSermonComments('${s.id}','${jsSafeTitle}')">💬 Comments</button>
         <button class="btn btn-ghost btn-sm" onclick="openEditSermon(this.dataset.id,this.dataset.title,this.dataset.desc)" data-id="${s.id}" data-title="${(s.title||'').replace(/"/g,'&quot;')}" data-desc="${(s.description||'').replace(/"/g,'&quot;')}" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;border-radius:10px;padding:9px 18px;cursor:pointer;font-size:13px;">✏ Edit</button>
         <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('https://trinitarian.app/?sermon=${s.id}').then(function(){showToast('Link copied!')})">🔗 Copy Link</button>
+        ${s.media_url ? `<button class="btn btn-ghost btn-sm" onclick="downloadSermonMedia('${s.id}','${jsSafeTitle}','${s.type}','${(s.media_url||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">⬇ Download</button>` : ''}
         <button class="btn btn-ghost btn-sm" style="color:var(--error);" onclick="deleteSermon('${s.id}','${jsSafeTitle}')">🗑 Delete</button>
       </div>
     </div>`;
@@ -2377,15 +2378,41 @@ async function init() {
 init();
 
 // ── Download All Sermons ──
+// Downloads a single sermon's actual media file (audio/video) to the
+// user's device. The browser can already play these files directly, so
+// they're fetchable cross-origin without extra CORS setup - fetching as a
+// blob and triggering a synthetic download link is the standard way to
+// force a real file save rather than a same-tab navigation, which is what
+// a plain <a href> with the download attribute would otherwise risk for a
+// cross-origin URL.
+async function downloadSermonMedia(id, title, type, mediaUrl) {
+  if (!mediaUrl) { alert('This sermon has no media file to download.'); return; }
+  try {
+    const res = await fetch(mediaUrl);
+    if (!res.ok) throw new Error('Fetch failed');
+    const blob = await res.blob();
+    const ext = type === 'video' ? 'mp4' : 'mp3';
+    const safeName = (title || 'sermon').replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'sermon';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${safeName}.${ext}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert(`Could not download "${title}". Please check your connection and try again.`);
+  }
+}
+
 async function downloadAllSermons() {
   try {
     const data = await api('/api/sermons/my/sermons');
     const list = Array.isArray(data) ? data : [];
-    if (!list.length) { alert('No sermons to download.'); return; }
-    const text = list.map(s => `Title: ${s.title}\nType: ${s.type}\nViews: ${s.views_count||0}\nDate: ${s.published_at?new Date(s.published_at).toLocaleDateString():'N/A'}\nTranscript: ${s.transcript||'N/A'}\n\n---\n`).join('\n');
-    const blob = new Blob([text], {type:'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download='my-sermons.txt'; a.click();
+    const exportable = list.filter(s => s.media_url);
+    if (!exportable.length) { alert('You have no sermons with media files to download.'); return; }
+    if (!confirm(`This will download ${exportable.length} sermon file${exportable.length === 1 ? '' : 's'} to your device, one at a time. Continue?`)) return;
+    for (const s of exportable) {
+      await downloadSermonMedia(s.id, s.title, s.type, s.media_url);
+    }
   } catch(e) { alert('Download failed'); }
 }
 
