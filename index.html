@@ -1865,12 +1865,19 @@ function lhFilterCat(cat,btn){
 
 let lhPastorsTabSearchTimer=null;
 let lhPastorSortMode='alphabetical';
+let lhPastorProOnly=false;
 function lhSetPastorSort(mode){
   lhPastorSortMode=mode;
   const btnAz=document.getElementById('lh-pastor-sort-az');
   const btnFollowers=document.getElementById('lh-pastor-sort-followers');
   if(btnAz)btnAz.style.cssText=mode==='alphabetical'?'padding:7px 14px;border-radius:18px;border:1px solid #D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37;font-size:12px;font-weight:600;cursor:pointer;':'padding:7px 14px;border-radius:18px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;font-size:12px;font-weight:600;cursor:pointer;';
   if(btnFollowers)btnFollowers.style.cssText=mode==='followers'?'padding:7px 14px;border-radius:18px;border:1px solid #D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37;font-size:12px;font-weight:600;cursor:pointer;':'padding:7px 14px;border-radius:18px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;font-size:12px;font-weight:600;cursor:pointer;';
+  lhLoadPastorsTabResults(document.getElementById('lh-pastors-tab-search')?.value||'');
+}
+function lhTogglePastorPro(){
+  lhPastorProOnly=!lhPastorProOnly;
+  const btn=document.getElementById('lh-pastor-pro-only');
+  if(btn)btn.style.cssText=lhPastorProOnly?'padding:7px 14px;border-radius:18px;border:1px solid #D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37;font-size:12px;font-weight:600;cursor:pointer;':'padding:7px 14px;border-radius:18px;border:1px solid rgba(212,175,55,0.15);background:transparent;color:#8fa3c0;font-size:12px;font-weight:600;cursor:pointer;';
   lhLoadPastorsTabResults(document.getElementById('lh-pastors-tab-search')?.value||'');
 }
 async function lhShowPastors(q){
@@ -1881,6 +1888,7 @@ async function lhShowPastors(q){
     +'<div style="display:flex;gap:8px;margin-bottom:16px;">'
     +'<button id="lh-pastor-sort-az" onclick="lhSetPastorSort(\'alphabetical\')" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorSortMode==='alphabetical'?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">A–Z</button>'
     +'<button id="lh-pastor-sort-followers" onclick="lhSetPastorSort(\'followers\')" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorSortMode==='followers'?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">👥 Most Followed</button>'
+    +'<button id="lh-pastor-pro-only" onclick="lhTogglePastorPro()" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorProOnly?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">👑 Pro Only</button>'
     +'</div>';
   el.innerHTML=searchBar+'<div id="lh-pastors-tab-list"><div style="text-align:center;padding:40px;color:#8fa3c0;">Loading pastors...</div></div>';
   await lhLoadPastorsTabResults(q);
@@ -1896,7 +1904,8 @@ async function lhLoadPastorsTabResults(q){
   if(!list)return;
   try{
     const sortParam=lhPastorSortMode==='followers'?'&sort=followers':'';
-    const url=q&&q.trim()?API+'/api/pastors?q='+encodeURIComponent(q.trim())+'&limit=50'+sortParam:API+'/api/pastors?limit=50'+sortParam;
+    const proParam=lhPastorProOnly?'&is_pro=true':'';
+    const url=q&&q.trim()?API+'/api/pastors?q='+encodeURIComponent(q.trim())+'&limit=50'+sortParam+proParam:API+'/api/pastors?limit=50'+sortParam+proParam;
     const res=await fetch(url,{headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}});
     const data=await res.json();
     const pastors=Array.isArray(data)?data:(data?.pastors||[]);

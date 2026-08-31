@@ -304,11 +304,13 @@ async function clearAuditLog() {
 // ── Pastors ──
 let allPastorsCache = [];
 let pastorSortMode = 'alphabetical';
+let pastorProOnly = false;
 
 async function loadPastorsList() {
   try {
     const sortParam = pastorSortMode === 'followers' ? '&sort=followers' : '';
-    const data = await api('/api/pastors?limit=100' + sortParam);
+    const proParam = pastorProOnly ? '&is_pro=true' : '';
+    const data = await api('/api/pastors?limit=100' + sortParam + proParam);
     allPastorsCache = Array.isArray(data) ? data : (data?.pastors||[]);
     renderPastors(allPastorsCache);
   } catch(e) {
@@ -325,6 +327,15 @@ function setPastorSort(mode) {
   const inactiveStyle = 'padding:7px 14px;border-radius:18px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;';
   if (btnAz) btnAz.style.cssText = mode === 'alphabetical' ? activeStyle : inactiveStyle;
   if (btnFollowers) btnFollowers.style.cssText = mode === 'followers' ? activeStyle : inactiveStyle;
+  loadPastorsList();
+}
+
+function togglePastorPro() {
+  pastorProOnly = !pastorProOnly;
+  const btn = document.getElementById('pastor-pro-only');
+  const activeStyle = 'padding:7px 14px;border-radius:18px;border:1px solid var(--gold-border);background:var(--gold-light);color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;';
+  const inactiveStyle = 'padding:7px 14px;border-radius:18px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;';
+  if (btn) btn.style.cssText = pastorProOnly ? activeStyle : inactiveStyle;
   loadPastorsList();
 }
 
