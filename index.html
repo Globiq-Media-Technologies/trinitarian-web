@@ -1865,6 +1865,12 @@ function lhFilterCat(cat,btn){
 
 let lhPastorsTabSearchTimer=null;
 let lhPastorSortMode='alphabetical';
+function lhIsAdminOrOwner(){
+  try{const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');return u&&['admin','owner'].includes(u.role);}catch(e){return false;}
+}
+function lhCurrentUserId(){
+  try{const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');return u?u.id:null;}catch(e){return null;}
+}
 let lhPastorProOnly=false;
 function lhSetPastorSort(mode){
   lhPastorSortMode=mode;
@@ -1888,7 +1894,7 @@ async function lhShowPastors(q){
     +'<div style="display:flex;gap:8px;margin-bottom:16px;">'
     +'<button id="lh-pastor-sort-az" onclick="lhSetPastorSort(\'alphabetical\')" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorSortMode==='alphabetical'?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">A–Z</button>'
     +'<button id="lh-pastor-sort-followers" onclick="lhSetPastorSort(\'followers\')" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorSortMode==='followers'?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">👥 Most Followed</button>'
-    +'<button id="lh-pastor-pro-only" onclick="lhTogglePastorPro()" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorProOnly?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">👑 Pro Only</button>'
+    +(lhIsAdminOrOwner()?'<button id="lh-pastor-pro-only" onclick="lhTogglePastorPro()" style="padding:7px 14px;border-radius:18px;border:1px solid '+(lhPastorProOnly?'#D4AF37;background:rgba(212,175,55,0.15);color:#D4AF37':'rgba(212,175,55,0.15);background:transparent;color:#8fa3c0')+';font-size:12px;font-weight:600;cursor:pointer;">👑 Pro Only</button>':'')
     +'</div>';
   el.innerHTML=searchBar+'<div id="lh-pastors-tab-list"><div style="text-align:center;padding:40px;color:#8fa3c0;">Loading pastors...</div></div>';
   await lhLoadPastorsTabResults(q);
@@ -1923,7 +1929,7 @@ async function lhLoadPastorsTabResults(q){
       const name=document.createElement('div');
       name.style.cssText='color:#fff;font-size:15px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:6px;';
       name.textContent=p.display_name||p.username||'Pastor';
-      if(p.is_pro){
+      if(p.is_pro && (lhIsAdminOrOwner() || p.id === lhCurrentUserId())){
         const proBadge=document.createElement('span');
         proBadge.style.cssText='color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:0.5px;';
         proBadge.textContent='👑 PRO';
@@ -3051,7 +3057,7 @@ function openPastorProfile(pastorId){
     const following=lhFollowing.includes(p.id||p.user_id);
     let html='<div style="text-align:center;margin-bottom:24px;">';
     html+='<div style="width:80px;height:80px;border-radius:40px;background:rgba(212,175,55,0.1);border:2px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;">✝</div>';
-    html+='<h2 style="color:#fff;font-size:20px;margin-bottom:6px;">'+(p.display_name||p.username||'Pastor')+(p.is_pro?' <span style="color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;letter-spacing:0.5px;vertical-align:middle;">👑 PRO</span>':'')+'</h2>';
+    html+='<h2 style="color:#fff;font-size:20px;margin-bottom:6px;">'+(p.display_name||p.username||'Pastor')+((p.is_pro&&(lhIsAdminOrOwner()||p.id===lhCurrentUserId()))?' <span style="color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;letter-spacing:0.5px;vertical-align:middle;">👑 PRO</span>':'')+'</h2>';
     html+='<p style="color:#D4AF37;font-size:14px;margin-bottom:4px;">'+(p.church_name||'')+'</p>';
     html+='<p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">'+(p.denomination||'')+' · '+(p.country||'')+'</p>';
     html+='<button onclick="toggleFollow('+(p.id||p.user_id)+',' +(JSON.stringify(p.display_name||p.username))+',this)" style="padding:10px 28px;border-radius:20px;border:1px solid '+(following?'rgba(212,175,55,0.4)':'rgba(212,175,55,0.2)')+';background:'+(following?'rgba(212,175,55,0.15)':'transparent')+';color:'+(following?'#D4AF37':'#8fa3c0')+';cursor:pointer;font-size:14px;">'+(following?'✓ Following':'+ Follow')+'</button>';
