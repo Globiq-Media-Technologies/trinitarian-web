@@ -2061,7 +2061,26 @@ async function lhClearHistory(){
   }catch(e){}
 }
 
-function lhLogout(){if(!confirm('Sign out?'))return;localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');goTo('listener');}
+async function lhLogout(){
+  if(!confirm('Sign out?'))return;
+  try{
+    const token=localStorage.getItem('trinitarian_token');
+    if(token && 'serviceWorker' in navigator){
+      const reg=await navigator.serviceWorker.ready;
+      const sub=await reg.pushManager.getSubscription();
+      if(sub){
+        await fetch(API+'/api/users/push-subscribe',{
+          method:'DELETE',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+          body:JSON.stringify({endpoint:sub.endpoint})
+        });
+      }
+    }
+  }catch(e){}
+  localStorage.removeItem('trinitarian_token');
+  localStorage.removeItem('trinitarian_user');
+  goTo('listener');
+}
 function lhBottomNav(section,btn){document.querySelectorAll('.lh-bnav').forEach(b=>{b.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#8fa3c0';});});if(btn){btn.querySelectorAll('span').forEach((s,i)=>{if(i===1)s.style.color='#D4AF37';});}if(section==='sermons'){lhCurrentType='all';document.getElementById('lh-sermons').style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';lhRender();}else if(section==='pastors'){lhCurrentType='pastors';lhShowPastors();}else if(section==='saved'){lhCurrentType='saved';lhShowSaved();}}
 
 let currentSermon=null,ptFontSz=15,ptIsNight=false;
