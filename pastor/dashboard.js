@@ -488,6 +488,39 @@ let token = localStorage.getItem('pastor_token');
 let user = JSON.parse(localStorage.getItem('pastor_user') || 'null');
 let badgePollInterval = null;
 let uploadType = 'video';
+
+// ── Web push registration ──
+// Reuses the same /sw.js and VAPID key as the public listener site - a
+// service worker registered at the root path covers the whole origin
+// (including /pastor/*), so this registers the same single service worker
+// rather than a separate one.
+const VAPID_PUBLIC_KEY = 'BIIKJwa4T53dVpnHLi4qGizEUgAcL9VpLuu9LbKKFKQ1d3ASmiU1E1TdXOPU_COwcNGlmfBDDLGhUurWWYjb2RE';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = window.atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function registerPastorPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js');
+    if (!token) return;
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+    await fetch(API + '/api/users/push-subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ subscription: sub.toJSON(), type: 'web' }),
+    });
+  } catch (e) { console.log('Push registration:', e.message); }
+}
 let uploadLang = 'en';
 
 // ── Logo (embedded) ──
@@ -853,8 +886,21 @@ async function deletePastorAccount(){
   }catch(e){ alert('Deletion failed. Please email support@trinitarian.app to request account deletion.'); }
 }
 
-function handleLogout() {
+async function handleLogout() {
   if (!confirm('Are you sure you want to sign out?')) return;
+  try {
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub && token) {
+        await fetch(API + '/api/users/push-subscribe', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        });
+      }
+    }
+  } catch (e) {}
   token = null; user = null;
   if (badgePollInterval) { clearInterval(badgePollInterval); badgePollInterval = null; }
   localStorage.removeItem('pastor_token');
@@ -865,6 +911,7 @@ function handleLogout() {
 // ── Dashboard Init ──
 function initDashboard() {
   showScreen('dashboard');
+  registerPastorPush();
   // Apply saved language immediately
   const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
   if (savedLang !== 'en') pdApplyTranslations(savedLang);
