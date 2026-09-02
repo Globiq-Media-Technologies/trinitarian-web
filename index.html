@@ -604,7 +604,7 @@
       </div>
     </div>
     <!-- Actions -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+    <div id="lh-player-actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
       <button onclick="playerSave()" id="btn-save" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.1);color:#D4AF37;cursor:pointer;font-size:13px;" data-i18n="p_save">🔖 Save</button>
       <button onclick="playerFullscreen()" id="fs-btn" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#b0c4d8;cursor:pointer;font-size:13px;" data-i18n="p_fullscreen">⛶ Fullscreen</button>
       
@@ -1585,19 +1585,12 @@ window.addEventListener('load',async()=>{
   if(sermonParam){
     fetch(API+'/api/sermons/'+sermonParam)
       .then(function(r){ return r.ok ? r.json() : null; })
-      .then(async function(sermon){
+      .then(function(sermon){
         if(sermon && sermon.id){
           window.lhSermonMap = window.lhSermonMap || {};
           window.lhSermonMap[sermon.id] = sermon;
           goTo('listener-home');
-          // goTo() calls initListenerHome() internally but doesn't await
-          // it, so a fixed setTimeout here was gambling that its async
-          // work (loading sermons, applying translations, etc.) would
-          // always finish in time - awaiting it directly guarantees
-          // proper sequencing instead. Calling it again is a small, safe
-          // redundancy since its operations are idempotent.
-          await initListenerHome();
-          openSermon(sermon);
+          setTimeout(function(){ openSermon(sermon); }, 300);
         } else {
           goTo('listener-home');
         }
@@ -2355,6 +2348,13 @@ function playerShowTab(tab,evt){
   ['info','transcript','reading','comments'].forEach(t=>{const el=document.getElementById('ptab-'+t);if(el)el.style.display=t===tab?'block':'none';});
   document.querySelectorAll('.ptab').forEach(b=>{b.style.background='transparent';b.style.color='#8fa3c0';b.style.borderColor='rgba(212,175,55,0.1)';});
   const btn=evt?evt.target:null;if(btn){btn.style.background='rgba(212,175,55,0.15)';btn.style.color='#D4AF37';btn.style.borderColor='rgba(212,175,55,0.3)';}
+  // Reading Mode's own toolbar (font size, night mode, highlight, save,
+  // bookmark, fullscreen) already covers what the main action row offers -
+  // showing both stacked was redundant (Save and Fullscreen literally
+  // appeared twice) and pushed the actual article text far down the page,
+  // especially cramped on mobile.
+  const actionsEl=document.getElementById('lh-player-actions');
+  if(actionsEl)actionsEl.style.display=(tab==='reading')?'none':'flex';
   if(tab==='reading'){loadReadingMode();setTimeout(restoreReadingPosition,400);}
 }
 
