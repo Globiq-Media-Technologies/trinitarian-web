@@ -2993,25 +2993,6 @@ let currentStreamId = null;
 let liveStartTime = null;
 let liveTimerInterval = null;
 let viewerCountInterval = null;
-
-// Agora's Web SDK has no orientationMode control (that only exists in
-// Agora's native mobile/desktop SDKs) - the local preview can render
-// sideways on some mobile browser/device combinations, a known limitation
-// of the Web SDK itself. This compensates in CSS by reading the device's
-// actual physical orientation and rotating the preview container to
-// match, since there's no lower-level SDK setting to fix this properly.
-function applyLocalPreviewOrientationFix() {
-  const container = document.getElementById('local-video-container');
-  if (!container) return;
-  const angle = (screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : 0;
-  // Rotate the container to counteract the device's physical rotation,
-  // so the preview stays upright regardless of how the phone is held.
-  container.style.transform = angle ? `rotate(${-angle}deg)` : 'none';
-  container.style.transformOrigin = 'center center';
-}
-if (screen.orientation && screen.orientation.addEventListener) {
-  screen.orientation.addEventListener('change', applyLocalPreviewOrientationFix);
-}
 let audioMuted = false;
 let videoMuted = false;
 
@@ -3036,7 +3017,6 @@ async function switchCamera() {
     currentFacingMode = newFacingMode;
     await agoraClient.publish([localVideoTrack]);
     localVideoTrack.play('local-video-container');
-    applyLocalPreviewOrientationFix();
 
     showToast(newFacingMode === 'user' ? 'Switched to front camera' : 'Switched to rear camera', 'success');
   } catch(e) {
@@ -3269,7 +3249,6 @@ async function startLiveStream(existingStreamId, existingTitle) {
     localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     localVideoTrack.play('local-video-container');
-    applyLocalPreviewOrientationFix();
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
     initZoomCapability();
 
