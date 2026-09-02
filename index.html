@@ -37,8 +37,8 @@
        the likely cause of the video overflowing the viewport in
        landscape fullscreen (unlike #lh-video-player above, which already
        had this exact fix). */
-    #lh-live-overlay:fullscreen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;}
-    #lh-live-overlay:-webkit-full-screen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;}
+    #lh-live-overlay:fullscreen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;border-radius:0!important;}
+    #lh-live-overlay:-webkit-full-screen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;border-radius:0!important;}
 
     /* Pages */
     .page{display:none;}
@@ -3478,18 +3478,6 @@ document.addEventListener('fullscreenchange',()=>{
   // control, not just our own Leave/toggle button.
   if(!document.fullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
   lhApplyFullscreenLayout(!!document.fullscreenElement);
-  // 100dvh alone isn't universally reliable on every mobile browser -
-  // window.innerHeight reads the actual currently-visible viewport
-  // directly, sidestepping any CSS unit's browser-specific behavior.
-  if(overlay&&document.fullscreenElement===overlay)overlay.style.height=window.innerHeight+'px';
-});
-window.addEventListener('resize',()=>{
-  const overlay=document.getElementById('lh-live-overlay');
-  // The browser's address bar can show/hide during fullscreen on some
-  // mobile browsers (e.g. from a scroll gesture), which changes the
-  // actually-visible height without a fullscreenchange event firing -
-  // resize does fire in that case, so re-measure here too.
-  if(overlay&&(document.fullscreenElement===overlay||document.webkitFullscreenElement===overlay))overlay.style.height=window.innerHeight+'px';
 });
 document.addEventListener('webkitfullscreenchange',()=>{
   const btn=document.getElementById('lh-btn-fullscreen');
@@ -3497,7 +3485,6 @@ document.addEventListener('webkitfullscreenchange',()=>{
   if(btn)btn.textContent=(document.webkitFullscreenElement)?'⤢':'⛶';
   if(!document.webkitFullscreenElement&&overlay&&overlay.dataset.windowedStyle)overlay.style.cssText=overlay.dataset.windowedStyle;
   lhApplyFullscreenLayout(!!document.webkitFullscreenElement);
-  if(overlay&&document.webkitFullscreenElement===overlay)overlay.style.height=window.innerHeight+'px';
 });
 
 async function toggleLike(){
