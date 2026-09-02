@@ -1585,12 +1585,19 @@ window.addEventListener('load',async()=>{
   if(sermonParam){
     fetch(API+'/api/sermons/'+sermonParam)
       .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(sermon){
+      .then(async function(sermon){
         if(sermon && sermon.id){
           window.lhSermonMap = window.lhSermonMap || {};
           window.lhSermonMap[sermon.id] = sermon;
           goTo('listener-home');
-          setTimeout(function(){ openSermon(sermon); }, 300);
+          // goTo() calls initListenerHome() internally but doesn't await
+          // it, so a fixed setTimeout here was gambling that its async
+          // work (loading sermons, applying translations, etc.) would
+          // always finish in time - awaiting it directly guarantees
+          // proper sequencing instead. Calling it again is a small, safe
+          // redundancy since its operations are idempotent.
+          await initListenerHome();
+          openSermon(sermon);
         } else {
           goTo('listener-home');
         }
