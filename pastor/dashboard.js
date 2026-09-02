@@ -428,7 +428,10 @@ function exploreRender() {
     card.onmouseover = function() { card.style.borderColor = 'rgba(212,175,55,0.4)'; };
     card.onmouseout = function() { card.style.borderColor = 'var(--border)'; };
     card.onclick = function() { viewSermon(s.id); };
-    card.innerHTML = '<div style="font-size:32px;margin-bottom:10px;">' + (ICONS[s.type]||'🎧') + '</div>'
+    const thumbHtml = s.thumbnail_url
+      ? '<img src="' + s.thumbnail_url.replace(/"/g, '&quot;') + '" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px;" onerror="this.outerHTML=\'<div style=&quot;font-size:32px;margin-bottom:10px;&quot;>' + (ICONS[s.type]||'🎧') + '</div>\';"/>'
+      : '<div style="font-size:32px;margin-bottom:10px;">' + (ICONS[s.type]||'🎧') + '</div>';
+    card.innerHTML = thumbHtml
       + '<div style="color:var(--white);font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">' + s.title + '</div>'
       + '<div style="color:var(--text-muted);font-size:12px;margin-bottom:4px;">✝ ' + (s.pastor_name||'Pastor') + '</div>'
       + '<div style="color:var(--text-muted);font-size:11px;">👁 ' + parseInt(s.views_count||0).toLocaleString() + ' · ' + (s.type||'').toUpperCase() + (s.published_at ? ' · <span style="color:#c3d4e8;">' + new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</span>' : '') + '</div>';
