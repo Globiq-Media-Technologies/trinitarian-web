@@ -932,22 +932,30 @@
       <p style="color:#8fa3c0;font-size:14px;text-align:center;margin-bottom:24px;" data-i18n="enter_new_pwd">Enter your new password below</p>
       <div id="reset-error" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#e05555;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
       <div id="reset-success" style="display:none;background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.3);color:#40c96a;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;"></div>
-      <div style="margin-bottom:14px;">
-        <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;" data-i18n="new_password">New Password</label>
-        <div style="position:relative;">
-          <input type="password" id="reset-pass" placeholder="Min. 8 characters" autocomplete="new-password" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:16px;outline:none;"/>
-          <span onclick="togglePwd('reset-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+      <div id="reset-form-fields">
+        <div style="margin-bottom:14px;">
+          <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;" data-i18n="new_password">New Password</label>
+          <div style="position:relative;">
+            <input type="password" id="reset-pass" placeholder="Min. 8 characters" autocomplete="new-password" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:16px;outline:none;"/>
+            <span onclick="togglePwd('reset-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+          </div>
         </div>
-      </div>
-      <div style="margin-bottom:20px;">
-        <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;" data-i18n="confirm_pwd">Confirm Password</label>
-        <div style="position:relative;">
-          <input type="password" id="reset-confirm" placeholder="Re-enter new password" autocomplete="new-password" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:16px;outline:none;"/>
-          <span onclick="togglePwd('reset-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;color:#8fa3c0;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;" data-i18n="confirm_pwd">Confirm Password</label>
+          <div style="position:relative;">
+            <input type="password" id="reset-confirm" placeholder="Re-enter new password" autocomplete="new-password" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px 44px 12px 16px;color:#fff;font-size:16px;outline:none;"/>
+            <span onclick="togglePwd('reset-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#8fa3c0;font-size:16px;">👁</span>
+          </div>
         </div>
+        <button onclick="handleReset()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;">Set New Password</button>
+        <p style="text-align:center;margin-top:16px;"><a onclick="goTo('listener')" style="color:#8fa3c0;font-size:13px;cursor:pointer;">← Back to Sign In</a></p>
       </div>
-      <button onclick="handleReset()" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;">Set New Password</button>
-      <p style="text-align:center;margin-top:16px;"><a onclick="goTo('listener')" style="color:#8fa3c0;font-size:13px;cursor:pointer;">← Back to Sign In</a></p>
+      <div id="reset-return-panel" style="display:none;text-align:center;">
+        <div style="font-size:40px;margin-bottom:14px;">✅</div>
+        <p style="color:#40c96a;font-size:15px;font-weight:700;margin-bottom:20px;">Password reset successfully!</p>
+        <button onclick="window.location.href='trinitarian://'" style="width:100%;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:12px;">📱 Return to Trinitarian App</button>
+        <p style="text-align:center;"><a onclick="goTo('listener')" style="color:#8fa3c0;font-size:13px;cursor:pointer;">Continue to Sign In on Web →</a></p>
+      </div>
     </div>
   </div>
 </div>
@@ -2804,7 +2812,7 @@ async function sendDmMessage(){if(!dmCurrentPastor)return;const input=document.g
 function showLhForgotPwd(){goTo('listener');setTimeout(()=>llShow('forgot'),200);}
 async function lhDeleteAccount(){const typed=prompt('This will permanently delete your account and all your data.\n\nType DELETE to confirm:');if(typed!=='DELETE'){if(typed!==null)alert('Confirmation text did not match — deletion cancelled.');return;}try{await fetch(API+'/api/users/me',{method:'DELETE',headers:{'Authorization':'Bearer '+localStorage.getItem('trinitarian_token')}});localStorage.removeItem('trinitarian_token');localStorage.removeItem('trinitarian_user');alert('Account deleted.');window.location.href='/';}catch(e){alert('Deletion failed. Email support@trinitarian.app to request deletion.');}}
 
-async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){okEl.textContent='Password reset successfully! You can now sign in.';okEl.style.display='block';setTimeout(()=>goTo('listener'),2000);}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
+async function handleReset(){const token=new URLSearchParams(window.location.search).get('token');const pass=document.getElementById('reset-pass').value;const confirm=document.getElementById('reset-confirm').value;const errEl=document.getElementById('reset-error');const okEl=document.getElementById('reset-success');errEl.style.display='none';okEl.style.display='none';if(!token){errEl.textContent='Invalid reset link. Please request a new one.';errEl.style.display='block';return;}if(pass.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}if(pass!==confirm){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}try{const res=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,password:pass})});const data=await res.json();if(data.message){document.getElementById('reset-form-fields').style.display='none';document.getElementById('reset-return-panel').style.display='block';}else{errEl.textContent=data.error||'Reset failed. Link may have expired.';errEl.style.display='block';}}catch(e){errEl.textContent='Connection failed. Please try again.';errEl.style.display='block';}}
 
 function lhToggleNotif(id){
   const current=localStorage.getItem(id);
