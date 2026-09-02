@@ -29,6 +29,16 @@
        instead of respecting object-fit:contain. */
     #lh-video-player:fullscreen{object-fit:contain!important;width:100%!important;height:100%!important;background:#000;}
     #lh-video-player:-webkit-full-screen{object-fit:contain!important;width:100%!important;height:100%!important;background:#000;}
+    /* The live stream overlay's baseline styling (98vw/97vh with small
+       margins, rounded corners) was designed for "almost fullscreen"
+       within the normal page, never for the browser's actual native
+       Fullscreen API - without this override, that leftover margin/
+       positioning logic conflicts with real fullscreen layout, which is
+       the likely cause of the video overflowing the viewport in
+       landscape fullscreen (unlike #lh-video-player above, which already
+       had this exact fix). */
+    #lh-live-overlay:fullscreen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;border-radius:0!important;}
+    #lh-live-overlay:-webkit-full-screen{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;border-radius:0!important;}
 
     /* Pages */
     .page{display:none;}
