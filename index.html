@@ -552,12 +552,12 @@
 
 <!-- ══ SERMON PLAYER ══ -->
 <div id="page-player" class="page">
-  <div style="padding:14px 24px;border-bottom:1px solid rgba(212,175,55,0.1);display:flex;align-items:center;gap:12px;">
+  <div style="padding:14px 24px;border-bottom:1px solid rgba(212,175,55,0.1);display:flex;align-items:center;gap:12px;max-width:min(650px,92vw);margin:0 auto;box-sizing:content-box;">
     <span onclick="lhSmartBack();" style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:#D4AF37;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;">&#8592; Back</span>
     <span id="player-title" style="color:#fff;font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
 
-  <div style="max-width:100%;margin:0 auto;padding:0;">
+  <div id="player-content-wrap" style="max-width:100%;margin:0 auto;padding:0;">
     <!-- Custom Media Player -->
     <div id="player-media" style="background:#000;margin-bottom:0;">
       <!-- Video player (custom controls, no native chrome) -->
@@ -2366,6 +2366,11 @@ async function openSermon(s){
     var mainFsBtn=document.getElementById('fs-btn');
     if(mainSaveBtn)mainSaveBtn.style.display='none';
     if(mainFsBtn)mainFsBtn.style.display='none';
+    // Constrain the whole content area to match the reading width -
+    // previously only the article text itself was constrained, leaving
+    // the action row (now below the article) still full-width.
+    var contentWrapT=document.getElementById('player-content-wrap');
+    if(contentWrapT){contentWrapT.style.maxWidth='min(650px,92vw)';contentWrapT.style.margin='0 auto';}
   } else {
     var pm=document.getElementById('player-media');
     if(pm)pm.style.display='block';
@@ -2379,6 +2384,9 @@ async function openSermon(s){
     var mainFsBtn=document.getElementById('fs-btn');
     if(mainSaveBtn)mainSaveBtn.style.display='flex';
     if(mainFsBtn)mainFsBtn.style.display='flex';
+    // Restore unconstrained width for video/audio - not touched by this fix.
+    var contentWrapV=document.getElementById('player-content-wrap');
+    if(contentWrapV){contentWrapV.style.maxWidth='100%';contentWrapV.style.margin='0 auto';}
   }
 }
 
