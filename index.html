@@ -1582,6 +1582,18 @@ window.addEventListener('load',async()=>{
           window.lhSermonMap[sermon.id] = sermon;
           goTo('listener-home');
           setTimeout(function(){ openSermon(sermon); }, 300);
+          // Defensive re-application in case initListenerHome()'s own
+          // async work (still potentially in flight from goTo() above)
+          // overwrites what openSermon() just set - a pure safety net,
+          // not a change to the existing flow above.
+          setTimeout(function(){
+            var fsBtn=document.getElementById('fs-btn');
+            var saveBtn=document.getElementById('btn-save');
+            if(['video','audio'].includes(sermon.type)){
+              if(fsBtn)fsBtn.style.display='flex';
+              if(saveBtn)saveBtn.style.display='flex';
+            }
+          }, 700);
         } else {
           goTo('listener-home');
         }
