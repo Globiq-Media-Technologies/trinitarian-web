@@ -3560,7 +3560,7 @@ async function viewSermon(id) {
     }
     
     overlay.innerHTML = `
-      <div style="background:#0d2142;min-height:100%;width:100%;padding:24px;box-sizing:border-box;">
+      <div style="background:#0d2142;min-height:100%;width:100%;padding:24px;box-sizing:border-box;max-width:min(650px,92vw);margin:0 auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <h2 style="color:#fff;font-size:18px;flex:1;padding-right:16px;">${s.title}</h2>
           <button onclick="document.getElementById('sermon-view-overlay').remove()" style="background:#D4AF37;color:#071528;border:none;border-radius:20px;padding:8px 18px;cursor:pointer;font-weight:700;flex-shrink:0;">✕ Close</button>
