@@ -3529,6 +3529,18 @@ async function viewSermon(id) {
       s = data?.sermon || data?.sermons?.[0] || data;
     }
     if (!s?.id) { alert('Sermon not found'); return; }
+
+    // A .txt upload is plain text - trivially readable, unlike a PDF -
+    // so if the backend never extracted it into the transcript field,
+    // fetch and use the raw file content directly rather than falling
+    // through to the generic "open as document" link, which would just
+    // dump the browser's native, unstyled text view in a new tab.
+    if (!s.transcript && s.media_url && s.media_url.toLowerCase().includes('.txt')) {
+      try {
+        const txtRes = await fetch(s.media_url);
+        if (txtRes.ok) s.transcript = await txtRes.text();
+      } catch (e) {}
+    }
     
     const overlay = document.createElement('div');
     overlay.id = 'sermon-view-overlay';

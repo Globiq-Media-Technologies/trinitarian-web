@@ -2280,7 +2280,17 @@ function cpSaveProgress(seconds,completed){
   }).catch(function(){});
 }
 
-function openSermon(s){
+async function openSermon(s){
+  // A .txt upload is plain text - trivially readable, unlike a PDF - so if
+  // the backend never extracted it into the transcript field, fetch and use
+  // the raw file content directly. Matches the same fallback already
+  // present in the mobile app and just added to the pastor dashboard.
+  if(s && !s.transcript && s.media_url && s.media_url.toLowerCase().includes('.txt')){
+    try{
+      const txtRes=await fetch(s.media_url);
+      if(txtRes.ok)s.transcript=await txtRes.text();
+    }catch(e){}
+  }
   currentSermon=s;
   // Increment view count
   if(s&&s.id){fetch(API+'/api/sermons/'+s.id+'/view',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('trinitarian_token')||'')}}).catch(function(){});
