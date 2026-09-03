@@ -2337,12 +2337,23 @@ function openSermon(s){
     if(tabRow)tabRow.style.display='none';
     ['info','reading','comments'].forEach(function(t){const el=document.getElementById('ptab-'+t);if(el)el.style.display=(t==='info')?'none':'block';});
     setTimeout(function(){loadReadingMode();setTimeout(restoreReadingPosition,400);},50);
+    // Save and Fullscreen are genuinely redundant here - the reading
+    // toolbar just below already has its own Bookmark and Fullscreen
+    // buttons covering the same actions.
+    var mainSaveBtn=document.getElementById('btn-save');
+    var mainFsBtn=document.getElementById('fs-btn');
+    if(mainSaveBtn)mainSaveBtn.style.display='none';
+    if(mainFsBtn)mainFsBtn.style.display='none';
   } else {
     var pm=document.getElementById('player-media');
     if(pm)pm.style.display='block';
     var tabRow=document.getElementById('ptab-buttons-row');
     if(tabRow)tabRow.style.display='flex';
     playerShowTab('info',null);
+    var mainSaveBtn=document.getElementById('btn-save');
+    var mainFsBtn=document.getElementById('fs-btn');
+    if(mainSaveBtn)mainSaveBtn.style.display='flex';
+    if(mainFsBtn)mainFsBtn.style.display='flex';
   }
 }
 
