@@ -128,6 +128,9 @@
       #lh-sermons{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))!important;gap:10px!important;}
       .lh-bnav{padding:2px 3px!important;}
     }
+    @media(min-width:900px){
+      #lh-sermons,#explore-sermons{grid-template-columns:repeat(3,1fr)!important;}
+    }
   
     /* Features */
     .features { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
@@ -2320,8 +2323,6 @@ function openSermon(s){
   document.getElementById('player-lang').textContent='🌍 '+(s.language||'en').toUpperCase();
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
   document.getElementById('player-icon').textContent=ICONS[s.type]||'🎧';
-  const pt=document.getElementById('pt-text');const pe=document.getElementById('pt-empty');
-  if(s.transcript){pt.textContent=s.transcript;pt.style.display='block';pe.style.display='none';}else{pt.style.display='none';pe.style.display='block';}
   const saved=lhSaved.includes(s.id);const saveBtn=document.getElementById('btn-save');
   if(saveBtn){saveBtn.style.background=saved?'rgba(212,175,55,0.3)':'transparent';saveBtn.textContent=saved?(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_saved:(LH_TRANS[lhCurrentLang]||LH_TRANS.en).p_save;}
   loadComments(s.id);setTimeout(loadRecommended,500);
