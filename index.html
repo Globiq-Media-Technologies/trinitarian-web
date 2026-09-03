@@ -659,7 +659,6 @@
         <button id="rd-bookmark-btn" onclick="rdBookmark()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🔖 Bookmark</button>
         <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
         <button onclick="rdToggleWidth(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Expand</button>
-        <button onclick="playerFullscreen()"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⛶ Fullscreen</button>
       </div>
       <!-- A4-width reading area -->
       <div id="reading-wrap" style="background:transparent;border:none;padding:20px 16px;min-height:500px;max-width:min(760px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word;">
@@ -2337,6 +2336,12 @@ function openSermon(s){
     if(tabRow)tabRow.style.display='none';
     ['info','reading','comments'].forEach(function(t){const el=document.getElementById('ptab-'+t);if(el)el.style.display=(t==='info')?'none':'block';});
     setTimeout(function(){loadReadingMode();setTimeout(restoreReadingPosition,400);},50);
+    // Move Download/Report/Like/Share/Copy to after the article instead of
+    // above it - makes more sense to encounter these after reading, not
+    // before, and reduces clutter at the top of the page.
+    var actionsElT=document.getElementById('lh-player-actions');
+    var readingElT=document.getElementById('ptab-reading');
+    if(actionsElT&&readingElT&&readingElT.parentNode)readingElT.parentNode.insertBefore(actionsElT,readingElT.nextSibling);
     // Save and Fullscreen are genuinely redundant here - the reading
     // toolbar just below already has its own Bookmark and Fullscreen
     // buttons covering the same actions.
@@ -2350,6 +2355,9 @@ function openSermon(s){
     var tabRow=document.getElementById('ptab-buttons-row');
     if(tabRow)tabRow.style.display='flex';
     playerShowTab('info',null);
+    var actionsElV=document.getElementById('lh-player-actions');
+    var tabRowV=document.getElementById('ptab-buttons-row');
+    if(actionsElV&&tabRowV&&tabRowV.parentNode)tabRowV.parentNode.insertBefore(actionsElV,tabRowV);
     var mainSaveBtn=document.getElementById('btn-save');
     var mainFsBtn=document.getElementById('fs-btn');
     if(mainSaveBtn)mainSaveBtn.style.display='flex';
