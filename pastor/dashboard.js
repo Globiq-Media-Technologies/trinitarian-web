@@ -2144,7 +2144,7 @@ function vsToggleExpand(btn) {
   if (!w) return;
   var expanded = w.dataset.expanded === 'true';
   if (expanded) {
-    w.style.maxWidth = 'min(760px,92vw)';
+    w.style.maxWidth = 'min(680px,92vw)';
     w.dataset.expanded = 'false';
     btn.textContent = '⟺ Wider';
   } else {
@@ -3569,7 +3569,7 @@ async function viewSermon(id) {
             <button id="vs-font-serif" onclick="vsSetFont('serif')" style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#071528;">Serif</button>
             <button onclick="vsToggleExpand(this)" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#D4AF37;">⟺ Wider</button>
           </div>
-          <div id="vs-reading-area" style="width:100%;max-width:min(760px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
+          <div id="vs-reading-area" style="width:100%;max-width:min(680px,92vw);margin:0 auto;transition:max-width 0.3s ease;overflow:hidden;">
             <div id="vs-text-content" style="color:#e8e8e8;font-size:16px;line-height:1.9;font-family:Georgia,serif;padding:12px 4px;">${(s.transcript||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').split('\n\n').map(p=>p.trim()?'<p style="margin-bottom:1em;">'+p.replace(/\n/g,'<br>')+'</p>':'').join('')||s.transcript}</div>
           </div>
         </div>` : (s.media_url && (s.media_url.toLowerCase().includes('.pdf') || s.type==='text' || s.type==='article') ? `<div style="margin-top:16px;text-align:center;padding:32px 16px;background:#071528;border-radius:12px;"><div style="font-size:36px;margin-bottom:14px;">${s.type==='article'?'📰':'📄'}</div><p style="color:#8fa3c0;font-size:13px;margin-bottom:18px;">This sermon was uploaded as a document.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><a href="${s.media_url}" target="_blank" rel="noopener" style="background:#D4AF37;color:#071528;padding:10px 22px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;">⛶ Open</a><a href="${s.media_url}" download style="background:transparent;color:#D4AF37;padding:10px 22px;border-radius:10px;text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(212,175,55,0.3);">⬇ Download</a></div></div>` : '<p style="color:#8fa3c0;font-size:14px;margin-top:16px;">No transcript available for this sermon.</p>')}
