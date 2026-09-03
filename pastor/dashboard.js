@@ -2399,9 +2399,9 @@ function applyStoredSettings() {
 
 
 async function init() {
-  // Inject CSS fixes for badge centering and sermon-actions layout
+  // Inject CSS fix for badge centering
   const styleEl = document.createElement('style');
-  styleEl.textContent = `.status-badge { text-align:center !important; } .sermon-actions { flex-direction:column !important; align-items:center !important; gap:6px !important; }`;
+  styleEl.textContent = `.status-badge { text-align:center !important; }`;
   document.head.appendChild(styleEl);
   // Apply saved language and settings immediately
   const savedLang = localStorage.getItem('trinitarian_pd_lang') || 'en';
