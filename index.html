@@ -615,7 +615,7 @@
         <button onclick="copySermonLink()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:20px;padding:9px 16px;cursor:pointer;font-size:13px;" data-i18n="copy">📋 Copy</button>
     </div>
     <!-- Transcript tabs -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;position:sticky;top:56px;z-index:40;background:#071528;padding:10px 0;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;border-bottom:1px solid rgba(212,175,55,0.1);">
+    <div id="ptab-buttons-row" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;position:sticky;top:56px;z-index:40;background:#071528;padding:10px 0;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;border-bottom:1px solid rgba(212,175,55,0.1);">
       <button onclick="playerShowTab('info',event)" class="ptab active" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.3);background:rgba(212,175,55,0.15);color:#D4AF37;cursor:pointer;font-size:13px;" data-i18n="info">Info</button>
       <button onclick="playerShowTab('reading',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="reading_mode">📖 Read</button>
       <button onclick="playerShowTab('comments',event)" class="ptab" style="padding:7px 16px;border-radius:20px;border:1px solid rgba(212,175,55,0.1);background:transparent;color:#8fa3c0;cursor:pointer;font-size:13px;" data-i18n="comments">💬 Comments</button>
@@ -668,6 +668,7 @@
     <!-- Comments tab -->
     <div style="border-top:1px solid rgba(212,175,55,0.1);margin:16px -16px;padding:0 16px;"></div>
     <div id="ptab-comments" style="display:none;">
+      <h3 style="color:#D4AF37;font-size:15px;font-weight:700;margin:0 0 12px;">💬 Comments</h3>
       <div style="background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:20px;margin-bottom:16px;">
         <textarea id="comment-input" placeholder="Add a comment..." maxlength="1000" oninput="document.getElementById('comment-char-count').textContent=this.value.length>800?this.value.length+'/1000':'';" style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:80px;"></textarea>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
@@ -2328,10 +2329,18 @@ function openSermon(s){
     // Hide media player for text/article - not needed
     var pm=document.getElementById('player-media');
     if(pm)pm.style.display='none';
-    setTimeout(function(){playerShowTab('reading',null);},50);
+    // No need for tab-switching on a page that's just an article - show
+    // the reading content and comments directly, stacked, the same way
+    // video/audio sermons show their player directly without a tab click.
+    var tabRow=document.getElementById('ptab-buttons-row');
+    if(tabRow)tabRow.style.display='none';
+    ['info','reading','comments'].forEach(function(t){const el=document.getElementById('ptab-'+t);if(el)el.style.display=(t==='info')?'none':'block';});
+    setTimeout(function(){loadReadingMode();setTimeout(restoreReadingPosition,400);},50);
   } else {
     var pm=document.getElementById('player-media');
     if(pm)pm.style.display='block';
+    var tabRow=document.getElementById('ptab-buttons-row');
+    if(tabRow)tabRow.style.display='flex';
     playerShowTab('info',null);
   }
 }
