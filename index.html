@@ -644,7 +644,13 @@
         <button id="rd-font-sans"  onclick="rdSetFont('sans')"  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;font-family:sans-serif;">Sans</button>
         <button id="rd-font-serif" onclick="rdSetFont('serif')" style="background:#D4AF37;border:1px solid #b8972a;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#071528;font-family:Georgia,serif;">Serif</button>
         <span style="color:rgba(212,175,55,0.3);font-size:18px;line-height:30px;">|</span>
-        <button id="rd-night-btn"  onclick="rdToggleNight()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🌙 Night</button>
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:13px;">☀</span>
+          <span id="rd-night-toggle" onclick="rdToggleNight()" style="width:36px;height:20px;border-radius:10px;background:rgba(212,175,55,0.3);position:relative;cursor:pointer;transition:background 0.2s;display:inline-block;">
+            <span id="rd-night-thumb" style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#D4AF37;transition:left 0.2s;"></span>
+          </span>
+          <span style="font-size:13px;">🌙</span>
+        </span>
         <button id="rd-highlight-btn" onclick="rdToggleHighlightMode()" style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🖊 Highlight</button>
         <button onclick="downloadTranscript()"                  style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">⬇ Save</button>
         <button id="rd-bookmark-btn" onclick="rdBookmark()"    style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;color:#D4AF37;">🔖 Bookmark</button>
@@ -2880,11 +2886,13 @@ function rdToggleNight(){
   var w=document.getElementById('reading-wrap');
   var t=document.getElementById('rd-text');
   var e=document.getElementById('rd-empty');
-  var n=document.getElementById('rd-night-btn');
+  var track=document.getElementById('rd-night-toggle');
+  var thumb=document.getElementById('rd-night-thumb');
   if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
   if(t)t.style.color=rdIsNight?'#e0e0e0':'#222';
   if(e)e.style.color=rdIsNight?'#aaa':'#8fa3c0';
-  if(n){n.textContent=rdIsNight?'☀ Day':'🌙 Night';n.style.background=rdIsNight?'#333':'#e8e8e8';n.style.color=rdIsNight?'#fff':'#333';}
+  if(track)track.style.background=rdIsNight?'#D4AF37':'rgba(212,175,55,0.3)';
+  if(thumb){thumb.style.left=rdIsNight?'18px':'2px';thumb.style.background=rdIsNight?'#071528':'#D4AF37';}
   var buttons=['rd-font-sans','rd-font-serif','rd-bookmark-btn'];
   for(var i=0;i<buttons.length;i++){
     var b=document.getElementById(buttons[i]);
@@ -3058,6 +3066,10 @@ function loadReadingMode(){
   var w=document.getElementById('reading-wrap');
   if(w)w.style.background=rdIsNight?'#1a1a2e':'#fff';
   t.style.color=rdIsNight?'#e0e0e0':'#222';
+  var rTrack=document.getElementById('rd-night-toggle');
+  var rThumb=document.getElementById('rd-night-thumb');
+  if(rTrack)rTrack.style.background=rdIsNight?'#D4AF37':'rgba(212,175,55,0.3)';
+  if(rThumb){rThumb.style.left=rdIsNight?'18px':'2px';rThumb.style.background=rdIsNight?'#071528':'#D4AF37';}
 
   // Wire up scroll-position saving — this was previously never attached, so the
   // "resume where you left off" feature silently did nothing. Bind once per
