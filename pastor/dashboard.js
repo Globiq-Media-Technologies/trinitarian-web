@@ -664,7 +664,7 @@ async function handleLogin() {
         const meRes = await fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + data.token } });
         const fresh = await meRes.json();
         if (fresh?.id) {
-          const roleOrder = {listener:0,pastor:1,moderator:2,admin:3,owner:4};
+          const roleOrder = {listener:0,musician:1,pastor:1,moderator:2,admin:3,owner:4};
           freshUser = (roleOrder[fresh.role]||0) >= (roleOrder[data.user?.role]||0) ? fresh : { ...fresh, role: data.user.role };
         }
       } catch(e) {}
@@ -679,7 +679,7 @@ async function handleLogin() {
         showAlert('login-error', '⏳ Your pastor application is under review. You will be notified once approved.', false, true);
         return;
       }
-      if (!['pastor','admin','moderator','owner'].includes(role)) {
+      if (!['pastor','musician','admin','moderator','owner'].includes(role)) {
         showAlert('login-error', 'Your account does not have pastor access.');
         return;
       }
@@ -929,6 +929,16 @@ function initDashboard() {
   document.getElementById('sidebar-church').textContent = user?.role?.toUpperCase() || 'PASTOR';
   document.getElementById('dash-role').textContent = (user?.role || 'pastor').toUpperCase();
   document.getElementById('overview-name').textContent = user?.display_name || 'Pastor';
+  // Musicians can only upload music - the backend enforces this too, but
+  // hiding the other options here avoids a confusing rejection after
+  // they've already filled out the rest of the upload form.
+  if (user?.role === 'musician') {
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      if (btn.id !== 'type-btn-music') btn.style.display = 'none';
+    });
+    const musicBtn = document.getElementById('type-btn-music');
+    if (musicBtn) selectType(musicBtn, 'music');
+  }
   if (['admin', 'moderator', 'owner'].includes(user?.role)) {
     document.getElementById('admin-nav').style.display = 'flex';
     if(document.getElementById('users-nav')) document.getElementById('users-nav').style.display = 'flex';
@@ -1104,7 +1114,7 @@ function renderSermonList(sermons, containerId) {
     const safeDesc = (s.description||'').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     return `
     <div class="sermon-card" style="cursor:pointer;">
-      <div class="sermon-thumb" onclick="viewSermon('${s.id}')">${s.type === 'video' ? '🎬' : s.type === 'audio' ? '🎧' : '📄'}</div>
+      <div class="sermon-thumb" onclick="viewSermon('${s.id}')">${s.type === 'video' ? '🎬' : s.type === 'audio' ? '🎧' : s.type === 'music' ? '🎵' : '📄'}</div>
       <div class="sermon-info" onclick="viewSermon('${s.id}')">
         <div class="sermon-title">${s.title}</div>
         <div class="sermon-meta">
@@ -1379,9 +1389,10 @@ function handleFileSelect(input) {
   const typeMismatch =
     (selectedType === 'video' && !isVideo) ||
     (selectedType === 'audio' && !isAudio) ||
+    (selectedType === 'music' && !isAudio) ||
     ((selectedType === 'text' || selectedType === 'article') && !isValidDoc);
   if (typeMismatch) {
-    const expected = selectedType === 'video' ? 'a video file' : selectedType === 'audio' ? 'an audio file' : 'a .docx or .txt file';
+    const expected = selectedType === 'video' ? 'a video file' : (selectedType === 'audio' || selectedType === 'music') ? 'an audio file' : 'a .docx or .txt file';
     alert(`You selected "${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}" as the content type, but this file doesn't match — please upload ${expected}, or change the content type above.`);
     input.value = '';
     if (nameEl) nameEl.innerHTML = '';
@@ -1418,7 +1429,7 @@ async function handleUpload(isDraft) {
   const type = document.getElementById('up-type')?.value;
   const transcript = document.getElementById('up-transcript')?.value?.trim();
   const mediaFile = document.getElementById('file-input')?.files?.[0];
-  if ((type === 'video' || type === 'audio') && !mediaFile) {
+  if ((type === 'video' || type === 'audio' || type === 'music') && !mediaFile) {
     return showAlert('upload-error', `Please select a ${type} file to upload`);
   }
   if ((type === 'text' || type === 'article') && !transcript && !mediaFile) {
