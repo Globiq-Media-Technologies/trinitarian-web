@@ -3832,8 +3832,12 @@ async function resendVerification(){
     const res=await fetch(API+'/api/auth/resend-verification',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}});
     const data=await res.json();
     const banner=document.getElementById('verify-banner');
-    if(banner)banner.innerHTML='✅ Verification email sent! Please check your inbox (and spam folder).';
-    setTimeout(function(){if(banner)banner.remove();},5000);
+    if(res.ok){
+      if(banner)banner.innerHTML='✅ '+(data.message||'Verification email sent!')+' Please check your inbox (and spam folder).';
+      setTimeout(function(){if(banner)banner.remove();},5000);
+    } else {
+      if(banner)banner.innerHTML='⚠ '+(data.error||'Could not resend. Please try again.');
+    }
   }catch(e){alert('Could not resend. Please try again.');}
 }
 
