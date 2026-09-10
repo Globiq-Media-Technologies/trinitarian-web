@@ -1815,8 +1815,24 @@ async function markAllRead() {
 
 // ── Admin ──
 let currentAppFilter = 'pending';
+let currentAppList = [];
+let currentAppRenderer = renderApplications;
+
+function filterApplicationsSearch() {
+  const q = (document.getElementById('app-search-input')?.value || '').trim().toLowerCase();
+  if (!q) { currentAppRenderer(currentAppList); return; }
+  const filtered = currentAppList.filter(a =>
+    (a.full_name||'').toLowerCase().includes(q) ||
+    (a.email||'').toLowerCase().includes(q) ||
+    (a.church_name||'').toLowerCase().includes(q)
+  );
+  currentAppRenderer(filtered);
+}
+
 async function filterApps(status, btn) {
   currentAppFilter = status;
+  const searchInput = document.getElementById('app-search-input');
+  if (searchInput) searchInput.value = '';
   document.querySelectorAll('.app-filter-btn').forEach(b=>{
     b.style.background='transparent';b.style.color='var(--text-muted)';b.style.borderColor='var(--border)';
   });
@@ -1829,14 +1845,18 @@ async function filterApps(status, btn) {
   if (status === 'auto-approval') {
     try {
       const data = await api('/api/pastors/applications/pending-auto-approval');
-      renderAutoApprovalQueue(data?.applications || []);
+      currentAppList = data?.applications || [];
+      currentAppRenderer = renderAutoApprovalQueue;
+      renderAutoApprovalQueue(currentAppList);
     } catch(e) {}
     return;
   }
   if (status === 'auto-approved') {
     try {
       const data = await api('/api/pastors/applications/auto-approved');
-      renderAutoApprovedList(data?.applications || []);
+      currentAppList = data?.applications || [];
+      currentAppRenderer = renderAutoApprovedList;
+      renderAutoApprovedList(currentAppList);
     } catch(e) {}
     return;
   }
@@ -1844,6 +1864,8 @@ async function filterApps(status, btn) {
   try {
     const apps = await api(url);
     const applications = apps?.applications || [];
+    currentAppList = applications;
+    currentAppRenderer = renderApplications;
     renderApplications(applications);
   } catch(e) {}
 }

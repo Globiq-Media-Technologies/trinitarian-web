@@ -942,6 +942,7 @@
           <button onclick="filterApps('auto-approved',this)" class="app-filter-btn" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(100,150,255,0.4);background:transparent;color:#6496ff;cursor:pointer;font-size:12px;">⏱ Auto-Approved</button>
         </div>
       </div>
+      <input id="app-search-input" type="text" placeholder="Search by name, email, or church…" oninput="filterApplicationsSearch()" style="width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--white);font-size:14px;margin-bottom:16px;"/>
       <div id="admin-applications"><div class="loading"><div class="spinner"></div>Loading…</div></div>
 
       <div style="margin:32px 0 16px;">
@@ -1307,7 +1308,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=75"></script>
+<script src="/pastor/dashboard.js?v=76"></script>
 
 
 <!-- Cookie Consent Banner -->
