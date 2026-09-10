@@ -1821,8 +1821,8 @@ async function filterApps(status, btn) {
     b.style.background='transparent';b.style.color='var(--text-muted)';b.style.borderColor='var(--border)';
   });
   if(btn){
-    const colors={pending:'rgba(240,165,0,0.1)',approved:'rgba(64,201,106,0.1)',rejected:'rgba(224,85,85,0.1)',all:'rgba(212,175,55,0.1)','auto-approval':'rgba(100,150,255,0.1)'};
-    const textColors={pending:'var(--warning)',approved:'var(--success)',rejected:'var(--error)',all:'var(--gold)','auto-approval':'#6496ff'};
+    const colors={pending:'rgba(240,165,0,0.1)',approved:'rgba(64,201,106,0.1)',rejected:'rgba(224,85,85,0.1)',all:'rgba(212,175,55,0.1)','auto-approval':'rgba(100,150,255,0.1)','auto-approved':'rgba(100,150,255,0.1)'};
+    const textColors={pending:'var(--warning)',approved:'var(--success)',rejected:'var(--error)',all:'var(--gold)','auto-approval':'#6496ff','auto-approved':'#6496ff'};
     btn.style.background=colors[status]||colors.all;
     btn.style.color=textColors[status]||textColors.all;
   }
@@ -1830,6 +1830,13 @@ async function filterApps(status, btn) {
     try {
       const data = await api('/api/pastors/applications/pending-auto-approval');
       renderAutoApprovalQueue(data?.applications || []);
+    } catch(e) {}
+    return;
+  }
+  if (status === 'auto-approved') {
+    try {
+      const data = await api('/api/pastors/applications/auto-approved');
+      renderAutoApprovedList(data?.applications || []);
     } catch(e) {}
     return;
   }
@@ -1878,6 +1885,31 @@ async function cancelAutoApproval(id, name) {
   } catch(e) {
     showToast('Failed to pause auto-approval', 'error');
   }
+}
+
+function renderAutoApprovedList(applications) {
+  const el = document.getElementById('admin-applications');
+  if (!applications.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⏱</div><h3>No auto-approved applications yet</h3><p style="color:var(--text-muted);">Applications that were approved automatically without manual review will appear here, so you always have a reviewable record of who was approved and what they submitted.</p></div>';
+    return;
+  }
+  el.innerHTML = applications.map(a => {
+    const approvedDate = a.reviewed_at ? new Date(a.reviewed_at).toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'}) : '';
+    return `
+    <div class="sermon-card" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;gap:10px;">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+        <div>
+          <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
+          <div style="color:var(--text-muted);font-size:13px;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}${a.city ? ', '+a.city : ''}</div>
+        </div>
+        <span class="status-badge" style="background:rgba(100,150,255,0.15);color:#6496ff;">⏱ Auto-approved ${approvedDate}</span>
+      </div>
+      <div style="color:var(--text-muted);font-size:13px;">${a.email}${a.phone ? ' · '+a.phone : ''}</div>
+      ${a.congregation_size ? `<div style="color:var(--text-muted);font-size:12px;">Congregation size: ${a.congregation_size}</div>` : ''}
+      ${a.verification_score !== null && a.verification_score !== undefined ? `<div style="color:#6496ff;font-size:12px;">Verification score: ${a.verification_score}/100</div>` : ''}
+      ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement}</div>` : ''}
+    </div>
+  `;}).join('');
 }
 
 let proSearchTimer = null;
@@ -2008,11 +2040,16 @@ function renderApplications(applications) {
       <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
         <div>
           <div style="color:var(--white);font-size:15px;font-weight:700;">${a.full_name}</div>
-          <div style="color:var(--text-muted);font-size:15px;font-weight:600;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}</div>
+          <div style="color:var(--text-muted);font-size:15px;font-weight:600;">${a.denomination||''} · ${a.church_name||''} · ${a.country||''}${a.city ? ', '+a.city : ''}</div>
         </div>
         <span class="status-badge ${statusColors[a.status]||'status-pending'}">● ${(a.status||'pending').toUpperCase()}</span>
       </div>
-      ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement.substring(0,200)}…</div>` : ''}
+      <div style="color:var(--text-muted);font-size:13px;">${a.email||''}${a.phone ? ' · '+a.phone : ''}</div>
+      ${a.congregation_size ? `<div style="color:var(--text-muted);font-size:12px;">Congregation size: ${a.congregation_size}</div>` : ''}
+      ${a.years_in_ministry ? `<div style="color:var(--text-muted);font-size:12px;">Years in ministry: ${a.years_in_ministry}</div>` : ''}
+      ${a.verification_score !== null && a.verification_score !== undefined ? `<div style="color:#6496ff;font-size:12px;">Verification score: ${a.verification_score}/100</div>` : ''}
+      ${a.statement ? `<div style="color:var(--text-sec);font-size:13px;line-height:1.6;border-left:2px solid var(--gold-border);padding-left:12px;">${a.statement}</div>` : '<div style="color:var(--warning);font-size:12px;">⚠ No statement submitted</div>'}
+      ${a.certificate_url ? `<a href="${a.certificate_url}" target="_blank" style="color:var(--gold);font-size:12px;text-decoration:underline;">📎 View submitted proof document</a>` : ''}
       ${a.status==='pending'?`<div style="display:flex;gap:8px;">
         <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve</button>
         <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
