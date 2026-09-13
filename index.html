@@ -141,6 +141,8 @@
     #lh-video-inner video, #lh-video-inner canvas { width:100% !important; height:100% !important; object-fit:contain; }
     </style>
   <!-- Google Analytics placeholder - add your ID here when ready -->
+  <!-- Google AdSense - replace ca-pub-XXXXXXXXXXXXXXXX with your real publisher ID once approved -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
 </head>
 <body>
@@ -765,6 +767,12 @@
     <span style="color:#fff;font-size:16px;font-weight:600;">Settings</span>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:24px 24px 80px;">
+
+    <!-- Trinitarian Pro -->
+    <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Trinitarian Pro</div>
+    <div id="lh-pro-section" class="card" style="margin-bottom:24px;">
+      <div style="color:#8fa3c0;font-size:13px;">Loading…</div>
+    </div>
 
     <!-- Account -->
     <div style="color:#D4AF37;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;" data-i18n="account">Account</div>
@@ -1492,7 +1500,7 @@ function goTo(page){
   if(page==='listener-home')initListenerHome();
   if(page==='lh-notifications')loadLhNotifications();
   if(page==='lh-live')initLhLivePage();
-  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro){const tt=LH_TRANS[lhCurrentLang]||LH_TRANS.en;ro.textContent=tt.listener_role||(u.role||'listener').toUpperCase();}}setTimeout(function(){applyTranslations(lhCurrentLang);},200);}
+  if(page==='lh-settings'){initLhNotifToggles();const u=JSON.parse(localStorage.getItem('trinitarian_user')||'null');if(u){const n=document.getElementById('lhs-name');const em=document.getElementById('lhs-email');const un=document.getElementById('lhs-username');const ro=document.getElementById('lhs-role');if(n)n.textContent=u.display_name||'—';if(em)em.textContent=u.email||'—';if(un)un.textContent=u.username||'—';if(ro){const tt=LH_TRANS[lhCurrentLang]||LH_TRANS.en;ro.textContent=tt.listener_role||(u.role||'listener').toUpperCase();}}lhLoadProSection();setTimeout(function(){applyTranslations(lhCurrentLang);},200);}
   if(page==='lh-inbox')loadLhInbox();
   if(page==='lh-dm')loadDmPastors();
   window.location.hash=page==='home'?'':page;
@@ -1719,6 +1727,54 @@ function tr(key){
   return tt[key]||LH_TRANS.en[key]||key;
 }
 
+async function lhLoadProSection(){
+  const el=document.getElementById('lh-pro-section');
+  if(!el)return;
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token){
+    el.innerHTML='<div style="color:#8fa3c0;font-size:13px;">Sign in to upgrade to Pro.</div>';
+    return;
+  }
+  try{
+    const res=await fetch(API+'/api/billing/status',{headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    if(data.is_pro){
+      const renewText=data.current_period_end?('Renews '+new Date(data.current_period_end).toLocaleDateString()):'';
+      el.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="color:#D4AF37;font-size:15px;font-weight:700;">👑 You are Pro</span></div>'+
+        (renewText?'<div style="color:#8fa3c0;font-size:12px;margin-bottom:14px;">'+renewText+'</div>':'')+
+        '<button onclick="lhOpenBillingPortal()" style="background:transparent;border:1px solid rgba(212,175,55,0.4);color:#D4AF37;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Manage Subscription</button>';
+    } else {
+      el.innerHTML='<div style="color:#e8e8e8;font-size:14px;margin-bottom:6px;">Upgrade to unlock Pro features.</div>'+
+        '<div style="color:#8fa3c0;font-size:12px;margin-bottom:14px;">Ad-free listening and more.</div>'+
+        '<button onclick="lhStartCheckout()" style="background:#D4AF37;border:none;color:#071528;font-weight:700;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Upgrade to Pro</button>';
+    }
+  }catch(e){
+    el.innerHTML='<div style="color:#8fa3c0;font-size:13px;">Could not load billing status.</div>';
+  }
+}
+
+async function lhStartCheckout(){
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token)return;
+  try{
+    const res=await fetch(API+'/api/billing/create-checkout-session',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    if(data.url){window.location.href=data.url;}
+    else{showToast(data.error||'Could not start checkout','error');}
+  }catch(e){showToast('Could not start checkout','error');}
+}
+
+async function lhOpenBillingPortal(){
+  const token=localStorage.getItem('trinitarian_token');
+  if(!token)return;
+  try{
+    const res=await fetch(API+'/api/billing/create-portal-session',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    if(data.url){window.location.href=data.url;}
+    else{showToast(data.error||'Could not open billing portal','error');}
+  }catch(e){showToast('Could not open billing portal','error');}
+}
+
 async function initListenerHome(){updateNotifCount();registerPush();
   const _initLang=localStorage.getItem('trinitarian_lang')||'en';
   applyTranslations(_initLang);
@@ -1785,7 +1841,35 @@ function lhRender(){
   if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🔍</div><p style="color:#8fa3c0;">'+(LH_TRANS[lhCurrentLang]||LH_TRANS.en).no_sermons+'</p></div>';return;}
   window.lhSermonMap={};lhAllSermons.forEach(s=>{window.lhSermonMap[s.id]=s;});
   const ICONS={video:'🎬',audio:'🎧',text:'📄',article:'📰'};
-  el.innerHTML=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="width:100%;height:120px;border-radius:10px;background:#071528;margin-bottom:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;">${lhThumbHtml(s,36,'<div style="font-size:36px;">'+(ICONS[s.type]||'🎧')+'</div>')}${s.published_at&&!lhIsSermonSeen(s.id)&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:6px;right:6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${escAttr(s.title)}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${escAttr(s.pastor_name||s.display_name||'Verified Pastor')}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span style="color:#c3d4e8;">${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`).join('');
+  // Pro users are ad-free - checked from the cached user object rather than
+  // a fresh API call, since a brief staleness window here (someone seeing
+  // one extra ad slot right after upgrading, until their next page load)
+  // is a low-stakes tradeoff worth making to avoid an extra request on
+  // every single feed render.
+  const _lhUser=JSON.parse(localStorage.getItem('trinitarian_user')||'null');
+  const _lhIsPro=_lhUser&&_lhUser.is_pro;
+  const _adUnit='<div style="grid-column:span 1;background:#0d2142;border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:8px;min-height:120px;display:flex;align-items:center;justify-content:center;"><ins class="adsbygoogle" style="display:block;width:100%;height:120px;" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0000000000" data-ad-format="auto"></ins></div>';
+  const cardsHtml=list.map(s=>`<div onclick="openSermonById('${s.id}')" style="background:#0d2142;border:1px solid rgba(212,175,55,0.15);border-radius:14px;padding:16px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(212,175,55,0.4)'" onmouseout="this.style.borderColor='rgba(212,175,55,0.15)'"><div style="width:100%;height:120px;border-radius:10px;background:#071528;margin-bottom:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;">${lhThumbHtml(s,36,'<div style="font-size:36px;">'+(ICONS[s.type]||'🎧')+'</div>')}${s.published_at&&!lhIsSermonSeen(s.id)&&(Date.now()-new Date(s.published_at).getTime())<172800000?'<span style="position:absolute;top:6px;right:6px;background:#e05555;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;">NEW</span>':''}</div><div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;">${escAttr(s.title)}</div><div style="color:#D4AF37;font-size:12px;margin-bottom:6px;">${escAttr(s.pastor_name||s.display_name||'Verified Pastor')}</div><div style="color:#8fa3c0;font-size:11px;display:flex;gap:10px;"><span>👁 ${parseInt(s.views_count||0).toLocaleString()}</span><span>${(s.type||'').toUpperCase()}</span>${s.published_at?`<span style="color:#c3d4e8;">${new Date(s.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div></div>`);
+  if(!_lhIsPro){
+    // Insert an ad slot after every 6th card, but never at the very start
+    // or end of a short list, and never if the ad would be the only item.
+    const withAds=[];
+    cardsHtml.forEach((card,idx)=>{
+      withAds.push(card);
+      if((idx+1)%6===0&&idx<cardsHtml.length-1)withAds.push(_adUnit);
+    });
+    el.innerHTML=withAds.join('');
+  } else {
+    el.innerHTML=cardsHtml.join('');
+  }
+  // Ask AdSense to fill any new ad slots just inserted - required after
+  // dynamically adding <ins class="adsbygoogle"> elements post-page-load.
+  if(!_lhIsPro){
+    try{
+      const adSlots=el.querySelectorAll('.adsbygoogle');
+      for(let i=0;i<adSlots.length;i++){(window.adsbygoogle=window.adsbygoogle||[]).push({});}
+    }catch(e){}
+  }
 }
 
 async function lhClearAllNotifications() {
