@@ -503,6 +503,44 @@ function pdTrF(key, params){
   return str;
 }
 
+async function pdLoadProSection(){
+  const el = document.getElementById('pd-pro-section');
+  if (!el) return;
+  try {
+    const data = await api('/api/billing/status');
+    if (data.is_pro) {
+      const renewText = data.current_period_end ? ('Renews ' + new Date(data.current_period_end).toLocaleDateString()) : '';
+      el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="color:var(--gold);font-size:15px;font-weight:700;">👑 You are Pro</span></div>' +
+        (renewText ? '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">' + renewText + '</div>' : '') +
+        '<button onclick="pdOpenBillingPortal()" style="background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Manage Subscription</button>';
+    } else {
+      el.innerHTML = '<div style="color:var(--text);font-size:14px;margin-bottom:6px;">Upgrade to unlock Pro features.</div>' +
+        '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Ad-free experience and more.</div>' +
+        '<button onclick="pdStartCheckout()" style="background:var(--gold);border:none;color:var(--navy);font-weight:700;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Upgrade to Pro</button>';
+    }
+  } catch (e) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Could not load billing status.</div>';
+  }
+}
+
+async function pdStartCheckout(){
+  try {
+    const data = await api('/api/billing/create-checkout-session', 'POST');
+    if (data.url) window.location.href = data.url;
+  } catch (e) {
+    showToast(e.message || 'Could not start checkout', 'error');
+  }
+}
+
+async function pdOpenBillingPortal(){
+  try {
+    const data = await api('/api/billing/create-portal-session', 'POST');
+    if (data.url) window.location.href = data.url;
+  } catch (e) {
+    showToast(e.message || 'Could not open billing portal', 'error');
+  }
+}
+
 
 const API = 'https://trinitarian-backend-production.up.railway.app';
 let token = localStorage.getItem('pastor_token');
@@ -638,6 +676,7 @@ function showPage(name) {
   setTimeout(() => pdApplyTranslations(pdCurrentLang), 400);
   if (name === 'settings') {
     loadNotifPrefs();
+    pdLoadProSection();
     if(document.getElementById('set-name')) document.getElementById('set-name').textContent = user?.display_name || '—';
     if(document.getElementById('set-username')) document.getElementById('set-username').textContent = user?.username || '—';
     if(document.getElementById('set-email')) document.getElementById('set-email').textContent = user?.email || '—';
@@ -1969,10 +2008,10 @@ function searchProUsers() {
       container.innerHTML = users.map(u => `
         <div style="display:flex;justify-content:space-between;align-items:center;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;">
           <div>
-            <div style="color:var(--white);font-size:14px;font-weight:600;">${u.display_name || 'Unnamed'}</div>
+            <div style="color:var(--white);font-size:14px;font-weight:600;">${u.display_name || 'Unnamed'} ${u.subscription_status === 'active' ? '<span style="color:#6496ff;font-size:11px;">💳 Paid Subscriber</span>' : ''}</div>
             <div style="color:var(--text-muted);font-size:12px;">${u.email} · ${u.role}</div>
           </div>
-          <button onclick="toggleProStatus('${u.id}', ${!u.is_pro}, this)" style="background:${u.is_pro ? 'rgba(224,85,85,0.1)' : 'rgba(212,175,55,0.15)'};border:1px solid ${u.is_pro ? 'rgba(224,85,85,0.3)' : 'rgba(212,175,55,0.3)'};color:${u.is_pro ? '#e05555' : '#D4AF37'};border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;">
+          <button onclick="toggleProStatus('${u.id}', ${!u.is_pro}, this)" ${u.is_pro && u.subscription_status === 'active' ? `title="This user has an active paid subscription - ask them to cancel via their own settings instead" style="background:rgba(100,100,100,0.1);border:1px solid rgba(100,100,100,0.3);color:var(--text-muted);border-radius:10px;padding:8px 16px;font-size:13px;cursor:not-allowed;font-weight:600;" disabled` : `style="background:${u.is_pro ? 'rgba(224,85,85,0.1)' : 'rgba(212,175,55,0.15)'};border:1px solid ${u.is_pro ? 'rgba(224,85,85,0.3)' : 'rgba(212,175,55,0.3)'};color:${u.is_pro ? '#e05555' : '#D4AF37'};border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;"`}>
             ${u.is_pro ? '✕ Revoke Pro' : '👑 Grant Pro'}
           </button>
         </div>
