@@ -1721,10 +1721,10 @@ async function loadNotifications() {
         icon = { video:'🎬', audio:'🎧', text:'📄', article:'📰' }[d.sermon_type] || icon;
       }
       return `
-      <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}" ${clickAttr}>
+      <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}" ${clickAttr} style="${n.is_priority ? 'border-left:3px solid var(--gold);' : ''}">
         <div class="notif-icon">${icon}</div>
         <div style="flex:1;">
-          <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.title}</div>
+          <div style="color:${n.is_read?'var(--text-sec)':'var(--white)'};font-size:14px;font-weight:${n.is_read?'400':'600'};margin-bottom:3px;">${n.is_priority ? '👑 ' : ''}${n.title}</div>
           ${n.body ? `<div style="color:var(--text-muted);font-size:12px;line-height:1.6;">${n.body}</div>` : ''}
           ${n.created_at ? `<div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${new Date(n.created_at).toLocaleString()}</div>` : ''}
         </div>
