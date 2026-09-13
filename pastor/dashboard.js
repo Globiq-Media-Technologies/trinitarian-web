@@ -3365,7 +3365,11 @@ async function startLiveStream(existingStreamId, existingTitle) {
     // every previous resolution fix never took effect: those were applied
     // to a different piece of code entirely (the camera-switch feature),
     // never to this real, active go-live path.
-    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    // High Quality Audio (Pro benefit) - highest tier Agora's Web SDK
+    // offers: 48kHz, music encoding, stereo, up to 128 Kbps. This whole
+    // go-live flow is already Pro-gated by the backend's start-stream
+    // check, so no additional condition is needed here.
+    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ encoderConfig: 'high_quality_stereo' });
     localVideoTrack = await AgoraRTC.createCameraVideoTrack({ facingMode: currentFacingMode, encoderConfig: '720p_1' });
     localVideoTrack.play('local-video-container');
     await agoraClient.publish([localAudioTrack, localVideoTrack]);
