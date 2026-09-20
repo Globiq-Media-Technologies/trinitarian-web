@@ -3162,8 +3162,6 @@ function initLivePage() {
 async function checkAndShowProBanner() {
   const studio = document.getElementById('live-studio');
   if (!studio) return;
-  const existing = document.getElementById('pro-required-banner');
-  if (existing) existing.remove();
   try {
     const token = localStorage.getItem('pastor_token');
     const res = await fetch(API + '/api/pro/status', { headers: { 'Authorization': 'Bearer ' + token } });
@@ -3199,6 +3197,12 @@ async function checkAndShowProBanner() {
       </div>
       <button onclick="pdStartCheckout()" style="background:#D4AF37;border:none;color:#071528;font-weight:700;padding:10px 20px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;margin-top:16px;">Upgrade to Pro - $10/month</button>
     `;
+    // Removing any existing banner immediately before insertion (rather than
+    // at the top of the function, before the fetch above) closes the race
+    // window where two near-simultaneous calls could each pass an earlier
+    // "remove existing" check before either had inserted anything yet.
+    const existing = document.getElementById('pro-required-banner');
+    if (existing) existing.remove();
     studio.insertBefore(banner, studio.firstChild);
   } catch (e) {}
 }
