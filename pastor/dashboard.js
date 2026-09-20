@@ -3197,6 +3197,7 @@ async function checkAndShowProBanner() {
           </div>
         `).join('')}
       </div>
+      <button onclick="pdStartCheckout()" style="background:#D4AF37;border:none;color:#071528;font-weight:700;padding:10px 20px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;margin-top:16px;">Upgrade to Pro - $10/month</button>
     `;
     studio.insertBefore(banner, studio.firstChild);
   } catch (e) {}
