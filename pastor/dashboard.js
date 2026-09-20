@@ -2133,8 +2133,17 @@ function renderApplications(applications) {
         <button class="btn btn-sm" style="background:rgba(64,201,106,0.1);border:1px solid rgba(64,201,106,0.4);color:var(--success);" onclick="approveApp('${a.id}','${a.full_name}')">✓ Approve</button>
         <button class="btn btn-sm btn-danger" onclick="rejectApp('${a.id}','${a.full_name}')">✕ Reject</button>
       </div>`:''}
+      ${a.status==='rejected'?`<button class="btn btn-sm btn-danger" onclick="deleteApplication('${a.id}','${a.full_name}')">🗑 Delete</button>`:''}
     </div>
   `).join('');
+}
+
+async function deleteApplication(id, name) {
+  if (!confirm(`Permanently delete ${name}'s rejected application? This cannot be undone.`)) return;
+  try {
+    await api(`/api/pastors/applications/${id}`, 'DELETE');
+    loadAdmin();
+  } catch(e) { alert('Failed to delete application.'); }
 }
 
 async function approveApp(id, name) {
