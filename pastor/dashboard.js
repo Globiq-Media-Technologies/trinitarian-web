@@ -1101,7 +1101,7 @@ async function loadOverview() {
       document.getElementById('stat-followers').textContent = analytics?.new_users ?? '—';
       const followersLabel = document.querySelector('#stat-followers')?.closest('.stat-card')?.querySelector('.stat-label');
       if (followersLabel) followersLabel.textContent = 'New Users (30d)';
-      document.getElementById('stat-streams').textContent = analytics?.top_pastors?.length ?? '—';
+      document.getElementById('stat-streams').textContent = analytics?.total_pastors ?? '—';
       const streamsLabel = document.querySelector('#stat-streams')?.closest('.stat-card')?.querySelector('.stat-label');
       if (streamsLabel) streamsLabel.textContent = 'Top Pastors';
       const topSermons = (analytics?.top_sermons || []).map(s => ({ ...s, pastor_name: s.pastor_name }));
