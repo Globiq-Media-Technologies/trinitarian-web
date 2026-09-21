@@ -1100,10 +1100,10 @@ async function loadOverview() {
       document.getElementById('stat-views').textContent = (analytics?.total_views ?? 0).toLocaleString();
       document.getElementById('stat-followers').textContent = analytics?.new_users ?? '—';
       const followersLabel = document.querySelector('#stat-followers')?.closest('.stat-card')?.querySelector('.stat-label');
-      if (followersLabel) followersLabel.textContent = 'New Users (30d)';
+      if (followersLabel) { followersLabel.textContent = 'New Users (30d)'; followersLabel.removeAttribute('data-i18n'); }
       document.getElementById('stat-streams').textContent = analytics?.total_pastors ?? '—';
       const streamsLabel = document.querySelector('#stat-streams')?.closest('.stat-card')?.querySelector('.stat-label');
-      if (streamsLabel) streamsLabel.textContent = 'Top Pastors';
+      if (streamsLabel) { streamsLabel.textContent = 'Top Pastors'; streamsLabel.removeAttribute('data-i18n'); }
       const topSermons = (analytics?.top_sermons || []).map(s => ({ ...s, pastor_name: s.pastor_name }));
       renderSermonList(topSermons.slice(0, 5), 'recent-sermons');
     } catch(e) {
