@@ -1646,6 +1646,8 @@ async function loadAnalytics(period, btn) {
     const allTimeEl = document.getElementById('an-views-alltime');
     if(allTimeEl) allTimeEl.textContent = '';
     document.getElementById('an-sermons').textContent = data?.live_sermons || data?.total_sermons || 0;
+    const followersEl = document.getElementById('an-followers');
+    if (followersEl) followersEl.textContent = data?.new_followers ?? 0;
     const top = document.getElementById('top-sermons');
     if (data?.top_sermons?.length) {
       top.innerHTML = '<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:8px;">💡 Click any sermon to view or edit it</p>' + data.top_sermons.map((s, i) => `
