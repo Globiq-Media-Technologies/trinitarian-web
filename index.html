@@ -2673,10 +2673,20 @@ async function playerDownload(){
 
 async function playerReport(){
   if(!currentSermon)return;
+  reportTarget={type:'sermon',sermonId:currentSermon.id};
+  openReportModalUI('Report Sermon',currentSermon.title);
+}
+
+async function openCommentReportModal(sermonId,commentId){
+  reportTarget={type:'comment',sermonId,commentId};
+  openReportModalUI('Report Comment','');
+}
+
+function openReportModalUI(titleText,subtitleText){
   const modal=document.createElement('div');
   modal.id='report-modal-overlay';
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
-  modal.innerHTML='<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:500px;"><h3 style="color:#fff;font-size:18px;margin-bottom:8px;" data-i18n="report_sermon">Report Sermon</h3><p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">'+currentSermon.title+'</p><div id="report-reasons" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div><textarea id="report-detail" placeholder="Please provide more details..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:120px;line-height:1.6;margin-bottom:16px;"></textarea><div id="report-selected" style="color:#D4AF37;font-size:12px;margin-bottom:14px;display:none;">Selected: <span id="report-reason-text"></span></div><div style="display:flex;gap:10px;"><button onclick="submitReport()" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">Submit Report</button><button onclick="document.getElementById(&quot;report-modal-overlay&quot;).remove();selectedReason=&quot;&quot;;" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button></div></div>';
+  modal.innerHTML='<div style="background:#0d2142;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px;width:100%;max-width:500px;"><h3 style="color:#fff;font-size:18px;margin-bottom:8px;">'+titleText+'</h3>'+(subtitleText?'<p style="color:#8fa3c0;font-size:13px;margin-bottom:16px;">'+subtitleText+'</p>':'')+'<div id="report-reasons" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div><textarea id="report-detail" placeholder="Please provide more details..." style="width:100%;background:#071528;border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:12px;color:#fff;font-size:16px;outline:none;resize:vertical;min-height:120px;line-height:1.6;margin-bottom:16px;"></textarea><div id="report-selected" style="color:#D4AF37;font-size:12px;margin-bottom:14px;display:none;">Selected: <span id="report-reason-text"></span></div><div style="display:flex;gap:10px;"><button onclick="submitReport()" style="flex:1;background:#D4AF37;color:#071528;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">Submit Report</button><button onclick="document.getElementById(&quot;report-modal-overlay&quot;).remove();selectedReason=&quot;&quot;;reportTarget=null;" style="flex:1;background:transparent;border:1px solid rgba(212,175,55,0.2);color:#8fa3c0;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;">Cancel</button></div></div>';
   document.body.appendChild(modal);
   const reasons=['False teaching','Copyright violation','Offensive content','Spam','Other'];
   const container=document.getElementById('report-reasons');
@@ -2698,8 +2708,12 @@ async function submitReport(){
   const reason=selectedReason+(detail?' - '+detail:'');
   const token=localStorage.getItem('trinitarian_token');
   if(!token){alert(tr('please_sign_report_content'));return;}
+  if(!reportTarget){return;}
+  const endpoint = reportTarget.type==='comment'
+    ? API+'/api/sermons/'+reportTarget.sermonId+'/comments/'+reportTarget.commentId+'/report'
+    : API+'/api/sermons/'+reportTarget.sermonId+'/report';
   try{
-    const res=await fetch(API+'/api/sermons/'+currentSermon.id+'/report',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({reason,description:detail})});
+    const res=await fetch(endpoint,{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({reason,description:detail})});
     const data=await res.json();
     if(!res.ok){
       if(data.needs_verification||res.status===403){
@@ -2714,7 +2728,7 @@ async function submitReport(){
       return;
     }
     document.getElementById('report-modal-overlay')?.remove();
-    const toast=document.createElement('div');toast.textContent='✓ Report submitted. Thank you.';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);selectedReason='';
+    const toast=document.createElement('div');toast.textContent='✓ Report submitted. Thank you.';toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);selectedReason='';reportTarget=null;
   }catch(e){alert(tr('could_not_submit_report'));}
 }
 
@@ -2778,13 +2792,7 @@ async function deleteCommentWeb(sermonId,commentId){
   }catch(e){alert(tr('connection_error_please_try_2'));}
 }
 async function reportCommentWeb(sermonId,commentId){
-  if(!confirm(tr('report_comment_review')))return;
-  const token=localStorage.getItem('trinitarian_token');
-  try{
-    const res=await fetch(API+'/api/sermons/'+sermonId+'/comments/'+commentId+'/report',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({reason:'Inappropriate content',description:'Reported from web'})});
-    if(res.ok){const t=document.createElement('div');t.textContent='✓ Comment reported. Thank you.';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#40c96a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;';document.body.appendChild(t);setTimeout(function(){t.remove();},3000);}
-    else alert(tr('failed_submit_report'));
-  }catch(e){alert(tr('connection_error_please_try_2'));}
+  openCommentReportModal(sermonId,commentId);
 }
 async function postComment(){
   if(!currentSermon)return;

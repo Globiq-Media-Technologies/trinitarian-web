@@ -3375,7 +3375,16 @@ async function startLiveStream(existingStreamId, existingTitle) {
     // Required for viewers to be able to switch to a lower-quality stream -
     // without this, no low-quality variant exists at all, so the viewer's
     // HD/SD toggle has nothing real to switch to.
-    try { await agoraClient.enableDualStream(); } catch (e) { console.error('enableDualStream failed:', e); }
+    try {
+      await agoraClient.enableDualStream();
+      // Explicitly configure the low stream rather than relying on the
+      // SDK's defaults, so the HD/SD difference is clearly, deliberately
+      // visible rather than potentially subtle. Note: Agora's own docs
+      // confirm macOS Safari specifically does not differentiate high/low
+      // stream quality regardless of this setting - a documented browser
+      // limitation, not something fixable from this end.
+      agoraClient.setLowStreamParameter({ width: 320, height: 180, framerate: 15, bitrate: 200 });
+    } catch (e) { console.error('enableDualStream failed:', e); }
     // Previously createMicrophoneAndCameraTracks() (the combined helper) —
     // this has zero resolution control at all, which is the actual reason
     // every previous resolution fix never took effect: those were applied
