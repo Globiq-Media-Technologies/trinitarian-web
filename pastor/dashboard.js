@@ -512,7 +512,7 @@ async function pdLoadProSection(){
       const renewText = data.current_period_end ? ('Renews ' + new Date(data.current_period_end).toLocaleDateString()) : '';
       el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="color:var(--gold);font-size:15px;font-weight:700;">👑 You are Pro</span></div>' +
         (renewText ? '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">' + renewText + '</div>' : '') +
-        '<button onclick="pdOpenBillingPortal()" style="background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Manage Subscription</button>';
+        '<button onclick="pdOpenBillingPortal()" style="background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">Cancel Subscription</button>';
     } else {
       el.innerHTML = '<div style="color:var(--text);font-size:14px;margin-bottom:6px;">Upgrade to unlock Pro features.</div>' +
         '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Ad-free experience and more.</div>' +
@@ -533,11 +533,14 @@ async function pdStartCheckout(){
 }
 
 async function pdOpenBillingPortal(){
+  if (!confirm('Cancel your Trinitarian Pro subscription? You will keep Pro access until the end of your current billing period.')) return;
   try {
-    const data = await api('/api/billing/create-portal-session', 'POST');
-    if (data.url) window.location.href = data.url;
+    const data = await api('/api/billing/cancel-subscription', 'POST');
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast('Cancellation requested. Your access continues until the current period ends.');
+    pdLoadProSection();
   } catch (e) {
-    showToast(e.message || 'Could not open billing portal', 'error');
+    showToast(e.message || 'Could not cancel subscription', 'error');
   }
 }
 
