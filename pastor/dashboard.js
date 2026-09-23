@@ -1103,7 +1103,7 @@ async function loadOverview() {
       document.getElementById('stat-views').textContent = (analytics?.total_views ?? 0).toLocaleString();
       document.getElementById('stat-followers').textContent = analytics?.new_users ?? '—';
       const followersLabel = document.querySelector('#stat-followers')?.closest('.stat-card')?.querySelector('.stat-label');
-      if (followersLabel) { followersLabel.textContent = 'New Users (30d)'; followersLabel.removeAttribute('data-i18n'); }
+      if (followersLabel) { followersLabel.textContent = 'New Users (30 Days)'; followersLabel.removeAttribute('data-i18n'); }
       document.getElementById('stat-streams').textContent = analytics?.total_pastors ?? '—';
       const streamsLabel = document.querySelector('#stat-streams')?.closest('.stat-card')?.querySelector('.stat-label');
       if (streamsLabel) { streamsLabel.textContent = 'Top Pastors'; streamsLabel.removeAttribute('data-i18n'); }
@@ -2463,12 +2463,12 @@ async function openMessage(id) {
     modal.innerHTML = `<div style="background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:520px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
-          <div style="color:var(--white);font-size:16px;font-weight:700;">\${msg.subject || 'Message'}</div>
-          <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">To: \${msg.to_name || msg.to_email || 'User'} · \${msg.created_at ? new Date(msg.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</div>
+          <div style="color:var(--white);font-size:16px;font-weight:700;">${msg.subject || 'Message'}</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">To: ${msg.to_name || msg.to_email || 'User'} · ${msg.created_at ? new Date(msg.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</div>
         </div>
         <button onclick="this.closest('div[style]').remove()" style="background:transparent;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;">✕</button>
       </div>
-      <div style="color:var(--text-sec);font-size:14px;line-height:1.8;white-space:pre-wrap;background:#071528;padding:16px;border-radius:10px;">\${msg.body || msg.content || msg.message || 'No content'}</div>
+      <div style="color:var(--text-sec);font-size:14px;line-height:1.8;white-space:pre-wrap;background:#071528;padding:16px;border-radius:10px;">${msg.body || msg.content || msg.message || 'No content'}</div>
     </div>`;
     modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
@@ -2761,7 +2761,7 @@ async function loadInbox() {
           <div style="font-size:20px;flex-shrink:0;">📬</div>
           <div style="flex:1;">
             <div style="color:#e8e8e8;font-size:14px;font-weight:600;">${m.subject||'Message'}</div>
-            <div style="color:#8fa3c0;font-size:12px;">To: ${m.to_name||m.to_email||'User'} · ${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+            <div style="color:#8fa3c0;font-size:12px;">To: ${m.to_name||m.to_email||'User'} · ${new Date(m.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · <span style="color:${m.is_read?'#40c96a':'#8fa3c0'};">${m.is_read?'✓✓ Read':'✓ Sent'}</span></div>
           </div>
         </div>`).join('');
       if (notifs.length) html += '<div style="height:1px;background:rgba(212,175,55,0.1);margin:16px 0;"></div>';
