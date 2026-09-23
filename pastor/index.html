@@ -602,6 +602,10 @@
         <div class="stat-card clickable" onclick="showPage('analytics')" title="View analytics"><span class="stat-hint">→</span><div class="stat-icon">👥</div><div class="stat-value" id="stat-followers">—</div><div class="stat-label" data-i18n="followers">Followers</div><div class="stat-tap-hint">Tap for details</div></div>
         <div class="stat-card clickable" onclick="scrollToPastStreams()" title="View live stream history"><span class="stat-hint">→</span><div class="stat-icon">📡</div><div class="stat-value" id="stat-streams">—</div><div class="stat-label" data-i18n="live_streams">Live Streams</div><div class="stat-tap-hint">Tap for history</div></div>
       </div>
+      <div id="top-countries-section" style="display:none; margin-bottom:16px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Top Countries</div>
+        <div id="top-countries-list"></div>
+      </div>
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
         <span style="color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;" data-i18n="recent_sermons">Recent Sermons</span>
         <button class="btn btn-ghost btn-sm" onclick="showPage('upload')">+ Upload New</button>
@@ -1318,7 +1322,7 @@
 <!-- ═══════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════ -->
-<script src="/pastor/dashboard.js?v=82"></script>
+<script src="/pastor/dashboard.js?v=83"></script>
 
 
 <!-- Cookie Consent Banner -->

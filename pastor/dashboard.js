@@ -1109,6 +1109,22 @@ async function loadOverview() {
       if (streamsLabel) { streamsLabel.textContent = 'Top Pastors'; streamsLabel.removeAttribute('data-i18n'); }
       const topSermons = (analytics?.top_sermons || []).map(s => ({ ...s, pastor_name: s.pastor_name }));
       renderSermonList(topSermons.slice(0, 5), 'recent-sermons');
+      const countries = analytics?.top_countries || [];
+      const countriesSection = document.getElementById('top-countries-section');
+      const countriesList = document.getElementById('top-countries-list');
+      if (countries.length && countriesSection && countriesList) {
+        countriesSection.style.display = 'block';
+        let regionNames;
+        try { regionNames = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) { regionNames = null; }
+        countriesList.innerHTML = countries.map(c => {
+          const name = regionNames ? (regionNames.of(c.country) || c.country) : c.country;
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;">' +
+            '<span style="color:var(--text);font-size:13px;">' + name + '</span>' +
+            '<span style="color:var(--text-muted);font-size:12px;">' + c.views + ' views</span></div>';
+        }).join('');
+      } else if (countriesSection) {
+        countriesSection.style.display = 'none';
+      }
     } catch(e) {
       document.getElementById('recent-sermons').innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><h3>Could not load platform data</h3></div>';
     }
