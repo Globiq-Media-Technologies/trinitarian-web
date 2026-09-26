@@ -73,7 +73,7 @@ function renderUsers(list) {
       <div style="width:44px;height:44px;border-radius:22px;background:var(--navy3);border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
         ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:44px;height:44px;border-radius:22px;object-fit:cover;"/>` : '👤'}
       </div>
-      <div class="sermon-info" style="min-width:0;overflow:hidden;">
+      <div class="sermon-info" style="min-width:0;overflow:hidden;flex:1;">
         <div class="sermon-title">${u.display_name||u.username||'User'}${(['admin','owner'].includes(user?.role) && u.is_pro) ? ' <span style="color:#D4AF37;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:0.5px;">👑 PRO</span>' : ''}</div>
         <div class="sermon-meta">
           <span style="word-break:break-all;">${u.email||''}</span>

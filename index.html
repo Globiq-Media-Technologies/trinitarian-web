@@ -2859,7 +2859,7 @@ async function loadLhNotifications(){const el=document.getElementById('lh-notifs
   var clickHandler=null;
   var tapLabel=null;
   if(n.type==='new_sermon'&&sermonId){clickHandler="lhOpenNotifSermon('"+sermonId+"')";tapLabel='Tap to listen →';}
-  else if(n.type==='live_stream'){clickHandler="goTo('lh-live')";tapLabel='Tap to join →';}
+  else if(n.type==='live_stream'){clickHandler=streamId?("lhJoinLiveStream('"+streamId+"','"+(n.title||'').replace(/'/g,"\\'")+"')"):"goTo('lh-live')";tapLabel='Tap to join →';}
   else if(n.type==='admin_message'){clickHandler="goTo('lh-inbox')";tapLabel='Tap to view →';}
   var clickable=!!clickHandler;
   // Previously every new_sermon notification showed the same fixed icon
@@ -3435,7 +3435,7 @@ function lhOpenLivePlayer(streamData, streamTitle){
         <button onclick="lhLeaveLiveStream()" style="background:rgba(224,85,85,0.2);color:#e05555;border:1px solid rgba(224,85,85,0.4);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;">Leave</button>
       </div>
     </div>
-    <div id="lh-remote-video" style="flex:1;min-height:300px;background:#000;position:relative;display:flex;align-items:center;justify-content:center;">
+    <div id="lh-remote-video" style="flex:1;min-height:0;background:#000;position:relative;display:flex;align-items:center;justify-content:center;">
       <div id="lh-video-inner" style="width:100%;height:100%;position:relative;"></div>
       <div id="lh-live-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#8fa3c0;">
         <div style="font-size:40px;margin-bottom:12px;">📡</div>
