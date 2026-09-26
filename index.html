@@ -3589,7 +3589,7 @@ function lhToggleLiveFullscreen(){
     // height/border-radius, which is exactly why fullscreen never actually
     // reached the true screen edges before this.
     overlay.dataset.windowedStyle=overlay.style.cssText;
-    overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;flex-direction:column;border-radius:0;overflow-y:auto;';
+    overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;flex-direction:column;border-radius:0;overflow:hidden;';
     if(overlay.requestFullscreen)overlay.requestFullscreen();
     else if(overlay.webkitRequestFullscreen)overlay.webkitRequestFullscreen();
     lhApplyFullscreenLayout(true);
