@@ -172,9 +172,11 @@
 
     /* ── RESPONSIVE ── */
     @media(max-width:768px) {
-      .sidebar { width:60px; }
-      .sidebar-logo, .nav-item span:not(.nav-icon), .sidebar-bottom, .nav-divider { display:none; }
-      .nav-item { padding:14px; justify-content:center; }
+      .sidebar { width:76px; }
+      .sidebar-logo, .sidebar-bottom, .nav-divider { display:none; }
+      .nav-item { flex-direction:column; gap:2px; padding:10px 4px; justify-content:center; }
+      .nav-item .nav-icon { width:auto; }
+      .nav-item span:not(.nav-icon) { font-size:9px; text-align:center; line-height:1.2; }
       .page { padding:20px 16px; }
       .type-grid { grid-template-columns:repeat(2,1fr); }
       .lang-grid { grid-template-columns:repeat(2,1fr); }
