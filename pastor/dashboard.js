@@ -556,7 +556,7 @@ let uploadType = 'video';
 // service worker registered at the root path covers the whole origin
 // (including /pastor/*), so this registers the same single service worker
 // rather than a separate one.
-const VAPID_PUBLIC_KEY = 'BIdR4IM7DQxT5Ay7RIBv2zYz6Vfuib_9UIJZeigHNPXr9vN7zASylp933rSeAsjArUfNs-G5lXu4lZJ_VzGrKKc';
+const VAPID_PUBLIC_KEY = 'BIIKJwa4T53dVpnHLi4qGizEUgAcL9VpLuu9LbKKFKQ1d3ASmiU1E1TdXOPU_COwcNGlmfBDDLGhUurWWYjb2RE';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
