@@ -540,7 +540,7 @@ async function pdStartCheckout(fromMobile){
 }
 
 async function pdRequestRefund(){
-  if (!confirm('Request a refund? This refunds your most recent payment, cancels your subscription, and removes Pro access immediately. This can only be done once per account.')) return;
+  if (!confirm('Request a refund? This refunds your most recent payment and cancels your subscription. Your Pro access stays active until the refund is confirmed, which may take a few business days. This can only be done once per account.')) return;
   try {
     const data = await api('/api/billing/request-refund', 'POST');
     if (data?.error) { showToast(data.error, 'error'); return; }
