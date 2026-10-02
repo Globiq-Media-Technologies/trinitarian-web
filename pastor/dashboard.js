@@ -556,7 +556,7 @@ let uploadType = 'video';
 // service worker registered at the root path covers the whole origin
 // (including /pastor/*), so this registers the same single service worker
 // rather than a separate one.
-const VAPID_PUBLIC_KEY = 'BIIKJwa4T53dVpnHLi4qGizEUgAcL9VpLuu9LbKKFKQ1d3ASmiU1E1TdXOPU_COwcNGlmfBDDLGhUurWWYjb2RE';
+const VAPID_PUBLIC_KEY = 'BIdR4IM7DQxT5Ay7RIBv2zYz6Vfuib_9UIJZeigHNPXr9vN7zASylp933rSeAsjArUfNs-G5lXu4lZJ_VzGrKKc';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -2558,7 +2558,9 @@ async function init() {
   // Mobile-to-web handoff: skip manual sign-in if a valid handoff token
   // is present, exchanging it for a real session the same way a normal
   // login would produce one.
-  const handoffToken = new URLSearchParams(window.location.search).get('handoff');
+  const handoffParams = new URLSearchParams(window.location.search);
+  const handoffToken = handoffParams.get('handoff');
+  const handoffIntent = handoffParams.get('intent');
   if (handoffToken) {
     window.history.replaceState({}, '', window.location.pathname);
     try {
@@ -2607,6 +2609,12 @@ async function init() {
         user = fresh;
         localStorage.setItem('pastor_user', JSON.stringify(user));
         initDashboard();
+        if (handoffIntent === 'upgrade') {
+          // Small delay so the dashboard's own init (which pdStartCheckout
+          // doesn't strictly depend on, but runs alongside) has settled
+          // before redirecting away to Paystack.
+          setTimeout(() => pdStartCheckout(), 300);
+        }
         return;
       }
     } catch(e) {}
