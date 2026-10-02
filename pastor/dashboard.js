@@ -512,7 +512,14 @@ async function pdLoadProSection(){
       const renewText = data.current_period_end ? ('Renews ' + new Date(data.current_period_end).toLocaleDateString()) : '';
       el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="color:var(--gold);font-size:15px;font-weight:700;">👑 You are Pro</span></div>' +
         (renewText ? '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">' + renewText + '</div>' : '') +
-        '<button onclick="pdOpenBillingPortal()" style="background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">' + pdTr('cancel_subscription_btn') + '</button>';
+        '<button onclick="pdOpenBillingPortal()" style="background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">' + pdTr('cancel_subscription_btn') + '</button>' +
+        '<div id="pd-refund-link" style="margin-top:10px;text-align:center;"></div>';
+      api('/api/billing/refund-eligibility').then(r => {
+        const rEl = document.getElementById('pd-refund-link');
+        if (rEl && r?.eligible) {
+          rEl.innerHTML = '<a href="javascript:void(0)" onclick="pdRequestRefund()" style="color:var(--text-muted);font-size:12px;text-decoration:underline;">Request a refund (' + r.daysRemaining + ' day' + (r.daysRemaining === 1 ? '' : 's') + ' left)</a>';
+        }
+      }).catch(() => {});
     } else {
       el.innerHTML = '<div style="color:var(--text);font-size:14px;margin-bottom:6px;">Upgrade to unlock Pro features.</div>' +
         '<div style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Ad-free experience and more.</div>' +
@@ -523,12 +530,24 @@ async function pdLoadProSection(){
   }
 }
 
-async function pdStartCheckout(){
+async function pdStartCheckout(fromMobile){
   try {
-    const data = await api('/api/billing/create-checkout-session', 'POST');
+    const data = await api('/api/billing/create-checkout-session', 'POST', fromMobile ? { from_mobile: true } : undefined);
     if (data.url) window.location.href = data.url;
   } catch (e) {
     showToast(e.message || 'Could not start checkout', 'error');
+  }
+}
+
+async function pdRequestRefund(){
+  if (!confirm('Request a refund? This refunds your most recent payment, cancels your subscription, and removes Pro access immediately. This can only be done once per account.')) return;
+  try {
+    const data = await api('/api/billing/request-refund', 'POST');
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast(data?.message || 'Your refund is being processed.');
+    pdLoadProSection();
+  } catch (e) {
+    showToast(e.message || 'Could not process refund', 'error');
   }
 }
 
@@ -2610,10 +2629,10 @@ async function init() {
         localStorage.setItem('pastor_user', JSON.stringify(user));
         initDashboard();
         if (handoffIntent === 'upgrade') {
-          // Small delay so the dashboard's own init (which pdStartCheckout
-          // doesn't strictly depend on, but runs alongside) has settled
-          // before redirecting away to Paystack.
-          setTimeout(() => pdStartCheckout(), 300);
+          // No artificial delay - pdStartCheckout() is an independent API
+          // call that doesn't depend on initDashboard() finishing, so
+          // there's nothing to wait for here.
+          pdStartCheckout(true);
         }
         return;
       }
