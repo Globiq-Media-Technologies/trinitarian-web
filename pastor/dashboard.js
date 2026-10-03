@@ -533,8 +533,11 @@ async function pdLoadProSection(){
 async function pdStartCheckout(fromMobile){
   try {
     const data = await api('/api/billing/create-checkout-session', 'POST', fromMobile ? { from_mobile: true } : undefined);
-    if (data.url) window.location.href = data.url;
+    if (data.url) { window.location.href = data.url; return; }
+    document.getElementById('upgrade-redirect-overlay')?.remove();
+    showToast('Could not start checkout', 'error');
   } catch (e) {
+    document.getElementById('upgrade-redirect-overlay')?.remove();
     showToast(e.message || 'Could not start checkout', 'error');
   }
 }
@@ -2627,6 +2630,15 @@ async function init() {
       if (fresh?.id) {
         user = fresh;
         localStorage.setItem('pastor_user', JSON.stringify(user));
+        if (handoffIntent === 'upgrade') {
+          const overlay = document.createElement('div');
+          overlay.id = 'upgrade-redirect-overlay';
+          overlay.style.cssText = 'position:fixed;inset:0;background:#071528;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+          overlay.innerHTML = '<div style="width:36px;height:36px;border:3px solid rgba(212,175,55,0.3);border-top-color:#D4AF37;border-radius:50%;animation:spin 0.8s linear infinite;"></div>' +
+            '<div style="color:#b0c4d8;font-size:14px;">Taking you to checkout…</div>' +
+            '<style>@keyframes spin{to{transform:rotate(360deg);}}</style>';
+          document.body.appendChild(overlay);
+        }
         initDashboard();
         if (handoffIntent === 'upgrade') {
           // No artificial delay - pdStartCheckout() is an independent API
